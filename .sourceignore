@@ -1,0 +1,9 @@
+# This file is used by the flux GitRepository controller to
+# ignore .yaml files that would otherwise be queued for
+# parsing by the Kustomization operator
+#
+# In the case of codecollections, we want to ignore all files
+# that are not codecollection.yaml
+**
+!codecollection.yaml
+!.sourceignore
