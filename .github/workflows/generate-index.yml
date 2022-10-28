@@ -1,0 +1,24 @@
+# Useful in a temporary manner until we fully release the public repo
+name: Generate readme file with codebundle index
+on:
+  workflow_dispatch:
+  pull_request:
+    paths: 
+      - "codebundles/**"
+      - ".github/scripts/index.sh"
+      - ".github/workflows/generate-index.yml"
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with: 
+          ref: ${{ github.event.pull_request.head.ref }}
+      - name: Update readme and commit back to repo
+        run: | 
+          git config --global user.email "${GITHUB_ACTOR}"
+          git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
+          ./.github/scripts/index.sh
+          git add readme.md
+          git commit -m "Updating Readme" 
+          git push
