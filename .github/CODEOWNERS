@@ -6,7 +6,7 @@
 # the repo. Unless a later match takes precedence,
 # these owners will be requested for
 # review when someone opens a pull request.
-*       @more-dinner @j-pye @stewartshea @jon-funk
+*	@runwhen-contrib/runwhen-team
 
 # Order is important; the last matching pattern takes the most
 # precedence. 
