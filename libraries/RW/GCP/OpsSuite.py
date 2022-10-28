@@ -1,0 +1,233 @@
+"""
+Operations Suite keyword library
+
+Scope: Global
+"""
+import json
+import urllib
+import re
+import dateutil.parser
+from dataclasses import dataclass
+from google.oauth2 import service_account
+from google.cloud import monitoring_v3, logging
+from google.protobuf.json_format import MessageToDict
+from typing import Optional
+from RW.GCP.mixins.GCPAuthentication import GCPAuthentication
+
+
+class OpsSuite(GCPAuthentication):
+    #TODO: move helpers to utils
+    #TODO: update docstrings
+    """
+    Operations Suite keyword library
+    """
+
+    ROBOT_LIBRARY_SCOPE = "GLOBAL"
+
+    def run_mql(self, project_name, mql_statement, sort_most_recent=True):
+        """
+        *DEPRECATED*
+        Runs a MQL statement against a project ID in Google cloud, and returns a timeseries of monitoring data.
+        - ``project_name`` the Google Cloud Project ID
+        - ``mql_statement`` is the MQL statement to execute.
+
+        ``tip:`` you can play with a MQL statement in the Google Cloud Console and paste it into the SLI config.
+
+        Examples:
+        | RW.GCP.OpsSuite.Run Mql   |   ${PROJECT_ID}   |   ${MQL_STATEMENT}
+        Return Value:
+        | response dict   |
+        """
+        client = monitoring_v3.QueryServiceClient(credentials=self.get_credentials())
+        request = monitoring_v3.QueryTimeSeriesRequest(
+            name=f"projects/{project_name}",
+            query=mql_statement,
+        )
+        page_result = client.query_time_series(request=request)
+        rsp = [type(r).to_dict(r) for r in page_result]
+        return rsp
+
+    def metric_query(self, project_name, mql_statement, sort_most_recent=True):
+        """
+        Runs a MQL statement against a project ID in Google cloud, and returns a timeseries of monitoring data.
+        - ``project_name`` the Google Cloud Project ID
+        - ``mql_statement`` is the MQL statement to execute.
+
+        ``tip:`` you can play with a MQL statement in the Google Cloud Console and paste it into the SLI config.
+
+        Examples:
+        | RW.GCP.OpsSuite.Run Mql   |   ${PROJECT_ID}   |   ${MQL_STATEMENT}    |
+        Return Value:
+        | response dict   |
+        """
+        client = monitoring_v3.QueryServiceClient(credentials=self.get_credentials())
+        request = monitoring_v3.QueryTimeSeriesRequest(
+            name=f"projects/{project_name}",
+            query=mql_statement,
+        )
+        page_result = client.query_time_series(request=request)
+        rsp = [type(r).to_dict(r) for r in page_result] # convert protobuf rsp to dict
+        metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
+        return metric
+
+    def _extract_metric_from_mql_result(
+        self,
+        metric_query_result: {},
+        sort_most_recent: bool,
+        data_key="point_data",
+    ) -> {}:
+        # TODO: convert to an extract/parse strategy
+        metric_data = metric_query_result[0][data_key]
+        if len(metric_data) == 0:
+            raise ValueError(f"The MQL result set has 0 results: {metric_query_result}")
+        if sort_most_recent:
+            metric_data = sorted(metric_data, key=lambda d: dateutil.parser.parse(d["time_interval"]["end_time"]))
+        # first access mql result array, access values list, get 0th entry which has/can be sorted to most recent
+        # then get dict values so we don't need to check keys, cast values to list and get 0th
+        metric = list(metric_data[0]["values"][0].values())[0]
+        # first attempt regular format
+        try:
+            metric = format(float(metric), "f")
+        except:
+            # TODO: log exception before continuing
+            # remove alpha characters from value and assume float cast
+            metric = float(''.join(i for i in str(metric) if i.isdigit() or i in ['.', '-']))
+        return metric
+    
+    def get_last_point_in_series_set(self, mql_result, label_key="label_values", data_key="point_data"):
+        """
+        *DEPRECATED*
+        Removes all data points except the most recent for each instance in the MQL result set.
+        - ``mql_result`` the results from an MQL statement
+
+        Examples:
+        | RW.GCP.OpsSuite.Get Last Point In Series Set  |   ${rsp}
+        Return Value:
+        | results dict   |
+        """
+        parsed_points_set = []
+        for series in mql_result:
+            if series[data_key]:
+                parsed_points_set.append({label_key: series[label_key], data_key: series[data_key][0]})
+        return parsed_points_set
+    
+    def average_numeric_across_instances(
+        self, 
+        data_points, 
+        label_key="label_values", 
+        data_key="point_data",
+        point_type="double_value"
+    ):
+        """
+        *DEPRECATED*
+        Returns the average of a MQL result set containing numerical data points.
+        - ``data_points`` the results from an MQL statement parsed to have singular data pointers per instance
+
+        Examples:
+        | RW.GCP.OpsSuite.Average Numeric Across Instances  |   ${parsed_points}
+        Return Value:
+        | average float |
+        """
+        avg = sum([d[data_key]["values"][0][point_type] for d in data_points])/len(data_points)
+        return avg
+    
+    def highest_numeric_across_instances(
+        self,
+        data_points,
+        label_key="label_values",
+        data_key="point_data",
+        point_type="double_value"
+    ):
+        """
+        *DEPRECATED*
+        Returns the highest value from a MQL result set.
+        - ``data_points`` the results from an MQL statement parsed to have singular data pointers per instance
+
+        Examples:
+        | RW.GCP.OpsSuite.Highest Numeric Across Instances  |   ${parsed_points}
+        Return Value:
+        | highest numeric |
+        """
+        values = [d[data_key]["values"][0][point_type] for d in data_points]
+        highest = max(values)
+        return highest
+    
+    def sum_numeric_across_instances(
+        self,
+        data_points,
+        label_key="label_values",
+        data_key="point_data",
+        point_type="double_value"
+    ):
+        """
+        *DEPRECATED*
+        Returns the sum of values from a MQL result set.
+        - ``data_points`` the results from an MQL statement parsed to have singular data pointers per instance
+
+        Examples:
+        | RW.GCP.OpsSuite.Sum Numeric Across Instances  |   ${parsed_points}
+        Return Value:
+        | numeric sum |
+        """
+        if point_type == "double_value":
+            values = [float(d[data_key]["values"][0][point_type]) for d in data_points]
+        elif point_type == "int64_value":
+            values = [int(d[data_key]["values"][0][point_type]) for d in data_points]
+        return sum(values)
+
+    def remove_units(
+        self,
+        data_points,
+        label_key="label_values",
+        data_key="point_data",
+        point_type="double_value"
+    ):
+        """
+        *DEPRECATED*
+        Iterates over a MQL result set and removes alpha characters to allow math ops.
+        - ``data_points`` the results from an MQL statement parsed to have singular data pointers per instance
+
+        Examples:
+        | RW.GCP.OpsSuite.Remove Units  |   ${parsed_points}
+        Return Value:
+        | MQL result set with numerical data points |
+        """
+        cleaned = []
+        for d in data_points:
+            data = d[data_key]["values"][0][point_type]
+            data = float(''.join(i for i in data if i.isdigit() or i in ['.', '-']))
+            d[data_key]["values"][0][point_type] = data
+            cleaned.append(d)
+        return cleaned
+
+    def get_gce_logs(
+        self, project_name: str = None, log_filter: str = None, limit: int = 1000, logger_name: str = "stderr"
+    ) -> object:
+        """
+        Get logs from GCE logging based on filter
+        Note: because we're forgoeing the use of the generator to provide an easy interface, using a limit and filter is important for performance
+        return: str
+        """
+        logging_client = logging.Client(credentials=self.get_credentials())
+        logger = logging_client.logger(f"{logger_name}")
+        logs = []
+        for log in logger.list_entries(
+            resource_names=[f"projects/{project_name}"],
+            filter_=log_filter,
+            max_results=limit,
+            order_by="timestamp desc",
+        ):
+            logs.append(log.payload)
+        return json.dumps(logs)
+
+    def get_logs_dashboard_url(self, project_id: str, gcloud_filter: str, hostname: str = "https://console.cloud.google.com/logs/query") -> str:
+        """
+        Generates a encoded URL to a gcloud logging dashboard with the equivalent query used to detect reported errors
+        BUG: using '>=' or similar operators in the query string can break the url when the request hits the dashboard; eg: use '>' instead
+        return: str
+        """
+        params = {"project": project_id}
+        # quote filter separately since it uses different server separator symbol
+        encoded_filter = ";query=" + urllib.parse.quote(gcloud_filter)
+        url = hostname + encoded_filter + "?" + urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
+        return url

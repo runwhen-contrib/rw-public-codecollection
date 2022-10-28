@@ -1,0 +1,2 @@
+errorQuery: "sum_over_time((count({metric_name} unless {metric_name} {operand} {threshold}))[{window}:]) OR on() vector(0)"
+totalQuery: "sum_over_time((count({metric_name}))[{window}:]) OR on() vector(1)"
