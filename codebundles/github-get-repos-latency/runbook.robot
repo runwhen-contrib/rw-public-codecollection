@@ -11,7 +11,6 @@ Library           RW.GitHub
 
 *** Tasks ***
 Check Latency When Creating a New GitHub Issue
-    [Documentation]    Create a new issue in GitHub issues. Report the latency.
     ${body} =    Catenate    SEPARATOR=\n
     ...    **Testing** *1 2 3*
     ...    1. item 1

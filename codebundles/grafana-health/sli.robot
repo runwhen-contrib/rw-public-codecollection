@@ -14,11 +14,3 @@ Check Grafana Server Health
     Info Log    ${res}
     Console Log    ${res.status_code}
     Console Log    ${res.content}
-#    Console Log If True    ${res.status_code} != 200    status_code: ${res.status_code}
-#    Console Log If True    ${res.status_code} != 200    reason: ${res.reason}
-#
-#    Push Metric    ${res.ok}    descr=${SERVICE_DESCR}
-#    ...    status_code=${res.status_code}
-#    ...    cluster_name=${res.cluster_name}
-#    ...    sealed=${res.sealed}
-#    ...    standby=${res.standby}

@@ -9,8 +9,6 @@ Library           RW.Core
 
 *** Tasks ***
 Ping host and collect packet lost percentage
-    [Documentation]    Ping host, collect packet lost percentage, and push it to MetricStore.
-    #RW.Core.Import Platform Variable    RW_PING_SERVICE_ENDPOINT
     RW.Core.Import User Variable    HOST_NAME
     ${result} =    RW.Core.Ping    ${HOST_NAME}    count=10
     RW.Core.Info Log    ${result["stdout"]}
