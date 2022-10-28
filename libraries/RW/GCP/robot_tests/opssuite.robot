@@ -29,15 +29,6 @@ Running GCE Logging Query And Fetching Log Explorer Link
     ...    ${GCP_PROJECT_ID}
     ...    ${GCP_LOG_QUERY} ${time_range}
     Log    ${rsp}
-# deprecated
-# Running GCE Metric Query And Pushing Result Count Metric
-#    RW.GCP.OpsSuite.Authenticate    ${GCP_CREDENTIALS}
-#    ${metric}=    RW.GCP.OpsSuite.Run Mql    ${GCP_PROJECT_ID}    ${GCP_METRIC_QUERY}
-#    Log    ${metric}
-# Running GCE Metric Query With Unified Results
-#    RW.GCP.OpsSuite.Authenticate    ${GCP_CREDENTIALS}
-#    ${metric}=    RW.GCP.OpsSuite.Run Mql    ${GCP_PROJECT_ID}    ${GCP_METRIC_QUERY2}
-#    Log    ${metric}
 
 Running GCE Metric Query And Pushing Result Count Metric
     RW.GCP.OpsSuite.Authenticate    ${GCP_CREDENTIALS}

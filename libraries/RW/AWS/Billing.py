@@ -1,6 +1,3 @@
-#  monitor billing
-#  Get billing info for report *
-
 """
 AWS Billing keyword library
 
