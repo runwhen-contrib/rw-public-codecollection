@@ -9,7 +9,7 @@ This directory is intended as a precursor to our first stand-alone public (open 
 | Folder Name | Type | Path | Documentation |
 |---|---|---|---|
 | artifactory-ok | SLI | [sli.robot](./codebundles/artifactory-ok/sli.robot) |      Checks an Artifactory instance health endpoint to determine its operational status. |
-| aws-account-limit | TaskSet | [runbook.robot](./codebundles/aws-account-limit/runbook.robot) |      Runbook to get recently created AWS accounts. |
+| aws-account-limit | TaskSet | [runbook.robot](./codebundles/aws-account-limit/runbook.robot) |      Retrieve all recently created AWS accounts. |
 | aws-account-limit | SLI | [sli.robot](./codebundles/aws-account-limit/sli.robot) |      Retrieve the count of all AWS accounts in an organization. |
 | aws-billing-costsacrosstags | TaskSet | [runbook.robot](./codebundles/aws-billing-costsacrosstags/runbook.robot) |      Creates a report of AWS line item costs filtered to a list of tagged resources |
 | aws-billing-tagcosts | SLI | [sli.robot](./codebundles/aws-billing-tagcosts/sli.robot) |      Monitors AWS cost and usage data for the latest billing period. |
