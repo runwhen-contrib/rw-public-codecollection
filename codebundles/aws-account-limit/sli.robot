@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Get a count of all AWS accounts in the organization.
+Documentation     Retrieve the count of all AWS accounts in an organization.
 Metadata          Name    aws-account-limit
 Metadata          Type    SLI
 Metadata          Author    Vui Le

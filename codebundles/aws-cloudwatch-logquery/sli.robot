@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle runs an AWS log query against the CloudWatch query insights API
-...               and pushes a metric equalling the number of rows found.
+Documentation     Retrieve number of results from an AWS CloudWatch Insights query.
 Force Tags        AWS    CloudWatch    Logs    Query    Log Group    Boto3    Errors    Failures    Files
 Library           RW.Core
 Library           RW.AWS.CloudWatch

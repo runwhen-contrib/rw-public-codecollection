@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle fetches a list of instance IDs filtered by tags, and uses them
+Documentation     Retrieve aggregate results from multiple AWS Cloudwatch Metrics Insights queries ran against tagged resources.
+...               This codebundle fetches a list of instance IDs filtered by tags, and uses them
 ...               to run a set of AWS metric queries against the CloudWatch metrics insights API
 ...               and pushes an aggregated/transformed value provided by the API as a metric.
 Force Tags        AWS    CloudWatch    EC2    Multiple    Metrics    Metric    Query    Boto3    Errors    Failures

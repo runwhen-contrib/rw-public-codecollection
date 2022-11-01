@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This SLI queries the sysdig data api using a json query to fetch metric data and push as an SLI value.
+Documentation     Queries the Sysdig data API to fetch metric data.
 Force Tags        Prometheus    Prom    PromQL    Query    Metric    Aggregate
 Suite Setup       Suite Initialization
 Library           RW.Core

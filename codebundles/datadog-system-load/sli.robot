@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Check Datadog system.load metric
+Documentation     Retrieve a DataDog instance's "System Load" metric
 Metadata          Name    datadog-system-load
 Metadata          Type    SLI
 Metadata          Author    Vui Le

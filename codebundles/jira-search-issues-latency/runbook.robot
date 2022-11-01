@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Runbook to create an issue in Jira.
+Documentation     Create an issue in Jira.
 Suite Setup       Runbook Setup
 Library           RW.Core
 Library           RW.Jira

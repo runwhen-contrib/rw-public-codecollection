@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A taskset for troubleshooting general issues associated with typical kubernetes deployment resources.
+Documentation     Troubleshooting general issues associated with kubernetes deployment resources.
 ...               Supports API interactions via both the API client and Kubectl binary through RunWhen Shell Services.
 Force Tags        K8s    Kubernetes    Kube    K8
 Suite Setup       Suite Initialization

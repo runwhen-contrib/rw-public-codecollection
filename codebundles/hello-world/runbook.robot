@@ -1,7 +1,6 @@
 *** Settings ***
-Documentation       A simple-as-possible task set
-
-Library             RW.Core
+Documentation     Basic Hello-World TaskSet
+Library           RW.Core
 
 *** Tasks ***
 Hello World

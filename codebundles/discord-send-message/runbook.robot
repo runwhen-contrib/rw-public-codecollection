@@ -1,7 +1,7 @@
 *** Settings ***
-Documentation     Runbook to send a message to a Discord channel.
+Documentation     Send a message to a Discord channel.
 Metadata          Name    discord-send-message
-Metadata          Type    Runbook
+Metadata          Type    TaskSet
 Metadata          Author    Vui Le
 Force Tags        discord    alert    message
 Library           RW.Core

@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A taskset which generates a link to the GCP Log Explorer
+Documentation     Generate a link to the GCP Log Explorer.
 Force Tags        GCP    Logs    Query    Links
 Library           DateTime
 Library           RW.GCP.OpsSuite

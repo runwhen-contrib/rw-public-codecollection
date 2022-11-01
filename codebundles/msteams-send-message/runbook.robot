@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Runbook to send a message to an MS Teams channel.
+Documentation     Send a message to an MS Teams channel.
 Library           RW.Core
 Library           RW.MSTeams
 #TODO: Refactor for new platform use

@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A codebundle which periodically performs a GET request against a Artifactory URL for health information.
+Documentation     Checks an Artifactory instance health endpoint to determine its operational status.
 ...               The response is parsed to determine if the service is healthy, resulting in a metric of 1 if it is, or 0 if not.
 Force Tags        Arty    Artifactory    health    HTTP
 Library           RW.Core

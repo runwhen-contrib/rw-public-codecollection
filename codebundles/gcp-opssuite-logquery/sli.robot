@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI which periodically runs the Google Log Query against the Log Explorer Query API
-...               and retrieves the number of results as the metric to push.
+Documentation     Retrieve the number of results of a GCP Log Explorer query.
 Force Tags        GCP    OpsSuite    Query    Logs
 Library           OperatingSystem
 Library           Collections

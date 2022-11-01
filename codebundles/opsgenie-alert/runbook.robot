@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Runbook to create an alert in Opsgenie.
+Documentation     Create an alert in Opsgenie.
 Suite Setup       Runbook Setup
 Library           RW.Core
 Library           RW.Opsgenie

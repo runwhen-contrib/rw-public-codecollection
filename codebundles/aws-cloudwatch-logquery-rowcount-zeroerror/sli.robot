@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle runs an AWS log query against the CloudWatch query insights API
-...               and pushes 0 (success) if logs are found (activity) or 1 if no logs were found in the time window.
+Documentation     Retrieve binary result from an AWS CloudWatch Insights query.
+...               Pushes 0 (success) if logs are found (activity) or 1 if no logs were found in the time window.
 Force Tags        AWS    CloudWatch    Logs    Query    Log Group    Boto3    Errors    Failures    Files    Heart beat
 Library           RW.Core
 Library           RW.AWS.CloudWatch

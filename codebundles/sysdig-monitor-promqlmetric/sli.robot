@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle performs a promql query against a sysdig promql api endpoint, pushing the returned metric value.
+Documentation     Queries the Sysdig data API with a PromQL query to fetch metric data.
 Force Tags        sysdig    Prom    PromQL    Query    Metric    Aggregate
 Suite Setup       Suite Initialization
 Library           RW.Core

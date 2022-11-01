@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle provides an SLI that queries the AWS CloudFormation API
-...               for stack event data with a filter and submits the number detected events as a metric
+Documentation     Retrieve the number of detected AWS CloudFormation stack events over a given history
 Force Tags        AWS    CloudFormation    Boto3    Stack Events    Stacks    Errors    Failures
 Library           RW.Core
 Library           RW.AWS.CloudFormation

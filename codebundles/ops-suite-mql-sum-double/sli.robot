@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI that performs a GCP MQL statement against the Metrics API,
-...               retrieves the result and aggregates the data as a double-typed metric to be submitted.
+Documentation     DEPRECATED
 Force Tags        GCP    Metrics    MQL    Google Cloud
 Library           RW.Core
 Library           RW.GCP.OpsSuite

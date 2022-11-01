@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Check availability by pinging host.
+Documentation     Ping a host and retrieve packet loss percentage.
 Metadata          Name    ping-host-availability
 Metadata          Type    SLI
 Metadata          Author    Vui Le

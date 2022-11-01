@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI which queries cert-manager resources to check expiration times of TLS certificates.
+Documentation     Retrieve number of expired TLS certificates managed by cert-manager within a given window.
 ...               The metric pushed is the number of certs within the configured expiration window.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl    cert-manager
 Suite Setup       Suite Initialization

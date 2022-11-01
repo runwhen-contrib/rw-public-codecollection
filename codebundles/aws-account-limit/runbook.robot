@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Runbook to get the recently created AWS accounts.
+Documentation     Runbook to get recently created AWS accounts.
 Metadata          Name    aws-account-limit
 Metadata          Type    Runbook
 Metadata          Author    Vui Le

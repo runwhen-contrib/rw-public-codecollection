@@ -1,4 +1,5 @@
 *** Settings ***
+Documentation     Used internally to check the status of RunWhen Public API.
 Library           RW.Core
 Library           RW.RunWhen.Papi
 Suite Setup       Suite Initialization

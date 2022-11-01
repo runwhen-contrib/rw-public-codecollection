@@ -1,6 +1,6 @@
 *** Settings ***
-Documentation     Check availability of a specified set of GitHub services as provided by https://www.githubstatus.com/, the metric supplied is a
-...               aggregated percentage indicating the availability of the components.
+Documentation     Check status of the Github platform or a specified set of GitHub services.
+...               The metric supplied is a aggregated percentage indicating the availability of the components.
 Metadata          Name    github-status-component-availability
 Metadata          Type    SLI
 Metadata          Author    Paul Dittaro

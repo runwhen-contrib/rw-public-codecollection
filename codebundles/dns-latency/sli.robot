@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     SLI to check DNS latency for Google Resolver
+Documentation     Check DNS latency for Google Resolver.
 Metadata          Name    dns-latency
 Metadata          Type    SLI
 Metadata          Author    Vui Le

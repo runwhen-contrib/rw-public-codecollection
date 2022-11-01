@@ -1,4 +1,5 @@
 *** Settings ***
+Documentation     DEPRECATED
 Library           OperatingSystem
 Library           Collections
 Library           DateTime
