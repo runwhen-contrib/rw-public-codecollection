@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     This codebundle measures the number of upcoming scheduled GitHub maintenances for the configured time window, and pushes the count as a metric.
+Documentation     Retrieve number of upcoming Github platform maintenances over a given window.
 Metadata          Name    github-status-maintenances
 Metadata          Type    SLI
 Metadata          Author    Paul Dittaro

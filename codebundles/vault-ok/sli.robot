@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A codebundle which periodically performs a GET request against a Vault URL for health information.
+Documentation     Check the health of a Vault server.
 ...               The response code is used to determine if the service is healthy, resulting in a metric of 1 if it is, or 0 if not.
 Force Tags        HashiCorp    Vault    health    HTTP
 Library           RW.Core

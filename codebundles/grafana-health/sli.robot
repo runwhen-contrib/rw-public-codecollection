@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Check Grafana server health
+Documentation     Check Grafana server health.
 Metadata          Name    grafana-health
 Metadata          Type    SLI
 Metadata          Author    Vui Le

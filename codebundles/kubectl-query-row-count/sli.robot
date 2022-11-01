@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI that uses Kubectl to extract data from the Kubernetes API Server
-...               and submit the number of results as a metric.
+Documentation     Run a kubectl query and retreive number of results as a metric.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl
 Library           RW.Core
 Library           RW.Kubectl

@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A codebundle that can be used to monitor cost and usage data as an SLI for the latest billing period.
+Documentation     Monitors AWS cost and usage data for the latest billing period.
 ...               Accepts one tag for continuous monitoring.
 Force Tags        AWS    Cost    Billing    CostExplorer    Usage
 Library           RW.Core

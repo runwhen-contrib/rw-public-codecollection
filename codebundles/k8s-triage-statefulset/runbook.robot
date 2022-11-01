@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A taskset for troubleshooting issues for StatefulSets and their related resources.
+Documentation     Troubleshoot issues for StatefulSets and their related resources.
 Force Tags        K8s    Kubernetes    Kube    K8    Triage    Troubleshoot    Statefulset    Set    Pods
 Suite Setup       Suite Initialization
 Library           BuiltIn

@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle queries all S3 buckets and inspects the last modified timestamp of its objects
-...               in order to determine if the bucket is stale or not.
+Metadata          Type    TaskSet
+Documentation     Identify stale AWS S3 buckets, based on last modified object timestamp.
 Force Tags        AWS    Storage    S3    Bucket    Metrics    Metric    Query    Boto3    Objects    Stale
 Library           RW.Core
 Library           RW.AWS.S3

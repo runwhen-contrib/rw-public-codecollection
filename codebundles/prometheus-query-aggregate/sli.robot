@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI that performs a query against a Prometheus' HTTP query API, retrieves the response,
-...               performs an aggregation operation on that result before pushing it as a metric.
+Documentation     Run a PromQL query against Prometheus and retrieve the aggregate of the result.
 Force Tags        Prometheus    Prom    PromQL    Query    Metric    Aggregate
 Suite Setup       Suite Initialization
 Library           RW.Core

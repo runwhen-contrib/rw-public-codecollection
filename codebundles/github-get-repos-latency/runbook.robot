@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Runbook to create a new issue in GitHub Issues.
+Documentation     Create a new issue in GitHub Issues.
 Metadata          Name    github-get-repos-latency
 Metadata          Type    Runbook
 Metadata          Author    Vui Le

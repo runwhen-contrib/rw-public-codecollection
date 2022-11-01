@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI which polls the Kubernetes API server with kubectl and returns 0 when OK
-...               or a 1 in the case of an unhealthy API server.
+Documentation     Check the health of a Kubernetes API server using kubectl.
+...               Returns 0 when OK, or a 1 in the case of an unhealthy API server.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl
 Suite Setup       Suite Initialization
 Library           BuiltIn

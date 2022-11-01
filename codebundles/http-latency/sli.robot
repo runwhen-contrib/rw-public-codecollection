@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle performs a measurement of golden signal: latency. The returned metric is the number of seconds
-...               the request took as a float value.
+Documentation     Measure HTTP latency against a given URL.
+...               The returned metric is the number of seconds the request took as a float value.
 Force Tags        Url    HTTP    Latency    Metric
 Library           RW.Core
 Library           RW.HTTP

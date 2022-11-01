@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     When run, this codebundle creates a URL to a CloudWatch metrics dashboard with
-...               a running query.
+Documentation     Creates a URL to a AWS CloudWatch metrics dashboard with a running query.
 Force Tags        AWS    CloudWatch    Metrics    Metric    Query    Boto3    Errors    Failures    Link    Dashboard
 Library           RW.Core
 Library           RW.AWS.CloudWatch

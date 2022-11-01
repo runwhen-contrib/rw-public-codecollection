@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle performs a measurement of 2 common golden signals: errors & latency, returning a 1 when either
+Documentation     Check if an HTTP request fails or times out of a given latency window.
+...               This codebundle performs a measurement of 2 common golden signals: errors & latency, returning a 1 when either
 ...               a HTTP error status code is returned, or the response time is outside of the configured latency window. A value of 0 for the SLI
 ...               is considered a success.
 Force Tags        Url    Errors    HTTP    Status    Latency    Metric

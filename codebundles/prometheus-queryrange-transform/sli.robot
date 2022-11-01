@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI that performs a query against a Prometheus' HTTP Range query API, retrieves the response,
-...               performs an transform operation on that result before pushing it as a metric.
+Documentation     Run a PromQL query against Prometheus range query API, perform a provided transform, and return the result.
 Force Tags        Prometheus    Prom    PromQL    Query    Metric    Aggregate
 Suite Setup       Suite Initialization
 Library           RW.Core

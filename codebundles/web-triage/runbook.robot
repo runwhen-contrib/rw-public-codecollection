@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A codebundle that runs a set of checks against a URL to inspect it for common issues
-...               such as an expired certification, missing DNS records, etc.
+Documentation     Troubleshoot and triage a URL to inspect it for common issues such as an expired certification, missing DNS records, etc.
 Force Tags        Url    Errors    HTTP    Status    Latency    Triage    DNS    SSL    Certificate
 Library           RW.Core
 Library           RW.WebInspector

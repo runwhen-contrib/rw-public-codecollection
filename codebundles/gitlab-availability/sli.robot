@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Check availability of the GitLab server
+Documentation     Check availability of a GitLab server.
 Metadata          Name    gitlab-availability
 Metadata          Type    SLI
 Metadata          Author    Vui Le

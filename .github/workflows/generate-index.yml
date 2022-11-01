@@ -19,6 +19,6 @@ jobs:
           git config --global user.email "${GITHUB_ACTOR}"
           git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
           ./.github/scripts/index.sh
-          git add readme.md
+          git add README.md
           git commit -m "Updating Readme" 
           git push

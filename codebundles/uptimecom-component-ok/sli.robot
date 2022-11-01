@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A codebundle used to periodically check the status of a Uptime.com statuspage component. It compares the
-...               operational state of the component with the list of allowed states, resulting in a 1 when acceptable, and 0 when not.
+Documentation     Check the status of an Uptime.com component for a given site.
+...               It compares the operational state of the component with the list of allowed states, resulting in a 1 when acceptable, and 0 when not.
 Force Tags        Uptime.Com    Uptime    Component    Statuspage    Operational    Up
 Library           RW.Core
 Library           RW.Uptime.StatusPage

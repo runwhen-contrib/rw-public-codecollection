@@ -1,6 +1,5 @@
 *** Settings ***
-Documentation     Experimental taskset using the shellservice-based kubectl service
-...
+Documentation     Used for troubleshooting the shellservice-based kubectl service
 Suite Setup       My Suite Setup
 Library           BuiltIn
 Library           RW.Core

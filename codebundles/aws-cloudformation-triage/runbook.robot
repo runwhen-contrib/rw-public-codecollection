@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle is a set of tasks which can be run to triage and troubleshoot various
-...               issues with CloudFormation.
+Documentation     Triage and troubleshoot various issues with AWS CloudFormation
 Force Tags        AWS    CloudFormation    Boto3    Stack Events    Stacks    Errors    Failures
 Library           RW.Core
 Library           RW.Report

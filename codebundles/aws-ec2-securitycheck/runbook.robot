@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle performs a suite of checks against a set of EC2 instances.
+Documentation     Performs a suite of security checks against a set of AWS EC2 instances.
 ...               Checks include untagged instances, dangling volumes, open routes.
 Force Tags        AWS    CloudWatch    Metrics    Metric    Query    Boto3    Errors    Failures
 Library           RW.Core

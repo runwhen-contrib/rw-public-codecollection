@@ -1,8 +1,9 @@
 
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle provides a list of integrations to chat services like Slack or Discord. With it
-...               users can send messages containing links, static content, or runsession report info.
+Documentation     Send messages and reporting to a variety of chat service providers.
+...               Current integrations are with Slack, MS Teams, RocketChat, or Discord.
+...               Users can send messages containing links, static content, or runsession report info.
 Force Tags        Chat    Slack    Discord    Google    Message    Messaging    Send    Alert    Notify
 Library           RW.Core
 Library           RW.Chat

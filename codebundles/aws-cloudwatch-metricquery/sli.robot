@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle runs an AWS metric query against the CloudWatch metrics insights API
-...               and pushes a metric equalling the metric value provided by the API.
+Documentation     Retrieve the result of an AWS CloudWatch Metrics Insights query.
 Force Tags        AWS    CloudWatch    Metrics    Metric    Query    Boto3    Errors    Failures
 Library           RW.Core
 Library           RW.AWS.CloudWatch

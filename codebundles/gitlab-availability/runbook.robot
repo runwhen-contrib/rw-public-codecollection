@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Troubleshooting GitLab server availability
+Documentation     Troubleshoot issues with GitLab server availability.
 Metadata          Name    gitlab-availability
 Metadata          Type    Runbook
 Metadata          Author    Vui Le

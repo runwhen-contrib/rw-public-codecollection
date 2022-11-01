@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     This codebundle runs an arbitrary kubectl command and writes the stdout to a report.
+Documentation     Run a kubectl command and retreive the stdout as a report.
 ...               Typically used in conjunction with other codebundles.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl    Stdout    Command    Run
 Suite Setup       Suite Initialization

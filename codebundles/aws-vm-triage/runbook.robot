@@ -1,4 +1,6 @@
 *** Settings ***
+Documentation     Triage and troubleshoot performance and usage of an AWS EC2 instance
+Metadata          Type    TaskSet
 Library           RW.Core
 Library           RW.AWS.CloudWatch
 Suite Setup       Suite Initialization

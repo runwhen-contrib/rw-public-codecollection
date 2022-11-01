@@ -1,4 +1,5 @@
 *** Settings ***
+Documentation     Check that a HTTP endpoint is healthy and returns in a target latency.
 Library           RW.Core
 Library           RW.HTTP
 Library           RW.Remote

@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A codebundle which performs a series billing queries using a list of tags to create
-...               a report of line item costs per tag.
+Documentation     Creates a report of AWS line item costs filtered to a list of tagged resources
 Force Tags        AWS    Cost    Billing    CostExplorer    Usage    Report
 Library           RW.Core
 Library           RW.AWS.Billing

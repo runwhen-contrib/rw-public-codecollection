@@ -1,5 +1,5 @@
 *** Settings ***
-Documentation     Check Pingdom health
+Documentation     Check health of Pingdom platform.
 Metadata          Name    pingdom-health
 Metadata          Type    SLI
 Metadata          Author    Vui Le

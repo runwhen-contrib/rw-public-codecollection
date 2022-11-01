@@ -1,7 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI which periodically fetches usage data via kubectl top, performs
-...               aggregation on the resulting stdout data, and submitting it as a metric.
+Documentation     Retreieve aggregate data via kubectl top command.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl
 Suite Setup       Suite Initialization
 Library           BuiltIn

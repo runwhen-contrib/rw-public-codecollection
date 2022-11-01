@@ -4,7 +4,7 @@
 # with the appended index of sli content
 
 README_HEADER_PATH="readme_header.md"
-OUTPUT_FILE="readme.md"
+OUTPUT_FILE="README.md"
 CODEBUNDLE_PATH="./codebundles"
 
 # Add readme content from readme_header

@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     An SLI which periodically health checks the pods deployed by cert-manager
+Documentation     Check the health of pods deployed by cert-manager.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl    cert-manager
 Suite Setup       Suite Initialization
 Library           BuiltIn
