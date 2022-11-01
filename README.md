@@ -75,7 +75,6 @@ This directory is intended as a precursor to our first stand-alone public (open 
 | prometheus-queryrange-transform | SLI | [sli.robot](./codebundles/prometheus-queryrange-transform/sli.robot) |      Run a PromQL query against Prometheus range query API, perform a provided transform, and return the result. |
 | remote-http-ok | SLI | [sli.robot](./codebundles/remote-http-ok/sli.robot) |      Check that a HTTP endpoint is healthy and returns in a target latency. |
 | rocketchat-plain-notification | TaskSet | [runbook.robot](./codebundles/rocketchat-plain-notification/runbook.robot) |      Send a message to an RocketChat channel. |
-| runwhen-papi-healthcheck-ws | SLI | [sli.robot](./codebundles/runwhen-papi-healthcheck-ws/sli.robot) |      Used internally to check the status of RunWhen Public API. |
 | sysdig-monitor-metric | SLI | [sli.robot](./codebundles/sysdig-monitor-metric/sli.robot) |      Queries the Sysdig data API to fetch metric data. |
 | sysdig-monitor-promqlmetric | SLI | [sli.robot](./codebundles/sysdig-monitor-promqlmetric/sli.robot) |      Queries the Sysdig data API with a PromQL query to fetch metric data. |
 | uptimecom-component-ok | SLI | [sli.robot](./codebundles/uptimecom-component-ok/sli.robot) |      Check the status of an Uptime.com component for a given site. |
