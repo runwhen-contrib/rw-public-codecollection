@@ -1,4 +1,4 @@
-![RunWhen](docs/GitHub_Banner.jpg)
+![](docs/GitHub_Banner.jpg)
 
 # RunWhen Public Codecollection
 This repository is the primary public codecollection that is to be used within the RunWhen platform. It contains codebundles that can be used in SLIs, SLOs, and TaskSets. 
