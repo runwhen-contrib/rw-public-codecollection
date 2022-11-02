@@ -1,5 +1,6 @@
 ![RunWhen](docs/GitHub_Banner.jpg)
 
-# rw-public-codecollection
+# RunWhen Public Codecollection
+This repository is the primary public codecollection that is to be used within the RunWhen platform. It contains codebundles that can be used in SLIs, SLOs, and TaskSets. 
 
-This directory is intended as a precursor to our first stand-alone public (open source) codecollection repository.
+Please see the **[contributing](CONTRIBUTING.MD)** and **[code of conduct](CODE_OF_CONDUCT.MD)** for details on adding your contributions to this project. 
