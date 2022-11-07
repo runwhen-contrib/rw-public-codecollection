@@ -1,4 +1,4 @@
-# Code of Conduct - Runwhen Public CodeCollection
+# Code of Conduct - RunWhen Public CodeCollection
 
 ## Our Pledge
 
