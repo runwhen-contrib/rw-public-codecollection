@@ -5,6 +5,7 @@ on:
   pull_request:
     paths: 
       - "codebundles/**"
+      - "readme_header.md"
       - ".github/scripts/index.sh"
       - ".github/workflows/generate-index.yml"
 jobs:
