@@ -2,7 +2,7 @@
 Library           RW.GCP.ServiceHealth
 
 *** Variables ***
-${SECONDS_IN_PAST}    600
+${SECONDS_IN_PAST}    1m
 ${PRODUCT_LIST}    Google Cloud Console, Google Cloud SQL, Google Kubernetes Engine
 ${REGION}         us-central1, us-west2
 

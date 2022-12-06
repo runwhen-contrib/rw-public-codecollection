@@ -2,7 +2,7 @@
 Library           DateTime
 Library           OperatingSystem
 Library           RW.GCP.OpsSuite
-Library           RW.Helpers.Json
+Library           RW.Utils
 Suite Setup       Suite Initialization
 
 *** Variables ***
@@ -15,7 +15,7 @@ Running GCE Logging Query And Pushing Result Count Metric
     ${now}=    Get Current Date    result_format=%Y-%m-%dT%H:%M:%SZ
     ${time_range}=    Set Variable    AND timestamp > "${1hour_ago}" AND timestamp < "${now}"
     ${rsp}=    RW.GCP.OpsSuite.Get Gce Logs    ${GCP_PROJECT_ID}    ${GCP_LOG_QUERY} ${time_range}
-    ${result_dict}=    RW.Helpers.Json.From Json    ${rsp}
+    ${result_dict}=    RW.Utils.From Json    ${rsp}
     ${metric}=    Evaluate    len($result_dict)
 
 Running GCE Logging Query And Fetching Log Explorer Link
@@ -24,21 +24,42 @@ Running GCE Logging Query And Fetching Log Explorer Link
     ${now}=    Get Current Date    result_format=%Y-%m-%dT%H:%M:%SZ
     ${time_range}=    Set Variable    AND timestamp > "${1hour_ago}" AND timestamp < "${now}"
     ${rsp}=    RW.GCP.OpsSuite.Get Gce Logs    ${GCP_PROJECT_ID}    ${GCP_LOG_QUERY} ${time_range}
-    ${result_dict}=    RW.Helpers.Json.From Json    ${rsp}
+    ${result_dict}=    RW.Utils.From Json    ${rsp}
     ${rsp}=    Get Logs Dashboard Url
     ...    ${GCP_PROJECT_ID}
     ...    ${GCP_LOG_QUERY} ${time_range}
     Log    ${rsp}
 
+Running GCE Logging Query Using Implicit Time
+    RW.GCP.OpsSuite.Authenticate    ${GCP_CREDENTIALS}
+    ${query}=    RW.GCP.OpsSuite.Add Time Range
+    ...    base_query=${GCP_LOG_QUERY}
+    ...    within_time=15m
+    ${rsp}=    RW.GCP.OpsSuite.Get Gce Logs
+    ...    project_name=${GCP_PROJECT_ID}
+    ...    log_filter=${query}
+    ...    gcp_credentials=${GCP_CREDENTIALS}
+    ${rsp}=    RW.GCP.OpsSuite.Get Logs Dashboard Url
+    ...    project_id=${GCP_PROJECT_ID}
+    ...    gcloud_filter=${query}
+
 Running GCE Metric Query And Pushing Result Count Metric
     RW.GCP.OpsSuite.Authenticate    ${GCP_CREDENTIALS}
-    ${metric}=    RW.GCP.OpsSuite.Metric Query    ${GCP_PROJECT_ID}    ${GCP_METRIC_QUERY}
-    Log    ${metric}
+    ${metric}=    RW.GCP.OpsSuite.Metric Query
+    ...    project_name=${GCP_PROJECT_ID}
+    ...    mql_statement=${GCP_METRIC_QUERY}
+    ...    gcp_credentials=${GCP_CREDENTIALS}
 
 Running GCE Metric Query With Unified Results
     RW.GCP.OpsSuite.Authenticate    ${GCP_CREDENTIALS}
     ${metric}=    RW.GCP.OpsSuite.Metric Query    ${GCP_PROJECT_ID}    ${GCP_METRIC_QUERY2}
     Log    ${metric}
+
+Running GCE Metric Query With New Interface
+    ${metric}=    RW.GCP.OpsSuite.Metric Query
+    ...    project_name=${GCP_PROJECT_ID}
+    ...    mql_statement=${GCP_METRIC_QUERY2}
+    ...    gcp_credentials=${GCP_CREDENTIALS}
 
 *** Keywords ***
 Suite Initialization
@@ -48,4 +69,5 @@ Suite Initialization
     Set Suite Variable    ${GCP_LOG_QUERY}    %{GCP_LOG_QUERY}
     Set Suite Variable    ${GCP_METRIC_QUERY}    %{GCP_METRIC_QUERY}
     Set Suite Variable    ${GCP_METRIC_QUERY2}    %{GCP_METRIC_QUERY2}
-    Set Suite Variable    ${GCP_CREDENTIALS}    ${auth}
+    ${GCP_CREDENTIALS}=    Evaluate    RW.platform.Secret("gcp_credentials", """${auth}""")
+    Set Suite Variable    ${GCP_CREDENTIALS}    ${GCP_CREDENTIALS}

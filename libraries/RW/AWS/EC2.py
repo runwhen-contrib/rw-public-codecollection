@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from typing import Union, Optional
 from benedict import benedict
 from RW.AWS.mixins.AWSAuthenticationMixin import AWSAuthenticationMixin
-from RW.AWS.Check import Check
+from RW.Utils.Check import Check
 
 
 class EC2(AWSAuthenticationMixin):

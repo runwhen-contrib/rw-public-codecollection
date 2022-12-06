@@ -3,20 +3,15 @@ rw.utils defines some common functions available to Library/Keyword
 authors as python interfaces.  Some of these are also exposed as
 Robot Keywords via RW.Utils.
 """
-import os
-import pprint
-import functools
-import time
-import json
-import yaml
-import datetime
-import re
-import xml.dom.minidom
-import urllib.parse
+from typing import Iterable, Any, Union, Optional
+import os, pprint, functools, time, json, datetime, yaml, logging, re, xml.dom.minidom, urllib.parse
 from enum import Enum
-from typing import Union, Optional
+from benedict import benedict
+from robot.libraries.BuiltIn import BuiltIn
 
 from RW import platform
+
+logger = logging.getLogger(__name__)
 
 #TODO: refresh funcs using outdated dependencies
 #TODO: port RWUtils over to here / merge / deduplicate
@@ -192,7 +187,6 @@ def latency(func, *args, **kwargs):
 
     return doit(*args, **kwargs)
 
-
 def parse_url(url: str, verbose: bool = False) -> Union[str, int]:
     parsed_url = urllib.parse.urlparse(url)
     if verbose:
@@ -207,6 +201,10 @@ def encode_url(hostname: str, params: dict, verbose: bool = False) -> str:
         platform.debug_log(f"Encoded URL: {encoded_url}", console=False)
     return encoded_url
 
+def parse_numerical(numeric_str: str):
+    return float(
+        "".join(i for i in numeric_str if i.isdigit() or i in [".", "-"])
+    )
 
 def parse_timedelta(timestring: str) -> datetime.timedelta:
 
@@ -222,3 +220,86 @@ def parse_timedelta(timestring: str) -> datetime.timedelta:
         raise platform.TaskError(
             f"{timestring!r} is not a valid time duration."
         )
+
+def stdout_to_list(stdout: str, delimiter: str = ""):
+    if delimiter:
+        return stdout.split(delimiter)
+    return stdout.split()
+
+def stdout_to_grid(stdout):
+    stdout_grid = []
+    for line in stdout.splitlines():
+        stdout_grid.append(line.split())
+    return stdout_grid
+
+def get_stdout_grid_column(stdout_grid, index: int):
+    """
+    Helper function to return a column as a list from the stdout lists of a kubectl command
+    """
+    result_column = []
+    for row in stdout_grid:
+        result_column.append(row[index])
+    return result_column
+
+def remove_units(
+    data_points,
+):
+    """
+    Iterates over list and removes units
+    """
+    cleaned = []
+    for d in data_points:
+        numerical = float(
+            "".join(i for i in d if i.isdigit() or i in [".", "-"])
+        )
+        cleaned.append(numerical)
+    return cleaned
+
+def aggregate(method: str, column: list):
+    method = method.capitalize()
+    if method == "Max":
+        return max(column)
+    elif method == "Average":
+        return sum(column) / len(column)
+    elif method == "Minimum":
+        return min(column)
+    elif method == "Sum":
+        return sum(column)
+    elif method == "First":
+        return column[0]
+    elif method == "Last":
+        return column[-1]
+
+def yaml_to_dict(yaml_str: str):
+    return yaml.safe_load(yaml_str)
+
+def dict_to_yaml(data: Union[dict, benedict]):
+    if isinstance(data, benedict):
+        return data.to_yaml()
+    return yaml.dump(data)
+
+def list_to_string(data_list: list, join_with: str= "\n") -> str:
+    return join_with.join(data_list)
+
+def string_if_else(check_boolean: bool, if_str: str, else_str) -> str:
+    return if_str if check_boolean else else_str
+
+def csv_to_list(csv_str: str, strip_entries: bool=True) -> list:
+    csv_list : list = []
+    if csv_str == "":
+        csv_list = []
+    else:
+        csv_list = csv_str.split(",")
+    if csv_list and strip_entries:
+        csv_list = [entry.strip() for entry in csv_list]
+    return csv_list
+
+def lists_to_dict(keys : list, values : list) -> dict:
+    return dict(zip(keys, values))
+
+def templated_string_list(template_string : str, values : list, key_name="item") -> list:
+    str_list : list = []
+    for value in values:
+        format_map = {key_name:value}
+        str_list.append(template_string.format(**format_map))
+    return str_list
