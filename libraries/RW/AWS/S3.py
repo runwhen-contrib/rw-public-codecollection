@@ -8,7 +8,7 @@ from datetime import datetime,timedelta, date
 from dataclasses import dataclass
 from typing import Union, Optional
 from RW.AWS.mixins.AWSAuthenticationMixin import AWSAuthenticationMixin
-from RW.AWS.Check import Check
+from RW.Utils.Check import Check
 
 
 class S3(AWSAuthenticationMixin):

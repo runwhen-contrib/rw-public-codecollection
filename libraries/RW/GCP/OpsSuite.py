@@ -7,15 +7,17 @@ import json
 import urllib
 import re
 import dateutil.parser
+from datetime import datetime, timezone
 from dataclasses import dataclass
 from google.oauth2 import service_account
 from google.cloud import monitoring_v3, logging
 from google.protobuf.json_format import MessageToDict
 from typing import Optional
-from RW.GCP.mixins.GCPAuthentication import GCPAuthentication
+from RW.Utils import parse_timedelta
+from RW import platform
 
 
-class OpsSuite(GCPAuthentication):
+class OpsSuite():
     #TODO: move helpers to utils
     #TODO: update docstrings
     """
@@ -23,6 +25,29 @@ class OpsSuite(GCPAuthentication):
     """
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
+
+    def __init__(self):
+        self._credentials = None
+
+    def authenticate(self, service_account_json: platform.Secret):
+        """
+        Sets the google service account credentials from a platform secret containing json.
+        - ``service_account_json`` the secret containing a json string from a google account credentials file.
+
+        Examples:
+        | RW.GCP.OpsSuite.Set Opssuite Credentials  |   ${opssuite_sa_creds}
+        """
+        if not service_account_json:
+            raise ValueError(f"service_account is empty")
+        sa = json.loads(service_account_json.value, strict=False)
+        self._credentials = service_account.Credentials.from_service_account_info(sa)
+
+    def get_credentials(self) -> object:
+        """
+        Return the credentials.
+        :return: The credentials
+        """
+        return self._credentials
 
     def run_mql(self, project_name, mql_statement, sort_most_recent=True):
         """
@@ -47,7 +72,7 @@ class OpsSuite(GCPAuthentication):
         rsp = [type(r).to_dict(r) for r in page_result]
         return rsp
 
-    def metric_query(self, project_name, mql_statement, sort_most_recent=True):
+    def metric_query(self, project_name, mql_statement, gcp_credentials : platform.Secret=None, sort_most_recent=True):
         """
         Runs a MQL statement against a project ID in Google cloud, and returns a timeseries of monitoring data.
         - ``project_name`` the Google Cloud Project ID
@@ -60,6 +85,8 @@ class OpsSuite(GCPAuthentication):
         Return Value:
         | response dict   |
         """
+        if gcp_credentials:
+            self.authenticate(gcp_credentials)
         client = monitoring_v3.QueryServiceClient(credentials=self.get_credentials())
         request = monitoring_v3.QueryTimeSeriesRequest(
             name=f"projects/{project_name}",
@@ -201,13 +228,15 @@ class OpsSuite(GCPAuthentication):
         return cleaned
 
     def get_gce_logs(
-        self, project_name: str = None, log_filter: str = None, limit: int = 1000, logger_name: str = "stderr"
+        self, project_name: str = None, log_filter: str = None, limit: int = 1000, gcp_credentials:platform.Secret=None, logger_name: str = "stderr"
     ) -> object:
         """
         Get logs from GCE logging based on filter
         Note: because we're forgoeing the use of the generator to provide an easy interface, using a limit and filter is important for performance
         return: str
         """
+        if gcp_credentials:
+            self.authenticate(gcp_credentials)
         logging_client = logging.Client(credentials=self.get_credentials())
         logger = logging_client.logger(f"{logger_name}")
         logs = []
@@ -231,3 +260,10 @@ class OpsSuite(GCPAuthentication):
         encoded_filter = ";query=" + urllib.parse.quote(gcloud_filter)
         url = hostname + encoded_filter + "?" + urllib.parse.urlencode(params, quote_via=urllib.parse.quote)
         return url
+
+    def add_time_range(self, base_query, within_time:str="1h") -> str:
+        past_time = (datetime.now(timezone.utc) - parse_timedelta(within_time)).strftime("%Y-%m-%dT%H:%M:%SZ")
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+        time_range = f" AND timestamp > \"{past_time}\" AND timestamp < \"{now}\""
+        time_ranged_query = base_query + time_range
+        return time_ranged_query

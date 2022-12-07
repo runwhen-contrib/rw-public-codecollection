@@ -15,6 +15,7 @@ from RW.Chat.strategies.SlackChatProviderStrategy import (
 from RW.Chat.strategies.GoogleChatProviderStrategy import (
     GoogleChatProviderStrategy,
 )
+from RW.Chat.strategies.DiscordChatProviderStrategy import DiscordChatProviderStrategy
 from RW.RunWhen.Papi import Papi
 
 
@@ -85,6 +86,8 @@ class Chat:
 
         if service and service == Chat.ChatProvider.SLACK.value:
             self._chat_provider_strategy = SlackChatProviderStrategy(**kwargs)
+        elif service and service == Chat.ChatProvider.DISCORD.value:
+            self._chat_provider_strategy = DiscordChatProviderStrategy(**kwargs)
         elif service and service == Chat.ChatProvider.GOOGLE_CHAT.value:
             self._chat_provider_strategy = GoogleChatProviderStrategy(**kwargs)
         elif service and service == Chat.ChatProvider.ROCKET_CHAT.value:
