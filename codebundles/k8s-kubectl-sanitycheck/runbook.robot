@@ -23,31 +23,31 @@ Test Generic Shell Service Connectivity
     RW.Core.Add To Report    shell service stdout: ${rsp.stdout} and stderr: ${rsp.stderr}
 
 Check Kubectl contexts
-    ${rsp}=    RW.K8s.Kubectl    config get-contexts
+    ${rsp}=    RW.K8s.Shell    kubectl config get-contexts
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     Log    Response from kubectl shellservice was ${rsp} with stdout ${rsp.stdout}
     RW.Core.Add To Report    config get-contexts stdout: ${rsp.stdout} and stderr: ${rsp.stderr}
-    ${rsp}=    RW.K8s.Kubectl    config current-context
+    ${rsp}=    RW.K8s.Shell    kubectl config current-context
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     Log    Response from kubectl shellservice was ${rsp} with stdout ${rsp.stdout}
     RW.Core.Add To Report    config current-context stdout: ${rsp.stdout} and stderr: ${rsp.stderr}
 
 Test Command Chains
-    ${rsp}=    RW.K8s.Kubectl    config current-context; ls; echo $PATH
+    ${rsp}=    RW.K8s.Shell    kubectl config current-context; ls; echo $PATH
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     Log    Response from kubectl shellservice was ${rsp} with stdout ${rsp.stdout}
     RW.Core.Add To Report    stdout: ${rsp.stdout} and stderr: ${rsp.stderr}
 
 Test Kubectl Get Pods
-    ${rsp}=    RW.K8s.Kubectl    get pods
+    ${rsp}=    RW.K8s.Shell    kubectl get pods
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     Log    Response from kubectl get pods was ${rsp} with stdout ${rsp.stdout}
     RW.Core.Add To Report    kubectl get pods stdout: ${rsp.stdout} and stderr: ${rsp.stderr}
-    ${rsp}=    RW.K8s.Kubectl    get all
+    ${rsp}=    RW.K8s.Shell    kubectl get all
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     Log    Response from kubectl get all was ${rsp} with stdout ${rsp.stdout}

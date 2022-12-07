@@ -6,13 +6,21 @@ Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
 Library           RW.K8s
+Library           RW.Utils
 Library           RW.platform
 Library           OperatingSystem
 
 *** Keywords ***
 Suite Initialization
     ${kubeconfig}=    RW.Core.Import Secret    kubeconfig
+    ...    type=string
+    ...    description=The kubernetes kubeconfig yaml containing connection configuration used to connect to cluster(s).
+    ...    pattern=\w*
+    ...    example=For examples, start here https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
     ${kubectl}=    RW.Core.Import Service    kubectl
+    ...    description=The location service used to interpret shell commands.
+    ...    default=kubectl-service.shared
+    ...    example=kubectl-service.shared
     ${KUBECTL_COMMAND}=    RW.Core.Import User Variable    KUBECTL_COMMAND
     ...    type=string
     ...    description=The kubectl top command to fetch stdout data with.
@@ -39,12 +47,11 @@ Suite Initialization
 
 *** Tasks ***
 Running Kubectl Top And Extracting Metric Data
-    ${rsp}=    RW.K8s.Kubectl    ${KUBECTL_COMMAND}
+    ${stdout}=    RW.K8s.Shell    cmd=${KUBECTL_COMMAND}
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
-    ${stdout}=    Set Variable    ${rsp.stdout}
-    ${datagrid}=    RW.K8s.Stdout To Grid    ${stdout}
-    ${column}=    RW.K8s.Get Stdout Grid Column    ${datagrid}    ${DATA_COLUMN}
-    ${cleaned_column}=    RW.K8s.Remove Units    ${column}
-    ${metric}=    RW.K8s.Top Aggregate    ${AGGREGATION}    ${cleaned_column}
+    ${datagrid}=    RW.Utils.Stdout To Grid    ${stdout}
+    ${column}=    RW.Utils.Get Stdout Grid Column    ${datagrid}    ${DATA_COLUMN}
+    ${cleaned_column}=    RW.Utils.Remove Units    ${column}
+    ${metric}=    RW.Utils.Aggregate    ${AGGREGATION}    ${cleaned_column}
     RW.Core.Push Metric    ${metric}

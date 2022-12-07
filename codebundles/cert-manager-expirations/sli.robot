@@ -7,6 +7,7 @@ Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
 Library           RW.K8s
+Library           RW.Utils
 Library           RW.CertManager
 Library           RW.platform
 Library           OperatingSystem
@@ -27,12 +28,21 @@ Suite Initialization
     ...    pattern="^[0-9]*$"
     ...    default=30
     ...    example=30
+    ${CONTEXT}=    RW.Core.Import User Variable    CONTEXT
+    ...    type=string
+    ...    description=Which Kubernetes context to operate within.
+    ...    pattern=\w*
+    ...    example=my-main-cluster
 
 *** Tasks ***
 Inspect Certification Expiration Dates
-    ${rsp}=    RW.CertManager.Check Certificate Dates
-    ...    days_left_allowed=${EXPIRATION_WINDOW}
+    ${rsp}=    RW.K8s.Shell
+    ...    cmd=kubectl get Certificate --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
+    ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
-    ...    namespace=${NAMESPACE}
+    ${certs}=    RW.Utils.Yaml To Dict    ${rsp}
+    ${rsp}=    RW.CertManager.Get Expiring Certs
+    ...    certs=${certs}
+    ...    days_left_allowed=${EXPIRATION_WINDOW}
     ${metric}=    Evaluate    len($rsp)
     RW.Core.Push Metric    ${metric}

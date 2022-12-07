@@ -1,10 +1,11 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     Troubleshoot issues for StatefulSets and their related resources.
+Documentation     A taskset for troubleshooting issues for StatefulSets and their related resources.
 Force Tags        K8s    Kubernetes    Kube    K8    Triage    Troubleshoot    Statefulset    Set    Pods
 Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
+Library           RW.Utils
 Library           RW.K8s
 Library           RW.platform
 Library           OperatingSystem
@@ -12,7 +13,14 @@ Library           OperatingSystem
 *** Keywords ***
 Suite Initialization
     ${kubeconfig}=    RW.Core.Import Secret    kubeconfig
+    ...    type=string
+    ...    description=The kubernetes kubeconfig yaml containing connection configuration used to connect to cluster(s).
+    ...    pattern=\w*
+    ...    example=For examples, start here https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
     ${kubectl}=    RW.Core.Import Service    kubectl
+    ...    description=The location service used to interpret shell commands.
+    ...    default=kubectl-service.shared
+    ...    example=kubectl-service.shared
     ${EVENT_SEARCH}=    RW.Core.Import User Variable    EVENT_SEARCH
     ...    type=string
     ...    description=Grep events for the following search term.
@@ -45,55 +53,49 @@ Suite Initialization
 
 *** Tasks ***
 Check StatefulSets Replicas Ready
-    ${rsp}=    RW.K8s.Get
-    ...    kind=StatefulSet
-    ...    namespace=${NAMESPACE}
-    ...    context=${CONTEXT}
-    ...    kubeconfig=${kubeconfig}
-    ...    unpack_from_items=True
-    ...    labels=${LABELS}
-    ...    distribution=${DISTRIBUTION}
-    ${all_ready}=    RW.K8s.Stateful Sets Ready
-    ...    statefulsets=${rsp}
-    ...    unpack_from_items=False
-    RW.Core.Add Pre To Report    All StatefulSets Replicas Ready: ${all_ready}
-    ${command}=    Set Variable    ${binary_name} get statefulsets -l ${LABELS} --context ${CONTEXT} -n ${NAMESPACE}
-    ${rsp}=    RW.K8s.Kubectl
-    ...    cmd=${command}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get statefulset --selector=${LABELS} --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    kubeconfig=${kubeconfig}
-    ${stdout}=    Set Variable    ${rsp.stdout}
-    RW.Core.Add Pre To Report    Command Used: ${command}
+    ...    kubeconfig=${KUBECONFIG}
+    ${statefulsets}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${all_ready}=    RW.K8s.Stateful Sets Ready
+    ...    statefulsets=${statefulsets}
+    RW.Core.Add Pre To Report    All StatefulSets Replicas Ready: ${all_ready}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get statefulset --selector=${LABELS} --context=${CONTEXT} --namespace=${NAMESPACE}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Events For The StatefulSet
-    ${command}=    Set Variable    ${binary_name} get events --context ${CONTEXT} -n ${NAMESPACE} | grep -i ${EVENT_SEARCH}
-    ${rsp}=    RW.K8s.Kubectl
-    ...    cmd=${command}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get events --context ${CONTEXT} -n ${NAMESPACE} | grep -i ${EVENT_SEARCH}
     ...    target_service=${kubectl}
-    ...    kubeconfig=${kubeconfig}
-    ${stdout}=    Set Variable    ${rsp.stdout}
-    RW.Core.Add Pre To Report    Command Used: ${command}
+    ...    kubeconfig=${KUBECONFIG}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get StatefulSet Logs
-    ${command}=    Set Variable    ${binary_name} get statefulsets -l ${LABELS} --no-headers -o custom-columns=":metadata.name" --context ${CONTEXT} -n ${NAMESPACE} | xargs -I '{ss}' ${binary_name} logs --tail=100 statefulset/{ss} --context ${CONTEXT} -n ${NAMESPACE}
-    ${rsp}=    RW.K8s.Kubectl
-    ...    cmd=${command}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get statefulsets -l ${LABELS} --no-headers -o custom-columns=":metadata.name" --context ${CONTEXT} -n ${NAMESPACE} | xargs -I '{ss}' ${binary_name} logs --tail=100 statefulset/{ss} --context ${CONTEXT} -n ${NAMESPACE}
     ...    target_service=${kubectl}
-    ...    kubeconfig=${kubeconfig}
-    ${stdout}=    Set Variable    ${rsp.stdout}
-    RW.Core.Add Pre To Report    Command Used: ${command}
+    ...    kubeconfig=${KUBECONFIG}
     RW.Core.Add Pre To Report    ${stdout}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get StatefulSet Manifests Dump
-    ${rsp}=    RW.K8s.Get
-    ...    kind=StatefulSet
-    ...    kubeconfig=${kubeconfig}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get statefulset --selector=${LABELS} --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
-    ...    labels=${LABELS}
-    ...    output_format=yaml
-    ...    distribution=${DISTRIBUTION}
-    RW.Core.Add Pre To Report    ${rsp}
+    ...    kubeconfig=${KUBECONFIG}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    ${stdout}
+    RW.Core.Add Pre To Report    Commands Used: ${history}

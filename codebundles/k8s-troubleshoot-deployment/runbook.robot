@@ -1,11 +1,12 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     Troubleshooting general issues associated with kubernetes deployment resources.
+Documentation     A taskset for troubleshooting general issues associated with typical kubernetes deployment resources.
 ...               Supports API interactions via both the API client and Kubectl binary through RunWhen Shell Services.
 Force Tags        K8s    Kubernetes    Kube    K8
 Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
+Library           RW.Utils
 Library           RW.K8s
 Library           RW.platform
 Library           OperatingSystem
@@ -13,7 +14,14 @@ Library           OperatingSystem
 *** Keywords ***
 Suite Initialization
     ${kubeconfig}=    RW.Core.Import Secret    kubeconfig
+    ...    type=string
+    ...    description=The kubernetes kubeconfig yaml containing connection configuration used to connect to cluster(s).
+    ...    pattern=\w*
+    ...    example=For examples, start here https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/
     ${kubectl}=    RW.Core.Import Service    kubectl
+    ...    description=The location service used to interpret shell commands.
+    ...    default=kubectl-service.shared
+    ...    example=kubectl-service.shared
     ${NAMESPACE}=    RW.Core.Import User Variable    NAMESPACE
     ...    type=string
     ...    description=The name of the Kubernetes namespace to scope actions and searching to.
@@ -60,94 +68,119 @@ Suite Initialization
     ...    description=Which link to direct users to for documentation on Kubernetes events.
     ...    pattern=\w*
     ...    default=https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/event-v1/
+    ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
+    Set Suite Variable    ${binary_name}    ${binary_name}
 
 *** Tasks ***
 Troubleshoot Resourcing
-    ${rsp}=    RW.K8s.Check Resources
-    ...    kubeconfig=${KUBECONFIG}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get Deployment --selector=${LABELS} --no-headers -o custom-columns=":metadata.name" --context ${CONTEXT} -n ${NAMESPACE} | grep "${NAME}" | xargs -I '{deploy_name}' ${binary_name} get Deployment/{deploy_name} --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
+    ...    kubeconfig=${KUBECONFIG}
+    ${deployment}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${ret}=    RW.K8s.Check Resources
+    ...    deployment=${deployment}
     ...    search_name=${NAME}
-    ...    labels=${LABELS}
-    ...    distribution=${DISTRIBUTION}
     ${resource_report}=    RW.K8s.Format Resources Report
-    ...    report_data=${rsp}
+    ...    report_data=${ret}
     ...    search_name=${NAME}
     ...    resource_doc_link=https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${resource_report}
 
 Troubleshoot Events
-    ${rsp}=    RW.K8s.Check Events
-    ...    kubeconfig=${KUBECONFIG}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get Events --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
+    ...    kubeconfig=${KUBECONFIG}
+    ${events}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${rsp}=    RW.K8s.Check Events
+    ...    events=${events}
     ...    search_name=${NAME}
-    ...    distribution=${DISTRIBUTION}
     ${events_report}=    RW.K8s.Format Events Report
     ...    report_data=${rsp}
     ...    search_name=${NAME}
     ...    events_doc_link=https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/event-v1/
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${events_report}
 
 Troubleshoot PVC
-    ${rsp}=    RW.K8s.Check PVC
-    ...    kubeconfig=${KUBECONFIG}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get pvc --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
-    ...    search_name=${NAME}
-    ...    distribution=${DISTRIBUTION}
-    ${events_report}=    RW.K8s.Format PVC Report
+    ...    kubeconfig=${KUBECONFIG}
+    ${pvcs}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get deployment --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ${deployments}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${rsp}=    RW.K8s.Check PVC
+    ...    deployments=${deployments}
+    ...    pvcs=${pvcs}
+    ${pvc_report}=    RW.K8s.Format PVC Report
     ...    report_data=${rsp}
-    ...    search_name=${NAME}
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
-    RW.Core.Add Pre To Report    ${events_report}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
+    RW.Core.Add Pre To Report    ${pvc_report}
 
 Troubleshoot Pods
-    ${rsp}=    RW.K8s.Check Pods
-    ...    kubeconfig=${KUBECONFIG}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get Pods --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
+    ...    kubeconfig=${KUBECONFIG}
+    ${pods}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${rsp}=    RW.K8s.Check Pods
+    ...    pods=${pods}
     ...    search_name=${NAME}
-    ...    namespace=${NAMESPACE}
-    ...    labels=${LABELS}
-    ...    distribution=${DISTRIBUTION}
     ${pod_report}=    RW.K8s.Format Pods Report
     ...    report_data=${rsp}
-    ...    search_name=${NAME}
-    ...    mute_suggestions=${MUTE_SUGGESTIONS}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${pod_report}
 
 Troubleshoot PodDisruptionBudgets
-    ${rsp}=    RW.K8s.Check Pdb
-    ...    kubeconfig=${KUBECONFIG}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get pdb --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
-    ...    search_name=${NAME}
-    ...    namespace=${NAMESPACE}
-    ...    labels=${LABELS}
-    ...    distribution=${DISTRIBUTION}
+    ...    kubeconfig=${KUBECONFIG}
+    ${pdbs}=    RW.Utils.Yaml To Dict    ${stdout}
+    ${rsp}=    RW.K8s.Check Pdb    pdbs=${pdbs}
     ${pdb_report}=    RW.K8s.Format Pdb Report
     ...    report_data=${rsp}
-    ...    search_name=${NAME}
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${pdb_report}
 
 Troubleshoot Networking
-    ${rsp}=    RW.K8s.Check Networking
-    ...    kubeconfig=${KUBECONFIG}
+    ${rsp}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get Pod --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
     ...    target_service=${kubectl}
-    ...    context=${CONTEXT}
-    ...    search_name=${NAME}
-    ...    namespace=${NAMESPACE}
-    ...    labels=${LABELS}
-    ...    distribution=${DISTRIBUTION}
+    ...    kubeconfig=${KUBECONFIG}
+    ${pods}=    RW.Utils.Yaml To Dict    ${rsp}
+    ${rsp}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get Service --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ${services}=    RW.Utils.Yaml To Dict    ${rsp}
+    ${rsp}=    RW.K8s.Check Networking
+    ...    services=${services}
+    ...    pods=${pods}
     ${networking_report}=    RW.K8s.Format Networking Report
     ...    report_data=${rsp}
-    ...    search_name=${NAME}
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${networking_report}

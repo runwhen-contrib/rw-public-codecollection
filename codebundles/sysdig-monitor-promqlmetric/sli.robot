@@ -48,7 +48,7 @@ Suite Initialization
     ...    pattern="^[0-9]*$"
     ...    default=1
     ...    example=1
-    Set Suite Variable    ${OPTIONAL_HEADERS}    %{OPTIONAL_HEADERS}
+    Set Suite Variable    ${HEADERS}    ${HEADERS}
 
 *** Tasks ***
 Querying PromQL Endpoint And Pushing Metric Data

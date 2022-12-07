@@ -9,21 +9,17 @@ Suite Setup       Suite Initialization
 
 *** Tasks ***
 Get GCP Log Dashboard URL For Given Log Query
-    RW.GCP.OpsSuite.Authenticate    ${OPS_SUITE_SA}
-    ${1hour_ago}=    Get Current Date    increment=-${SECONDS_IN_PAST}s    result_format=%Y-%m-%dT%H:%M:%SZ
-    ${now}=    Get Current Date    result_format=%Y-%m-%dT%H:%M:%SZ
-    ${time_range}=    Set Variable    AND timestamp > "${1hour_ago}" AND timestamp < "${now}"
+    ${query}=    RW.GCP.OpsSuite.Add Time Range
+    ...    base_query=${LOG_QUERY}
+    ...    within_time=${WITHIN_TIME}
     ${dashboard_url}=    RW.GCP.OpsSuite.Get Logs Dashboard Url
     ...    ${PROJECT_ID}
-    ...    ${LOG_QUERY} ${time_range}
-    Log    ${dashboard_url}
-    RW.Core.Add To Report    GCP Log Explorer Dashboard Link For Query: ${LOG_QUERY} ${time_range}
+    ...    ${query}
+    RW.Core.Add To Report    GCP Log Explorer Dashboard Link For Query: ${query}
     RW.Core.Add To Report    ${dashboard_url}
 
 *** Keywords ***
 Suite Initialization
-    ${secret}=    Import Secret    ops-suite-sa
-    ${OPS_SUITE_SA}=    Set Variable    ${secret.value}
     RW.Core.Import User Variable    PROJECT_ID
     ...    type=string
     ...    description=The GCP Project ID to scope the API to.
@@ -31,15 +27,12 @@ Suite Initialization
     ...    example=myproject-ID
     RW.Core.Import User Variable    LOG_QUERY
     ...    type=string
-    ...    description=The number of seconds of history to consider for query results.
+    ...    description=The log query used to create the dashboard URL with.
     ...    pattern=\w*
     ...    example=resource.labels.namespace_name:"my-namespace"
-    RW.Core.Import User Variable    SECONDS_IN_PAST
+    RW.Core.Import User Variable    WITHIN_TIME
     ...    type=string
-    ...    description=The number of seconds of history to consider for query results.
-    ...    pattern="^[0-9]*$"
-    ...    example=600
-    Set Suite Variable    ${OPS_SUITE_SA}    ${OPS_SUITE_SA}
-    Set Suite Variable    ${PROJECT_ID}    ${PROJECT_ID}
-    Set Suite Variable    ${LOG_QUERY}    ${LOG_QUERY}
-    Set Suite Variable    ${SECONDS_IN_PAST}    ${SECONDS_IN_PAST}
+    ...    pattern=((\d+?)d)?((\d+?)h)?((\d+?)m)?((\d+?)s)?
+    ...    description=How far back to retrieve log entries, in the format "1d1h15m", with possible unit values being 'd' representing days, 'h' representing hours, 'm' representing minutes, and 's' representing seconds.
+    ...    example=30m
+    ...    default=15m
