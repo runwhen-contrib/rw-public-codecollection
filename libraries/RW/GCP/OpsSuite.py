@@ -94,7 +94,10 @@ class OpsSuite():
         )
         page_result = client.query_time_series(request=request)
         rsp = [type(r).to_dict(r) for r in page_result] # convert protobuf rsp to dict
-        metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
+        if not rsp: 
+          metric = 0
+        else: 
+          metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
         return metric
 
     def _extract_metric_from_mql_result(
