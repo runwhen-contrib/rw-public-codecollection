@@ -97,7 +97,7 @@ class OpsSuite():
         if no_result_overwrite == Yes': 
             if not rsp: 
             #  metric = int(no_result_value)
-              metric = 5
+              metric = 6
             else: 
               metric = 10
             #  metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
