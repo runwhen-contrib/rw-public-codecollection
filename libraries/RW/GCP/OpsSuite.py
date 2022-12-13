@@ -72,7 +72,7 @@ class OpsSuite():
         rsp = [type(r).to_dict(r) for r in page_result]
         return rsp
 
-    def metric_query(self, project_name, mql_statement, gcp_credentials : platform.Secret=None, sort_most_recent=True):
+    def metric_query(self, project_name, mql_statement, no_result_data_overwrite, no_result_value, gcp_credentials : platform.Secret=None, sort_most_recent=True):
         """
         Runs a MQL statement against a project ID in Google cloud, and returns a timeseries of monitoring data.
         - ``project_name`` the Google Cloud Project ID
