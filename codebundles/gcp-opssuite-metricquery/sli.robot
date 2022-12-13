@@ -34,7 +34,7 @@ Suite Initialization
     ...    example=fetch kubernetes.io/node/cpu/allocatable_utilization | within 10m | top 1
     RW.Core.Import User Variable    NO_RESULT_OVERWRITE
     ...    type=string
-    ...    description=Determine how to handle queries with no result data. Either set each timeseries to a value or do nothing. 
+    ...    description=Determine how to handle queries with no result data. Set to Yes to write a metric (specified below) or No to accept the null result. 
     ...    pattern=\w*
     ...    enum=[Yes,No]
     ...    default=No
