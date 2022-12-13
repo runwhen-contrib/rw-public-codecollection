@@ -102,7 +102,8 @@ class OpsSuite():
               metric = 10
             #  metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
         else: 
-          metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)    
+          # metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)  
+          metric = 20  
         return metric
 
     def _extract_metric_from_mql_result(
