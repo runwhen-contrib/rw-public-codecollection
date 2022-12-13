@@ -42,6 +42,7 @@ Suite Initialization
     ...    type=string
     ...    description=Set the metric value that should be stored when no data result is available.
     ...    pattern=\d*
+    ...    default=0
     ...    example=0
     Set Suite Variable    ${PROJECT_ID}    ${PROJECT_ID}
     Set Suite Variable    ${MQL_STATEMENT}    ${MQL_STATEMENT}
