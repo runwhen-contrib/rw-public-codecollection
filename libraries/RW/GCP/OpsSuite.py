@@ -94,9 +94,9 @@ class OpsSuite():
         )
         page_result = client.query_time_series(request=request)
         rsp = [type(r).to_dict(r) for r in page_result] # convert protobuf rsp to dict
-        if no_result_data_handler = "SetValue": 
+        if no_result_data_overwrite = "Yes": 
             if not rsp: 
-              metric = no_result_data_value
+              metric = int(no_result_value)
             else: 
               metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
         else: 
