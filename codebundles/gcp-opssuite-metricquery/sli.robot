@@ -11,6 +11,8 @@ Running GCP OpsSuite Metric Query
     ...    project_name=${PROJECT_ID}
     ...    mql_statement=${MQL_STATEMENT}
     ...    gcp_credentials=${ops-suite-sa}
+    ...    no_result_data_handler=${NO_RESULT_DATA_HANDLER}
+    ...    no_result_data_value=${NO_RESULT_DATA_VALUE}
     RW.Core.Push Metric    ${metric}
 
 *** Keywords ***
@@ -30,5 +32,19 @@ Suite Initialization
     ...    description=The MQL statement used to query metrics from the GCP OpsSuite Metric API. Note that a 'within' clause must be present in the query. See https://cloud.google.com/monitoring/mql
     ...    pattern=\w*
     ...    example=fetch kubernetes.io/node/cpu/allocatable_utilization | within 10m | top 1
+    RW.Core.Import User Variable    NO_RESULT_DATA_HANDLER
+    ...    type=string
+    ...    description=Determine how to handle queries with no result data. Either set each timeseries to a value or do nothing. 
+    ...    pattern=\w*
+    ...    enum=[DoNothing, SetValue]
+    ...    default=DoNothing
+    ...    example=`0`
+    RW.Core.Import User Variable    NO_RESULT_DATA_VALUE
+    ...    type=integer
+    ...    description=Set the metric value that should be stored when no data result is available.
+    ...    pattern=\w*
+    ...    example=`0`
     Set Suite Variable    ${PROJECT_ID}    ${PROJECT_ID}
     Set Suite Variable    ${MQL_STATEMENT}    ${MQL_STATEMENT}
+    Set Suite Variable    ${NO_RESULT_DATA_HANDLER}     ${NO_RESULT_DATA_HANDLER}
+    Set Suite Variable    ${NO_RESULT_DATA_VALUE}     ${NO_RESULT_DATA_VALUE}
