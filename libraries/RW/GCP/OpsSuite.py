@@ -72,7 +72,7 @@ class OpsSuite():
         rsp = [type(r).to_dict(r) for r in page_result]
         return rsp
 
-    def metric_query(self, project_name, mql_statement, no_result_data_overwrite, no_result_value, gcp_credentials : platform.Secret=None, sort_most_recent=True):
+    def metric_query(self, project_name, mql_statement, no_result_overwrite, no_result_value, gcp_credentials : platform.Secret=None, sort_most_recent=True):
         """
         Runs a MQL statement against a project ID in Google cloud, and returns a timeseries of monitoring data.
         - ``project_name`` the Google Cloud Project ID
@@ -94,11 +94,13 @@ class OpsSuite():
         )
         page_result = client.query_time_series(request=request)
         rsp = [type(r).to_dict(r) for r in page_result] # convert protobuf rsp to dict
-        if no_result_data_overwrite is 'Yes': 
+        if no_result_overwrite is 'Yes': 
             if not rsp: 
-              metric = int(no_result_value)
+            #  metric = int(no_result_value)
+              metric = 5
             else: 
-              metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
+              metric = 10
+            #  metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
         else: 
           metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)    
         return metric

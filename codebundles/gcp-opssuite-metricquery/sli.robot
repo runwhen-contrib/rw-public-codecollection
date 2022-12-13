@@ -11,7 +11,7 @@ Running GCP OpsSuite Metric Query
     ...    project_name=${PROJECT_ID}
     ...    mql_statement=${MQL_STATEMENT}
     ...    gcp_credentials=${ops-suite-sa}
-    ...    no_result_data_overwrite=${NO_RESULT_OVERWRITE}
+    ...    no_result_overwrite=${NO_RESULT_OVERWRITE}
     ...    no_result_value=${NO_RESULT_VALUE}
     RW.Core.Push Metric    ${metric}
 
