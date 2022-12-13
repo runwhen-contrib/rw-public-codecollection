@@ -96,14 +96,11 @@ class OpsSuite():
         rsp = [type(r).to_dict(r) for r in page_result] # convert protobuf rsp to dict
         if no_result_overwrite == 'Yes': 
             if not rsp: 
-            #  metric = int(no_result_value)
-              metric = 6
+              metric = int(no_result_value)
             else: 
-              metric = 10
-            #  metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
+              metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)
         else: 
-          # metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)  
-          metric = 20  
+          metric = self._extract_metric_from_mql_result(rsp, sort_most_recent)  
         return metric
 
     def _extract_metric_from_mql_result(
