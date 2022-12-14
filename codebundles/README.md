@@ -1,0 +1,2 @@
+# RunWhen Public Codecollection
+This folder contains all of the open-source content that is published as the RunWhen public codecollection. Each folder contains a specific codebundle that can contain robot framework code to build an SLI, SLO, or TaskSet. Each folder can contain a dedicated README.md file, which can detail usage of the codebundle, requirements, and use cases. This content is automatically published on docs.runwhen.com
