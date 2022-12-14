@@ -1,7 +1,7 @@
-# GCP Operations Suite Log Query Dashboard 
+# Kubernetes Triage Deployments
 
 ## TaskSet
-Generate a link to the GCP Log Explorer.
+Triages issues related to a deployment's replicas.
 
 ## Use Cases
 

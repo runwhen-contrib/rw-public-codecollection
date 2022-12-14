@@ -1,4 +1,4 @@
 # RunWhen Public Codecollection
 This content contains all of the open source codebundles that are published as the [RunWhen public codecollection](https://github.com/runwhen-contrib/rw-public-codecollection). Each codebundle folder contains code and documentation to build an SLI, SLO, or TaskSet. Each folder can contain a dedicated README.md file, which can detail usage of the codebundle, requirements, and use cases. This content is automatically published on docs.runwhen.com
 
-Updates to this content can be submitted as a Pull Request against the main [RunWhen Public Codecollection repo](https://github.com/runwhen-contrib/rw-public-codecollection) or by creating an [issue](https://github.com/runwhen-contrib/rw-public-codecollection/issues) with the `docs` label. 
+Updates to this content can be submitted as a Pull Request against the main [RunWhen Public Codecollection repo](https://github.com/runwhen-contrib/rw-public-codecollection) or by creating an [issue](https://github.com/runwhen-contrib/rw-public-codecollection/issues) with the `documentation` label. 

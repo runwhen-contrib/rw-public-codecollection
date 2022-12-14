@@ -1,7 +1,7 @@
-# GCP Operations Suite Log Query Dashboard 
+# Opsgenie Alert
 
 ## TaskSet
-Generate a link to the GCP Log Explorer.
+Create an alert in Opsgenie.
 
 ## Use Cases
 

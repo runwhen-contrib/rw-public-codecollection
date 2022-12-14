@@ -1,7 +1,7 @@
-# GCP Operations Suite Log Query Dashboard 
+# RocketChat Plain Notification
 
 ## TaskSet
-Generate a link to the GCP Log Explorer.
+Send a message to an RocketChat channel.
 
 ## Use Cases
 

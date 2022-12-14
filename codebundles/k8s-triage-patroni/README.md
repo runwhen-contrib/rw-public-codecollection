@@ -1,7 +1,7 @@
-# GCP Operations Suite Log Query Dashboard 
+# Kubernetes Triage Patroni
 
 ## TaskSet
-Generate a link to the GCP Log Explorer.
+Taskset to triage issues related to patroni.
 
 ## Use Cases
 

@@ -1,7 +1,7 @@
-# GCP Operations Suite Log Query Dashboard 
+# Hello World
 
 ## TaskSet
-Generate a link to the GCP Log Explorer.
+Basic Hello-World TaskSet
 
 ## Use Cases
 

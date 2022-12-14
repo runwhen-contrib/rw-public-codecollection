@@ -1,7 +1,7 @@
-# GCP Operations Suite Log Query Dashboard 
+# Microsoft Teams Send Message
 
 ## TaskSet
-Generate a link to the GCP Log Explorer.
+Send a message to an MS Teams channel.
 
 ## Use Cases
 
