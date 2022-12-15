@@ -55,6 +55,7 @@ Please see the **[contributing](CONTRIBUTING.md)** and **[code of conduct](CODE_
 | k8s-kubectl-sanitycheck | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-sanitycheck/runbook.robot) |      Used for troubleshooting the shellservice-based kubectl service |
 | k8s-kubectl-top | SLI | [sli.robot](./codebundles/k8s-kubectl-top/sli.robot) |      Retreieve aggregate data via kubectl top command. |
 | k8s-patroni-healthcheck | SLI | [sli.robot](./codebundles/k8s-patroni-healthcheck/sli.robot) |      Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy. |
+| k8s-postgres-querymetric | SLI | [sli.robot](./codebundles/k8s-postgres-querymetric/sli.robot) |      Runs a postgres SQL query and pushes the returned query result as an SLI metric. |
 | k8s-triage-deploymentreplicas | TaskSet | [runbook.robot](./codebundles/k8s-triage-deploymentreplicas/runbook.robot) |      Triages issues related to a deployment's replicas. |
 | k8s-triage-patroni | TaskSet | [runbook.robot](./codebundles/k8s-triage-patroni/runbook.robot) |      Taskset to triage issues related to patroni. |
 | k8s-triage-statefulset | TaskSet | [runbook.robot](./codebundles/k8s-triage-statefulset/runbook.robot) |      A taskset for troubleshooting issues for StatefulSets and their related resources. |
