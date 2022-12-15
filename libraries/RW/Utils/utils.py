@@ -303,3 +303,10 @@ def templated_string_list(template_string : str, values : list, key_name="item")
         format_map = {key_name:value}
         str_list.append(template_string.format(**format_map))
     return str_list
+
+def secrets_list(*args) -> [platform.Secret]:
+    secrets_list: [platform.Secrets] = []
+    for arg in args:
+        if isinstance(arg, platform.Secret):
+            secrets_list.append(arg)
+    return secrets_list
