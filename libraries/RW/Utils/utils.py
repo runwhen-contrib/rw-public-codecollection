@@ -145,6 +145,19 @@ def to_int(v) -> Union[int, list[int]]:
             f"Expected a scalar or list value (actual value: {v})"
         )
 
+def to_float(v) -> Union[float, list[float]]:
+    """
+    Convert the input parameter, which may be a scalar or a list, into
+    float value(s).
+    """
+    if is_scalar(v):
+        return float(v)
+    elif is_list(v):
+        return [float(x) for x in v]
+    else:
+        raise ValueError(
+            f"Expected a scalar or list value (actual value: {v})"
+        )
 
 def prettify(data) -> str:
     return pprint.pformat(data, indent=1, width=80)
