@@ -107,13 +107,33 @@ class Status:
         """
 
         status_page = self._fetch_status_page()
+
         if components is not None:
+    
+            # Generate a list of valid components
+            valid_component_names = {component_name['name'] for component_name in status_page['components']}
+            invalid_component_list = []
+
+            # Test each input item against the list of valid components; create a list of invalid components if they exist
+            for item in components:
+                if item not in valid_component_names:
+                    invalid_component_list.append(item)
+            
+            # Fail the step and identify which component isn't valid
+            if len(invalid_component_list) != 0:
+                raise ValueError(
+                    f"{len(invalid_component_list)} component(s) are not found on the github status page. Invalid components are: {invalid_component_list} Valid components are: {valid_component_names} ;"
+                )
+
+            # Create a list of each component and it' current status
             component_status = [
                 component
-                for component in status_page["components"]
+                for component in status_page["components"]    
                 if component["name"] in components
             ]
             component_availability_score = 0.0
+
+            # Compute the overall health score
             for component in component_status:
                 component_availability_score += (
                     self.GITHUB_COMPONENT_AVAILABILITY_MAP[
