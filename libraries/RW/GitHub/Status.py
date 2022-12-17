@@ -122,7 +122,7 @@ class Status:
             # Fail the step and identify which component isn't valid
             if len(invalid_component_list) != 0:
                 raise ValueError(
-                    f"{len(invalid_component_list)} component(s) are not found on the github status page. Invalid components are: {invalid_component_list} Valid components are: {valid_component_names} ;"
+                    f"{len(invalid_component_list)} component(s) is/are not found on the github status page. Invalid components are: {invalid_component_list} Valid components are: {valid_component_names} ;"
                 )
 
             # Create a list of each component and it' current status
