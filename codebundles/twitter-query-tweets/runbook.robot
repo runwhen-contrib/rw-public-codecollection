@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Shea Stewart
 Documentation     Queries Twitter to fetch tweets within a specified time range for a specific user handle add them to a report.
-Force Tags        Twitter    Social
+Force Tags        Twitter    Social   tweet
 Suite Setup       Suite Initialization
 Library           RW.Core
 Library           RW.SocialScrape.SocialScrape
