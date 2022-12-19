@@ -42,20 +42,28 @@ Suite Initialization
     ...    pattern="^[0-9]*$"
     ...    default=30
     ...    example=30
-    RW.Core.Import User Variable    SECONDS_IN_PAST
-    ...    type=string
-    ...    description=Determines the range of historical data queried starting from now back a number of seconds.
-    ...    pattern="^[0-9]*$"
-    ...    default=600
-    ...    example=600
     RW.Core.Import User Variable    DATA_COLUMN
     ...    type=string
     ...    description=Which column of the result data to perform aggregation on. Typically 0 is the timestamp, whereas 1 is the metric value.
     ...    pattern="^[0-9]*$"
     ...    default=1
     ...    example=1
+    RW.Core.Import User Variable    NO_RESULT_OVERWRITE
+    ...    type=string
+    ...    description=Determine how to handle queries with no result data. Set to Yes to write a metric (specified below) or No to accept the null result.
+    ...    pattern=\w*
+    ...    enum=[Yes,No]
+    ...    default=No
+    RW.Core.Import User Variable    NO_RESULT_VALUE
+    ...    type=string
+    ...    description=Set the metric value that should be stored when no data result is available.
+    ...    pattern=\d*
+    ...    default=0
+    ...    example=0
     Set Suite Variable    ${CURL_SERVICE}    ${CURL_SERVICE}
     Set Suite Variable    ${OPTIONAL_HEADERS}    ${OPTIONAL_HEADERS}
+    Set Suite Variable    ${NO_RESULT_OVERWRITE}    ${NO_RESULT_OVERWRITE}
+    Set Suite Variable    ${NO_RESULT_VALUE}    ${NO_RESULT_VALUE}
 
 *** Tasks ***
 Querying Prometheus Instance And Pushing Aggregated Data
@@ -64,8 +72,11 @@ Querying Prometheus Instance And Pushing Aggregated Data
     ...    query=${QUERY}
     ...    optional_headers=${OPTIONAL_HEADERS}
     ...    step=${STEP}
-    ...    seconds_in_past=${SECONDS_IN_PAST}
     ...    target_service=${CURL_SERVICE}
     ${data}=    Set Variable    ${rsp["data"]}
-    ${metric}=    RW.Prometheus.Transform Data    ${data}    ${TRANSFORM}
+    ${metric}=    RW.Prometheus.Transform Data
+    ...    data=${data}
+    ...    method=${TRANSFORM}
+    ...    no_result_overwrite=${NO_RESULT_OVERWRITE}
+    ...    no_result_value=${NO_RESULT_VALUE}
     RW.Core.Push Metric    ${metric}

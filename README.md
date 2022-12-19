@@ -5,6 +5,8 @@ This repository is the primary public codecollection that is to be used within t
 
 Please see the **[contributing](CONTRIBUTING.md)** and **[code of conduct](CODE_OF_CONDUCT.md)** for details on adding your contributions to this project. 
 
+Documentation for each codebundle is maintained in the README.md alongside the robot code and is published at [https://docs.runwhen.com/public/v/codebundles/](https://docs.runwhen.com/public/v/codebundles/). 
+
 
 ## Codebundle Index
 | Folder Name | Type | Path | Documentation |
@@ -37,7 +39,7 @@ Please see the **[contributing](CONTRIBUTING.md)** and **[code of conduct](CODE_
 | github-actions-workflowtiming | SLI | [sli.robot](./codebundles/github-actions-workflowtiming/sli.robot) |      Monitors the average timing of a github actions workflow file within a repo |
 | github-get-repos-latency | TaskSet | [runbook.robot](./codebundles/github-get-repos-latency/runbook.robot) |      Create a new issue in GitHub Issues. |
 | github-get-repos-latency | SLI | [sli.robot](./codebundles/github-get-repos-latency/sli.robot) |      Check GitHub latency by getting a list of repo names. |
-| github-status-components | SLI | [sli.robot](./codebundles/github-status-components/sli.robot) |      Check status of the Github platform or a specified set of GitHub services. |
+| github-status-components | SLI | [sli.robot](./codebundles/github-status-components/sli.robot) |      Check status of the GitHub platform (https://www.githubstatus.com/) for a specified set of GitHub service components. |
 | github-status-incidents | SLI | [sli.robot](./codebundles/github-status-incidents/sli.robot) |      Check for unresolved incidents related to GitHub services, and provides a count of ongoing incidents as a metric. |
 | github-status-maintenances | SLI | [sli.robot](./codebundles/github-status-maintenances/sli.robot) |      Retrieve number of upcoming Github platform maintenances over a given window. |
 | gitlab-availability | TaskSet | [runbook.robot](./codebundles/gitlab-availability/runbook.robot) |      Troubleshoot issues with GitLab server availability. |

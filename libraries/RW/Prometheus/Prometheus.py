@@ -1,4 +1,5 @@
 import requests
+import logging
 import urllib
 import json
 import dateutil.parser
@@ -6,6 +7,7 @@ import dateutil.parser
 from datetime import datetime, timedelta
 from RW import platform
 
+logger = logging.getLogger(__name__)
 
 class Prometheus:
     """
@@ -18,51 +20,73 @@ class Prometheus:
         """
         API request method wrapped by other public query methods.
         """
+        if target_service:
+            # if a runwhen service is provided, pass an equivalent curl to it instead
+            rsp = self._query_with_service(
+                url=url,
+                params=params,
+                optional_headers=optional_headers,
+                target_service=target_service
+            )
+        else:
+            # else we assume the prometheus instance is public
+            headers = {
+                "content-type":"application/json",
+            }
+            if optional_headers:
+                optional_headers = json.loads(optional_headers.value)
+                headers.update(optional_headers)
+            rsp = requests.get(url, headers=headers, params=params, timeout=timeout)
+            if rsp.status_code != 200:
+                raise ValueError(f"Received HTTP code {rsp.status_code} in response {rsp} against url {url} and params {params}")
+            rsp = rsp.json()
+        if "status" not in rsp or "data" not in rsp:
+            raise ValueError(f"Response received is malformed {rsp} against url {url} and params {params}")
+        if rsp["status"] == "error":
+            raise ValueError(f"API responded with error {rsp} against url {url} and params {params}")
+        return rsp
+
+    def _secret_to_curl_headers(self, optional_headers: platform.Secret) -> platform.Secret:
+        header_list = []
         headers = {
             "content-type":"application/json",
         }
-        if optional_headers:
-            optional_headers = json.loads(optional_headers.value)
-            headers.update(optional_headers)
-        if target_service:
-            # if a runwhen service is provided, pass an equivalent curl to it instead
-            curl_str = self._create_curl(url, headers, params)
-            rsp = self._query_with_service(curl_str, target_service)
-        else:
-            # else we assume the prometheus instance is public
-            rsp = requests.get(url, headers=headers, params=params, timeout=timeout)
-            if rsp.status_code != 200:
-                raise ValueError(f"Received HTTP code {rsp.status_code} in response {rsp} against url {url} headers {headers} and params {params}")
-            rsp = rsp.json()
-        if "status" not in rsp or "data" not in rsp:
-            raise ValueError(f"Response received is malformed {rsp} against url {url} headers {headers} and params {params}")
-        if rsp["status"] == "error":
-            raise ValueError(f"API responded with error {rsp} against url {url} headers {headers} and params {params}")
-        return rsp
+        headers.update(json.loads(optional_headers.value))
+        for k,v in headers.items():
+            header_list.append(f"-H \"{k}: {v}\"")
+        optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=" ".join(header_list))
+        return optional_headers
 
-    def _create_curl(self, url, headers=None, params=None) -> str:
+    def _create_curl(self, url, optional_headers: platform.Secret, params=None) -> str:
         """
         Helper method to generate a curl string equivalent to a Requests object (roughly)
+        Note that headers are inserted as a $variable to be substituted in the location service by an environment variable.
+        This is identified by the secret.key
         """
-        header_list = []
-        if headers:
-            for k,v in headers.items():
-                header_list.append(f"-H \"{k}: {v}\"")
         if params:
             params = f"?{urllib.parse.urlencode(params, quote_via=urllib.parse.quote)}"
         else:
             params = ""
-        headers = " ".join(header_list)
-        curl = f"curl -X GET {headers} '{url}{params}'"
+        # we use eval so that the location service evaluates the secret headers as multiple tokens
+        curl = f"eval $(echo \"curl -X GET ${optional_headers.key} '{url}{params}'\")"
         return curl
 
-    def _query_with_service(self, curl: str, target_service: platform.Service=None) -> dict:
+    def _query_with_service(
+        self, url: str,
+        optional_headers: platform.Secret,
+        target_service: platform.Service,
+        params=None,
+    ) -> dict:
         """
         Passes a curl string over to a RunWhen location service which handles the request and returns the stdout.
         """
+        optional_headers = self._secret_to_curl_headers(optional_headers=optional_headers)
+        curl_str: str = self._create_curl(url, optional_headers, params=params)
+        request_optional_headers = platform.ShellServiceRequestSecret(optional_headers)
         rsp = platform.execute_shell_command(
-            cmd=curl,
+            cmd=curl_str,
             service=target_service,
+            request_secrets=[request_optional_headers]
         )
         if rsp.status != 200:
             raise ValueError(f"Received HTTP status of {rsp.status} from response {rsp}")
@@ -71,7 +95,15 @@ class Prometheus:
         rsp = json.loads(rsp.stdout)
         return rsp
 
-    def query_instant(self, api_url, query, step: str=None, target_service: platform.Service=None, optional_headers: platform.Secret=None, point_in_time=datetime.now()):
+    def query_instant(
+        self,
+        api_url,
+        query,
+        step: str=None,
+        target_service: platform.Service=None,
+        optional_headers: platform.Secret=None,
+        point_in_time=datetime.now()
+    ):
         """
         Performs a query against the prometheus instant API for metrics with a single data point.
 
@@ -92,7 +124,18 @@ class Prometheus:
             params["step"] = step
         return self._query(api_url, target_service=target_service, optional_headers=optional_headers, params=params)
 
-    def query_range(self, api_url, query, target_service: platform.Service=None, optional_headers: platform.Secret=None, step="30s", seconds_in_past=60, start=None, end=None, use_unix_seconds:bool=False):
+    def query_range(
+        self,
+        api_url,
+        query,
+        target_service: platform.Service=None,
+        optional_headers: platform.Secret=None,
+        step="30s",
+        seconds_in_past=60,
+        start=None,
+        end=None,
+        use_unix_seconds:bool=False
+    ):
         """
         Performs a query against the prometheus Range API for metric data containing lists of data points.
 
@@ -152,7 +195,15 @@ class Prometheus:
         api_url = f"{api_url}/label/{label}/values"
         return self._query(api_url, target_service=target_service, optional_headers=optional_headers)
 
-    def transform_data(self, data, method: str, column_index=1, metric_name=None):
+    def transform_data(
+        self,
+        data,
+        method: str,
+        no_result_overwrite: bool=False,
+        no_result_value: float=0,
+        column_index=1,
+        metric_name=None
+    ):
         """
         A helper method which can parse and transform data from a Prometheus API response.
         In the below examples, ${data} is typically referencing ${rsp["data"]} from
@@ -166,10 +217,11 @@ class Prometheus:
         |   transform_value: float  |
         """
         column_index = int(column_index)
-        if "result" not in data:
-            raise ValueError(f"Empty metric results {data}")
-        if len(data["result"]) == 0:
-            raise ValueError(f"Empty metric results {data}")
+        if "result" not in data or len(data["result"]) == 0:
+            if no_result_overwrite:
+                return no_result_value
+            else:
+                raise ValueError(f"Empty metric results {data}")
         metric_index = None
         # find index of metric in results if name provided
         if metric_name:
