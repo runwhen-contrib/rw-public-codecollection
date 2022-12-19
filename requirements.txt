@@ -13,4 +13,3 @@ pyopenssl>=0.0
 slack_sdk>=0.0
 python-benedict>=0.0
 sdcclient>=0.16
-https://backend-services.dev.project-468.com/pypi/platform/rw.core/RW.Core-0.1.1.tar.gz
