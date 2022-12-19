@@ -46,4 +46,7 @@ class SocialScrape:
                 break
             latest_tweets.append([tweet.date, tweet.id, tweet.content, tweet.user.username])
 
-        return latest_tweets
+        # Format list
+        formatted_tweets = pd.DataFrame(latest_tweets, columns=['Datetime', 'Tweet Id', 'Text', 'Username'])
+        
+        return formatted_tweets
