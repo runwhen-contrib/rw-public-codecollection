@@ -16,6 +16,7 @@ from datetime import timedelta, date
 import datetime
 from RW import platform
 import snscrape.modules.twitter as sntwitter
+import pandas as pd
 
 class SocialScrape: 
     """
