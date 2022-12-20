@@ -24,7 +24,7 @@ class SocialScrape:
     Uses https://github.com/JustAnotherArchivist/snscrape
     """
 
-    @staticmethod
+    ROBOT_LIBRARY_SCOPE = "GLOBAL"
     def twitter_scrape_handle(handle: str = None, maxTweets: int = 5, max_tweet_age: int = 365, min_tweet_age: int = 0):
         """
         Scrapes a specific twitter handle and delivers a list of tweets. 
