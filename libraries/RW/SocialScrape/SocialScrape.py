@@ -24,6 +24,8 @@ class SocialScrape:
     Uses https://github.com/JustAnotherArchivist/snscrape
     """
 
+    ROBOT_LIBRARY_SCOPE = "GLOBAL"
+
     @staticmethod
     def twitter_scrape_handle(handle: str = None, maxTweets: int = 5, max_tweet_age: int = 365, min_tweet_age: int = 0):
         """

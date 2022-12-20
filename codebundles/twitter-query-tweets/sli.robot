@@ -4,7 +4,7 @@ Documentation     Queries Twitter to count amount of tweets within a specified t
 Force Tags        Twitter    Social  tweet
 Suite Setup       Suite Initialization
 Library           RW.Core
-Library           RW.SocialScrape.SocialScrape
+Library           RW.SocialScrape
 
 *** Keywords ***
 Suite Initialization
@@ -35,8 +35,8 @@ Suite Initialization
 
 *** Tasks ***
 Query Twitter
-    ${rsp}=    RW.SocialScrape.SocialScrape.Twitter Scrape Handle    handle=${HANDLE}    maxTweets=${MAX_TWEETS}    max_tweet_age=${MAX_TWEET_AGE}    min_tweet_age=${MIN_TWEET_AGE}
-    ${metric} =    Get Length    ${rsp}
+    ${rsp}=    RW.SocialScrape.Twitter Scrape Handle    handle=${HANDLE}    maxTweets=${MAX_TWEETS}    max_tweet_age=${MAX_TWEET_AGE}    min_tweet_age=${MIN_TWEET_AGE}
+    ${metric}=    Get Length    ${rsp}
     Log    response: ${rsp}
     Log    metric: ${metric}
     RW.Core.Push Metric    ${metric}

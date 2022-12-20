@@ -4,7 +4,7 @@ Documentation     Queries Twitter to fetch tweets within a specified time range 
 Force Tags        Twitter    Social   tweet
 Suite Setup       Suite Initialization
 Library           RW.Core
-Library           RW.SocialScrape.SocialScrape
+Library           RW.SocialScrape
 
 *** Keywords ***
 Suite Initialization
@@ -35,6 +35,6 @@ Suite Initialization
 
 *** Tasks ***
 Query Twitter
-    ${rsp}=    RW.SocialScrape.SocialScrape.Twitter Scrape Handle    handle=${HANDLE}    maxTweets=${MAX_TWEETS}    max_tweet_age=${MAX_TWEET_AGE}    min_tweet_age=${MIN_TWEET_AGE}
+    ${rsp}=    RW.SocialScrape.Twitter Scrape Handle    handle=${HANDLE}    maxTweets=${MAX_TWEETS}    max_tweet_age=${MAX_TWEET_AGE}    min_tweet_age=${MIN_TWEET_AGE}
     Log    ${rsp}
     RW.Core.Add Pre To Report    ${rsp}
