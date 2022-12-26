@@ -59,6 +59,7 @@ class K8sConnectionMixin:
         target_service: platform.Service,
         kubeconfig: platform.Secret,
         shell_secrets=[],
+        shell_secret_files=[],
     ):
         """Execute a shell command, which can contain kubectl (or equivalent).
         Returns a RW.platform.ShellServiceResponse
@@ -69,6 +70,7 @@ class K8sConnectionMixin:
             target_service (platform.Service): which runwhen location service to use.
             kubeconfig (platform.Secret): a kubeconfig containing in a platform secret.
             shell_secrets (list(platform.Secret)): a list of platform secret values which can be accessed in the shell command with '$key'.
+            shell_secret_files (list(platform.Secret)): a list of platform secret values to be accessible as files on the location service.
 
         Example:
         (in suite setup)
@@ -93,6 +95,8 @@ class K8sConnectionMixin:
         request_secrets.append(platform.ShellServiceRequestSecret(kubeconfig, as_file=True))
         for shell_secret in shell_secrets:
             request_secrets.append(platform.ShellServiceRequestSecret(shell_secret))
+        for shell_secret_file in shell_secret_files:
+            request_secrets.append(platform.ShellServiceRequestSecret(shell_secret_file, as_file=True))
         env = {"KUBECONFIG": f"./{kubeconfig.key}"}
         rsp = platform.execute_shell_command(
             cmd=cmd, service=target_service, request_secrets=request_secrets, env=env

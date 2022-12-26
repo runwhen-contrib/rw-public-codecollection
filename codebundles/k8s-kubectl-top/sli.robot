@@ -25,7 +25,7 @@ Suite Initialization
     ...    type=string
     ...    description=The kubectl top command to fetch stdout data with.
     ...    pattern=\w*
-    ...    example=kubectl --context my-context -n my-namespace top pods
+    ...    example=kubectl --context my-context -n my-namespace top pods --no-headers
     ${DATA_COLUMN}=    RW.Core.Import User Variable    DATA_COLUMN
     ...    type=string
     ...    description=Which kubectl zero-relative stdout column to use for aggregating data. Note that column 0 typically contains the name.
@@ -44,6 +44,7 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
+    ...    default=Kubernetes
 
 *** Tasks ***
 Running Kubectl Top And Extracting Metric Data

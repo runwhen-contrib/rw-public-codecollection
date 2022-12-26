@@ -1,0 +1,37 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: canary
+  labels:
+    job-name: canary
+spec:
+  backoffLimit: 1
+  completionMode: NonIndexed
+  completions: 1
+  parallelism: 1
+  suspend: false
+  template:
+    metadata:
+      labels:
+        job-name: canary
+    spec:
+      containers:
+      - command:
+        - ls
+        - /canary_pvc
+        image: busybox
+        imagePullPolicy: Always
+        name: canary
+      volumeMounts:
+        - mountPath: /canary_pvc
+          name: canary_pvc
+        - mountPath: /tmp
+          name: cache-volume
+      terminationGracePeriodSeconds: 30
+      restartPolicy: Never
+  volumes:
+  - emptyDir: {}
+    name: cache-volume
+  - name: canary_pvc
+    persistentVolumeClaim:
+      claimName: canary_pvc
