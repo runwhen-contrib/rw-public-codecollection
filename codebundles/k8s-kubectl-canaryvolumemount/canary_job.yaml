@@ -22,16 +22,16 @@ spec:
         image: busybox
         imagePullPolicy: Always
         name: canary
-      volumeMounts:
-        - mountPath: /canary_pvc
-          name: canary_pvc
-        - mountPath: /tmp
-          name: cache-volume
+        volumeMounts:
+          - mountPath: /canary_pvc
+            name: canary-pvc
+          - mountPath: /tmp
+            name: cache-volume
       terminationGracePeriodSeconds: 30
       restartPolicy: Never
-  volumes:
-  - emptyDir: {}
-    name: cache-volume
-  - name: canary_pvc
-    persistentVolumeClaim:
-      claimName: canary_pvc
+      volumes:
+      - emptyDir: {}
+        name: cache-volume
+      - name: canary-pvc
+        persistentVolumeClaim:
+          claimName: canary

@@ -31,7 +31,7 @@ Suite Initialization
     ...    description=What pattern to look for in event messages to return as results.
     ...    pattern=\w*
     ...    example=Unable to attach or mount volumes
-    ...    default=Unable to attach or mount volumes
+    ...    default=*
     ${NAMESPACE}=    RW.Core.Import User Variable    NAMESPACE
     ...    type=string
     ...    description=The name of the Kubernetes namespace to scope actions and searching to.
@@ -54,10 +54,12 @@ Suite Initialization
 
 *** Tasks ***
 Get Number Of Matching Events
-    ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get events -n ${NAMESPACE} --context ${CONTEXT} --no-headers | grep -E -i "${EVENT_PATTERN}"
-    ...    target_service=${kubectl}
+    ${event_count}=    RW.K8s.Get Event Count
+    ...    event_pattern=${EVENT_PATTERN}
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
     ...    kubeconfig=${kubeconfig}
-    ${events_rows}=    RW.Utils.Stdout To List    stdout=${stdout}    delimiter="\n"
-    ${metric}=    Evaluate    len($events_rows)
+    ...    target_service=${kubectl}
+    ...    binary_name=${binary_name}
+    ${metric}=    Set Variable    ${event_count}
     RW.Core.Push Metric    ${metric}

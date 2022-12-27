@@ -79,7 +79,14 @@ Run Canary Job
     ...    kubeconfig=${kubeconfig}
     ...    shell_secret_files=${canary_yaml}
     # poll job for success
-    ${metric}=    Set Variable    1
+    ${did_job_succeed}=    RW.K8s.Wait Until Job Successful
+    ...    job_name=canary
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    ...    kubeconfig=${kubeconfig}
+    ...    target_service=${kubectl}
+    ...    binary_name=${binary_name}
+    ${metric}=    Evaluate    1 if ${did_job_succeed} == True else 0
     # cleanup
     ${stdout}=    RW.K8s.Shell
     ...    cmd=${binary_name} delete job/canary -n ${NAMESPACE} --context ${CONTEXT} && ${binary_name} delete pvc/canary -n ${NAMESPACE} --context ${CONTEXT}

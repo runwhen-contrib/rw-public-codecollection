@@ -13,8 +13,10 @@ from .pod_tasks_mixin import PodTasksMixin
 from .pdb_tasks_mixin import PdbTasksMixin
 from .network_tasks_mixin import NetworkTasksMixin
 from .statefulset_tasks_mixin import StatefuletTasksMixin
+from .job_tasks_mixin import JobTasksMixin
 from RW.Utils.utils import dict_to_yaml
 from RW.Utils.utils import yaml_to_dict
+from RW.Utils.utils import stdout_to_list
 from RW.Utils.Check import Check
 
 logger = logging.getLogger(__name__)
@@ -27,6 +29,7 @@ class NamespaceTasksMixin(
     PodTasksMixin,
     PdbTasksMixin,
     NetworkTasksMixin,
+    JobTasksMixin,
     StatefuletTasksMixin
     ):
 
@@ -209,3 +212,21 @@ class NamespaceTasksMixin(
                 value=f"{pods_with_error_logs}",
             ))
         return "\n".join([str(c) for c in checks])
+    
+    def get_event_count(
+        self,
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        event_pattern:str = "*",
+        binary_name: str = "kubectl",
+        event_type: str = "Warning"
+    ) -> int:
+        events_stdout: str = self.shell(
+            cmd=f"{binary_name} get events -n {namespace} --context {context} --no-headers --field-selector type={event_type} | grep -E -i \"{event_pattern}\"",
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        event_rows: list = stdout_to_list(events_stdout, delimiter="\n")
+        return len(event_rows)
