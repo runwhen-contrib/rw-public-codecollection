@@ -2,20 +2,12 @@
 name: Generate readme file with codebundle index
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
+  pull_request:
     paths: 
       - "codebundles/**"
       - "readme_header.md"
       - ".github/scripts/index.sh"
       - ".github/workflows/generate-index.yml"
-  # pull_request:
-  #   paths: 
-  #     - "codebundles/**"
-  #     - "readme_header.md"
-  #     - ".github/scripts/index.sh"
-  #     - ".github/workflows/generate-index.yml"
 jobs:
   update-readme:
     runs-on: ubuntu-latest
