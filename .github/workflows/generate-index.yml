@@ -2,8 +2,8 @@
 name: Generate readme file with codebundle index
 on:
   workflow_dispatch:
-  push:
-    branches:
+  push: 
+    branches: 
       - main
     paths: 
       - "codebundles/**"
@@ -17,12 +17,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with: 
-          ref: ${{ github.event.pull_request.head.ref }}
+          ref: ${{ github.event.pull_request.base.ref }}
       - name: Update readme and commit back to repo
         run: | 
           git config --global user.email "${GITHUB_ACTOR}"
           git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
+          git checkout -b "automatic-index-update"
+
+          # Run the index update script
           ./.github/scripts/index.sh
           git add README.md
-          git commit -m "Updating Readme" 
-          git push
+
+
+          # Test if any git changes are made. If not, bail out and send instruction. 
+          if [ -z "$(git diff-index HEAD)" ] 
+          then 
+              echo "No git changes detected"
+              exit 0
+          else
+              echo "Changes detected. Pushing..."
+              git commit -m "Codebundle index update."
+              git push --set-upstream origin automatic-index-update
+          fi
+
+          # Open up a PR
+          PR_OUTPUT=$(curl -X POST -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" -d '{"title":"automatic-index-update","head":"automatic-index-update","base":"main","body":"automatic-index-update" }' https://api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/pulls)
+          PR_LINK=$(echo $PR_OUTPUT| jq '._links.html.href' )
+          PR_LINK=$(echo $PR_LINK | tr -d '"')
+          gh pr merge --auto --merge $PR_LINK
+        env:
+          GH_TOKEN: ${{ github.token }}
