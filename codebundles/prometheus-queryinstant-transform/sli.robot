@@ -32,8 +32,8 @@ Suite Initialization
     ...    example=sysdig_container_cpu_quota_used_percent > 75 or sysdig_container_memory_limit_used_percent> 75
     RW.Core.Import User Variable    TRANSFORM
     ...    type=string
-    ...    enum=[Max,Average,Minimum,Sum,First,Last]
-    ...    description=What transform method to apply to the column data. First and Last are position relative, so Last is the most recent value.
+    ...    enum=[Raw,Max,Average,Minimum,Sum,First,Last]
+    ...    description=What transform method to apply to the column data. First and Last are position relative, so Last is the most recent value. Use Raw to skip transform. 
     ...    default=Last
     ...    example=Last
     RW.Core.Import User Variable    STEP
