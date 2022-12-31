@@ -73,8 +73,6 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | rocketchat-plain-notification | TaskSet | [runbook.robot](./codebundles/rocketchat-plain-notification/runbook.robot) |      Send a message to an RocketChat channel. |
 | sysdig-monitor-metric | SLI | [sli.robot](./codebundles/sysdig-monitor-metric/sli.robot) |      Queries the Sysdig data API to fetch metric data. |
 | sysdig-monitor-promqlmetric | SLI | [sli.robot](./codebundles/sysdig-monitor-promqlmetric/sli.robot) |      Queries the Sysdig data API with a PromQL query to fetch metric data. |
-| twitter-query-tweets | TaskSet | [runbook.robot](./codebundles/twitter-query-tweets/runbook.robot) |      Queries Twitter to fetch tweets within a specified time range for a specific user handle add them to a report. |
-| twitter-query-tweets | SLI | [sli.robot](./codebundles/twitter-query-tweets/sli.robot) |      Queries Twitter to count amount of tweets within a specified time range for a specific user handle. |
 | uptimecom-component-ok | SLI | [sli.robot](./codebundles/uptimecom-component-ok/sli.robot) |      Check the status of an Uptime.com component for a given site. |
 | vault-ok | SLI | [sli.robot](./codebundles/vault-ok/sli.robot) |      Check the health of a Vault server. |
 | web-triage | TaskSet | [runbook.robot](./codebundles/web-triage/runbook.robot) |      Troubleshoot and triage a URL to inspect it for common issues such as an expired certification, missing DNS records, etc. |
