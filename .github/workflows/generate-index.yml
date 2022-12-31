@@ -11,10 +11,6 @@ on:
       - ".github/scripts/index.sh"
       - ".github/workflows/generate-index.yml"
 
-permissions:
-  contents: "write"
-  id-token: "write"
-
 jobs:
   update-readme:
     runs-on: ubuntu-latest
