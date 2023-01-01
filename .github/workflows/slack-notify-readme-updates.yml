@@ -28,8 +28,8 @@ jobs:
 
           # Exit gracefully if no new readme updates are detected
           if [ ${#CHANGED_FILES[@]} -eq 0 ]; then
-              exit 0
               echo "send_slack_message=false" >> $GITHUB_ENV
+              exit 0
           fi
 
           for readme in "${CHANGED_FILES[@]}"
