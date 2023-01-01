@@ -19,6 +19,5 @@ jobs:
       - name: Check for list of commits
         run: | 
           # Get list of changed files
-          git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md
-          CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md)
-          echo "$CHANGED_FILES"
+          declare CHANGED_FILES=($(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md))
+          echo "${CHANGED_FILES[0]}"
