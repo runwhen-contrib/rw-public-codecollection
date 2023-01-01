@@ -20,7 +20,11 @@ jobs:
         run: | 
           # Get list of changed files
           declare CHANGED_FILES=($(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md))
+
+          # Exit gracefully if no new readme updates are detected, 
+          # else build list of changes with docs.runwhen.com url
           if (( ${CHANGED_FILES[@]} == 0 )); then
               exit 0
+          else
+              echo "${CHANGED_FILES[@]}"
           fi
-          echo "${CHANGED_FILES[0]}"
