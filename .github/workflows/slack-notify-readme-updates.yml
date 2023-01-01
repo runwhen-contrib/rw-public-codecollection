@@ -10,7 +10,7 @@ on:
       - ".github/workflows/slack-notify-readme-updates.yml"
 
 env: 
-  CODEBUNDLE_DOCS_URL_PREFIX: "https://docs.runwhen.com/public/v/codebundles/"
+  CODEBUNDLE_DOCS_URL_PREFIX: "https://docs.runwhen.com/public/v/"
 
 jobs:
   notify-slack:
@@ -32,4 +32,6 @@ jobs:
           for readme in "${CHANGED_FILES[@]}"
           do 
             echo "$readme"
+            codebundle_url="${CODEBUNDLE_DOCS_URL_PREFIX}"+"${readme%/README.md}"
+            echo "$codebundle_url"
           done
