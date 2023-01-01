@@ -36,12 +36,12 @@ jobs:
             echo "$codebundle_url"
           done
 
-          echo "CODEBUNDLE_URL_LIST=$codebundle_url" >> $GITHUB_ENV
+          echo "codebundle_url_list='$codebundle_url'" >> $GITHUB_ENV
 
       - name: Send message to public slack channel
         uses: slackapi/slack-github-action@v1.15.0
         with:
           channel-id: "#tutorial-ws-notifications" # Slack channel id or name to post message. https://api.slack.com/methods/chat.postMessage#channels
-          slack-message: "RunWhen Codebundle Documentation Udates:\n ${{ env.CODEBUNDLE_URL_LIST }}"
+          slack-message: "RunWhen Codebundle Documentation Udates:\n ${{ env.codebundle_url_list }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
