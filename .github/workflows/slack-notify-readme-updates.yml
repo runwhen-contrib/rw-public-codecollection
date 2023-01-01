@@ -32,6 +32,6 @@ jobs:
           for readme in "${CHANGED_FILES[@]}"
           do 
             echo "$readme"
-            codebundle_url=$codebundle_url+"${CODEBUNDLE_DOCS_URL_PREFIX}${readme%/README.md}\n"
+            codebundle_url="${codebundle_url}""${CODEBUNDLE_DOCS_URL_PREFIX}${readme%/README.md}"$'\n'
             echo "$codebundle_url"
           done
