@@ -20,4 +20,7 @@ jobs:
         run: | 
           # Get list of changed files
           declare CHANGED_FILES=($(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md))
+          if (( ${CHANGED_FILES[@]} == 0 )); then
+              exit 0
+          fi
           echo "${CHANGED_FILES[0]}"
