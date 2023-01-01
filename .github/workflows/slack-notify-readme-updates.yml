@@ -1,0 +1,23 @@
+# Useful in a temporary manner until we fully release the public repo
+name: Generate readme file with codebundle index
+on:
+  workflow_dispatch:
+  push: 
+    branches: 
+      - main
+    paths: 
+      - "codebundles/**/README.md"
+      - ".github/workflows/slack-notify-readme-updates.yml"
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        # with: 
+        #   ref: ${{ github.event.pull_request.base.ref }}
+      - name: Check for list of commits
+        run: | 
+          if [[ $(git diff-tree --no-commit-id --name-only --diff-filter=ACMRT -r ${{ github.sha }} -- '*README.md' | xargs) ]]; then
+            git diff-tree --no-commit-id --name-only --diff-filter=ACMRT -r "$GITHUB_SHA" -- '*README.md'
+          fi
