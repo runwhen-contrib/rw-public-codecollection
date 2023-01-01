@@ -14,6 +14,7 @@ from .pdb_tasks_mixin import PdbTasksMixin
 from .network_tasks_mixin import NetworkTasksMixin
 from .statefulset_tasks_mixin import StatefuletTasksMixin
 from .job_tasks_mixin import JobTasksMixin
+from .daemonset_tasks_mixin import DaemonsetTasksMixin
 from RW.Utils.utils import dict_to_yaml
 from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
@@ -30,6 +31,7 @@ class NamespaceTasksMixin(
     PdbTasksMixin,
     NetworkTasksMixin,
     JobTasksMixin,
+    DaemonsetTasksMixin,
     StatefuletTasksMixin
     ):
 

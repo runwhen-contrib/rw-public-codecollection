@@ -25,12 +25,6 @@ Suite Initialization
     ...    description=The location service used to interpret shell commands.
     ...    default=kubectl-service.shared
     ...    example=kubectl-service.shared
-    ${NAME}=    RW.Core.Import User Variable    NAME
-    ...    type=string
-    ...    description=The name assigned to the job and PVC objects.
-    ...    pattern=\w*
-    ...    example=canary
-    ...    default=canary
     ${NAMESPACE}=    RW.Core.Import User Variable    NAMESPACE
     ...    type=string
     ...    description=The name of the Kubernetes namespace to scope actions and searching to.
