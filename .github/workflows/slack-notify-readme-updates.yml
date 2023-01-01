@@ -31,9 +31,7 @@ jobs:
 
           for readme in "${CHANGED_FILES[@]}"
           do 
-            echo "$readme"
             codebundle_url="${codebundle_url}""${CODEBUNDLE_DOCS_URL_PREFIX}${readme%/README.md}"$'\n'
-            echo "$codebundle_url"
           done
 
           echo "codebundle_url_list<<EOF" >> $GITHUB_ENV
@@ -44,6 +42,6 @@ jobs:
         uses: slackapi/slack-github-action@v1.15.0
         with:
           channel-id: "#tutorial-ws-notifications" # Slack channel id or name to post message. https://api.slack.com/methods/chat.postMessage#channels
-          slack-message: "RunWhen Codebundle Documentation Udates:\n ${{ env.codebundle_url_list }}"
+          slack-message: "RunWhen Codebundle Documentation Updates:\n ${{ env.codebundle_url_list }}"
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
