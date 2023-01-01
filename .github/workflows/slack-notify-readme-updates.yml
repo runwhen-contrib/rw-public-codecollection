@@ -9,6 +9,9 @@ on:
       - "codebundles/**/README.md"
       - ".github/workflows/slack-notify-readme-updates.yml"
 
+env: 
+  CODEBUNDLE_DOCS_URL_PREFIX: "https://docs.runwhen.com/public/v/codebundles/"
+
 jobs:
   notify-slack:
     runs-on: ubuntu-latest
@@ -21,10 +24,12 @@ jobs:
           # Get list of changed files
           declare CHANGED_FILES=($(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md))
 
-          # Exit gracefully if no new readme updates are detected, 
-          # else build list of changes with docs.runwhen.com url
+          # Exit gracefully if no new readme updates are detected
           if (( ${CHANGED_FILES[@]} == 0 )); then
               exit 0
-          else
-              echo "${CHANGED_FILES[@]}"
           fi
+
+          for readme in "${CHANGED_FILES[@]}"
+          do 
+            echo "$readme"
+          done
