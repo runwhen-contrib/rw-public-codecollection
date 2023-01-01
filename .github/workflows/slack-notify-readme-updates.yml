@@ -21,7 +21,7 @@ jobs:
         with: 
           fetch-depth: 0
       - name: Check for list of commits
-        id: sort commits
+        id: check-commits
         run: | 
           # Get list of changed files
           declare CHANGED_FILES=($(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md))
@@ -43,6 +43,7 @@ jobs:
           echo "send_slack_message=true" >> $GITHUB_ENV
 
       - name: Send message to public slack channel
+        id: send-slack-message
         if: ${{ env.send_slack_message }} == 'true'
         uses: slackapi/slack-github-action@v1.15.0
         with:
