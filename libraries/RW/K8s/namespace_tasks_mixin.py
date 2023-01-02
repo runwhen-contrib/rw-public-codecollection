@@ -230,5 +230,8 @@ class NamespaceTasksMixin(
             target_service=target_service,
             kubeconfig=kubeconfig,
         )
-        event_rows: list = stdout_to_list(events_stdout, delimiter="\n")
-        return len(event_rows)
+        if events_stdout:
+            event_rows: list = stdout_to_list(events_stdout, delimiter="\n")
+            return len(event_rows)
+        else:
+            return 0

@@ -30,6 +30,7 @@ Suite Initialization
     ...    description=The PromQL statement used to query metrics.
     ...    pattern=\w*
     ...    example=sysdig_container_cpu_quota_used_percent > 75 or sysdig_container_memory_limit_used_percent> 75
+    ...    default=sysdig_container_cpu_quota_used_percent > 75 or sysdig_container_memory_limit_used_percent> 75
     RW.Core.Import User Variable    TRANSFORM
     ...    type=string
     ...    enum=[Max,Average,Minimum,Sum,First,Last]
@@ -53,7 +54,7 @@ Suite Initialization
     ...    description=Determine how to handle queries with no result data. Set to Yes to write a metric (specified below) or No to accept the null result.
     ...    pattern=\w*
     ...    enum=[Yes,No]
-    ...    default=No
+    ...    default=Yes
     RW.Core.Import User Variable    NO_RESULT_VALUE
     ...    type=string
     ...    description=Set the metric value that should be stored when no data result is available.

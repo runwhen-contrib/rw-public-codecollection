@@ -22,6 +22,7 @@ class K8sConnectionMixin:
         # "", # Allow empty string because we may grep and filter values resulting in empty
         "Defaulted container", # Allow defaulting to a container in a pod
         "Error from server (NotFound)",
+        "No resources found in",
     ]
 
     class DistributionOption(Enum):
