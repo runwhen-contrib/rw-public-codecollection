@@ -1,0 +1,53 @@
+# Useful in a temporary manner until we fully release the public repo
+name: Send slack message when readme contents are updated
+on:
+  workflow_dispatch:
+  push: 
+    branches: 
+      - main
+    paths: 
+      - "codebundles/**/README.md"
+      - ".github/workflows/slack-notify-readme-updates.yml"
+
+env: 
+  CODEBUNDLE_DOCS_URL_PREFIX: "https://docs.runwhen.com/public/v/"
+
+jobs:
+  notify-slack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        id: checkout
+        with: 
+          fetch-depth: 0
+      - name: Check for list of commits
+        id: check-commits
+        run: | 
+          # Get list of changed files
+          declare CHANGED_FILES=($(git diff --name-only ${{ github.event.before }} ${{ github.event.after }} | grep README.md))
+
+          # Exit gracefully if no new readme updates are detected
+          if [ ${#CHANGED_FILES[@]} -eq 0 ]; then
+              echo "send_slack_message=false" >> $GITHUB_ENV
+              exit 0
+          fi
+
+          for readme in "${CHANGED_FILES[@]}"
+          do 
+            codebundle_url="${codebundle_url}""${CODEBUNDLE_DOCS_URL_PREFIX}${readme%/README.md}"$'\n'
+          done
+
+          echo "codebundle_url_list<<EOF" >> $GITHUB_ENV
+          echo "$codebundle_url" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+          echo "send_slack_message=true" >> $GITHUB_ENV
+
+      - name: Send message to public slack channel
+        id: send-slack-message
+        if: ${{ env.send_slack_message == 'true' }}
+        uses: slackapi/slack-github-action@v1.15.0
+        with:
+          channel-id: "#codebundle-updates" # Slack channel id or name to post message. https://api.slack.com/methods/chat.postMessage#channels
+          slack-message: "RunWhen Codebundle Documentation Updates:\n ${{ env.codebundle_url_list }}"
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
