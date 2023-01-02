@@ -9,3 +9,4 @@ Check the health of a Vault server. The response code is used to determine if th
 
 ## TODO
 - [ ] Add additional documentation
+ test
