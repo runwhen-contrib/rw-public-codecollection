@@ -25,6 +25,7 @@ Suite Initialization
     ...    type=string
     ...    description=Grep events for the following search term.
     ...    pattern=\w*
+    ...    default=Unable to attach or mount volumes
     ...    example=artifactory
     ${RESOURCE_NAME}=    RW.Core.Import User Variable    RESOURCE_NAME
     ...    type=string
@@ -52,6 +53,7 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
+    ...    default=Kubernetes
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
@@ -69,7 +71,7 @@ Fetch Logs
 
 Get Related Events
     ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get events --context ${CONTEXT} -n ${NAMESPACE} | grep -i ${EVENT_SEARCH}
+    ...    cmd=${binary_name} get events --context ${CONTEXT} -n ${NAMESPACE} | grep -i "${EVENT_SEARCH}"
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History

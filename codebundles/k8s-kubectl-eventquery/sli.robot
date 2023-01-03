@@ -1,18 +1,23 @@
 *** Settings ***
-Metadata          Author    Jonathan Funk
-Documentation     Check the health of a Kubernetes API server using kubectl.
-...               Returns 1 when OK, or a 0 in the case of an unhealthy API server.
-Force Tags        K8s    Kubernetes    Kube    K8    Kubectl
-Suite Setup       Suite Initialization
-Library           BuiltIn
-Library           RW.Core
-Library           RW.K8s
-Library           RW.platform
-Library           OperatingSystem
+Documentation       Returns the number of events with matching messages as an SLI metric.
+Metadata            Author    Jonathan Funk
+
+Library             BuiltIn
+Library             RW.Core
+Library             RW.Utils
+Library             RW.K8s
+Library             RW.platform
+Library             OperatingSystem
+
+Suite Setup         Suite Initialization
+
+Force Tags          k8s    kubernetes    kube    k8    events    
+
 
 *** Keywords ***
 Suite Initialization
-    ${kubeconfig}=    RW.Core.Import Secret    kubeconfig
+    ${kubeconfig}=    RW.Core.Import Secret
+    ...    kubeconfig
     ...    type=string
     ...    description=The kubernetes kubeconfig yaml containing connection configuration used to connect to cluster(s).
     ...    pattern=\w*
@@ -21,6 +26,12 @@ Suite Initialization
     ...    description=The location service used to interpret shell commands.
     ...    default=kubectl-service.shared
     ...    example=kubectl-service.shared
+    ${EVENT_PATTERN}=    RW.Core.Import User Variable    EVENT_PATTERN
+    ...    type=string
+    ...    description=What pattern to look for in event messages to return as results.
+    ...    pattern=\w*
+    ...    example=Unable to attach or mount volumes
+    ...    default=*
     ${NAMESPACE}=    RW.Core.Import User Variable    NAMESPACE
     ...    type=string
     ...    description=The name of the Kubernetes namespace to scope actions and searching to.
@@ -40,13 +51,15 @@ Suite Initialization
     ...    default=Kubernetes
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
-    Set Suite Variable    ${KUBECTL_COMMAND}    ${binary_name} get --raw='/livez' --context ${CONTEXT} -n ${NAMESPACE}
 
 *** Tasks ***
-Running Kubectl Check Against API Server
-    ${stdout}=    RW.K8s.Shell
-    ...    cmd=${KUBECTL_COMMAND}
+Get Number Of Matching Events
+    ${event_count}=    RW.K8s.Get Event Count
+    ...    event_pattern=${EVENT_PATTERN}
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    ...    kubeconfig=${kubeconfig}
     ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ${metric}=    Evaluate    1 if "${stdout}" == "ok" else 0
+    ...    binary_name=${binary_name}
+    ${metric}=    Set Variable    ${event_count}
     RW.Core.Push Metric    ${metric}

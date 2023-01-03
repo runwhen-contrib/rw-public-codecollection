@@ -25,13 +25,13 @@ Suite Initialization
     ...    description=The kubectl command to run and retreive stdout from.
     ...    pattern=\w*
     ...    example=kubectl get pods --context my-context -n my-namespace
-    ...    example=kubectl get pods
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
     ...    type=string
     ...    description=Which distribution of Kubernetes to use for operations, such as: Kubernetes, OpenShift, etc.
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
+    ...    default=Kubernetes
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
 
 *** Tasks ***

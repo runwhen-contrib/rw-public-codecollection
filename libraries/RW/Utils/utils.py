@@ -317,9 +317,18 @@ def templated_string_list(template_string : str, values : list, key_name="item")
         str_list.append(template_string.format(**format_map))
     return str_list
 
-def secrets_list(*args) -> [platform.Secret]:
+def create_secrets_list(*args) -> [platform.Secret]:
     secrets_list: [platform.Secrets] = []
     for arg in args:
         if isinstance(arg, platform.Secret):
             secrets_list.append(arg)
     return secrets_list
+
+def get_source_dir() -> str:
+    builtin: BuiltIn = BuiltIn()
+    src_path = builtin.get_variable_value("${SUITE SOURCE}")
+    src_dir = "/".join(src_path.split("/")[:-1])
+    return src_dir
+
+def create_secret(key: str, val: Any) -> platform.Secret:
+    return platform.Secret(key, val)
