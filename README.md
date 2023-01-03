@@ -51,11 +51,15 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | http-ok | SLI | [sli.robot](./codebundles/http-ok/sli.robot) |      Check if an HTTP request against a URL fails or times out of a given latency window. |
 | jira-search-issues-latency | TaskSet | [runbook.robot](./codebundles/jira-search-issues-latency/runbook.robot) |      Create an issue in Jira. |
 | jira-search-issues-latency | SLI | [sli.robot](./codebundles/jira-search-issues-latency/sli.robot) |      Check Jira latency when searching issues by current user. |
+| k8s-daemonset-healthcheck | SLI | [sli.robot](./codebundles/k8s-daemonset-healthcheck/sli.robot) |        Checks that the current state of a daemonset is healthy and returns a score of either 1 (healthy) or 0 (unhealthy). |
 | k8s-decommission-workloads | TaskSet | [runbook.robot](./codebundles/k8s-decommission-workloads/runbook.robot) |      Searches a namespace for matching objects and provides the commands to decommission them. |
 | k8s-kubectl-apiserverhealth | SLI | [sli.robot](./codebundles/k8s-kubectl-apiserverhealth/sli.robot) |      Check the health of a Kubernetes API server using kubectl. |
+| k8s-kubectl-canaryvolumemount | SLI | [sli.robot](./codebundles/k8s-kubectl-canaryvolumemount/sli.robot) |        Creates an adhoc one-shot job which mounts a PVC as a canary test, which is polled for success before being torn down. |
+| k8s-kubectl-eventquery | SLI | [sli.robot](./codebundles/k8s-kubectl-eventquery/sli.robot) |        Returns the number of events with matching messages as an SLI metric. |
 | k8s-kubectl-run | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-run/runbook.robot) |      This codebundle runs an arbitrary kubectl command and writes the stdout to a report. |
 | k8s-kubectl-sanitycheck | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-sanitycheck/runbook.robot) |      Used for troubleshooting the shellservice-based kubectl service |
 | k8s-kubectl-top | SLI | [sli.robot](./codebundles/k8s-kubectl-top/sli.robot) |      Retreieve aggregate data via kubectl top command. |
+| k8s-namespace-healthcheck | SLI | [sli.robot](./codebundles/k8s-namespace-healthcheck/sli.robot) |        Scores the health of a Kubernetes namespace by examining both namespace events and Prometheus metrics. |
 | k8s-patroni-healthcheck | SLI | [sli.robot](./codebundles/k8s-patroni-healthcheck/sli.robot) |      Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy. |
 | k8s-postgres-querymetric | SLI | [sli.robot](./codebundles/k8s-postgres-querymetric/sli.robot) |      Runs a postgres SQL query and pushes the returned query result as an SLI metric. |
 | k8s-triage-deploymentreplicas | TaskSet | [runbook.robot](./codebundles/k8s-triage-deploymentreplicas/runbook.robot) |      Triages issues related to a deployment's replicas. |
