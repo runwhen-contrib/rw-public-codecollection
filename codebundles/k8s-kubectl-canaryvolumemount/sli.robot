@@ -60,7 +60,7 @@ Run Canary Job
     # if canary was cleaned up, proceed
     ${canary_job_yaml}=    RW.Utils.Create Secret    key=canary_job.yaml    val=${canary_job_yaml}
     ${canary_pvc_yaml}=    RW.Utils.Create Secret    key=canary_pvc.yaml    val=${canary_pvc_yaml}
-    ${canary_yaml}=    RW.Utils.Secrets List    ${canary_job_yaml}    ${canary_pvc_yaml}
+    ${canary_yaml}=    RW.Utils.Create Secrets List    ${canary_job_yaml}    ${canary_pvc_yaml}
     # make the manifests available as secret files on the location service
     ${stdout}=    RW.K8s.Shell
     ...    cmd=cat ./canary_pvc.yaml | ${binary_name} apply -n ${NAMESPACE} --context ${CONTEXT} -f -

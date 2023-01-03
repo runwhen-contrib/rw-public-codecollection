@@ -317,7 +317,7 @@ def templated_string_list(template_string : str, values : list, key_name="item")
         str_list.append(template_string.format(**format_map))
     return str_list
 
-def secrets_list(*args) -> [platform.Secret]:
+def create_secrets_list(*args) -> [platform.Secret]:
     secrets_list: [platform.Secrets] = []
     for arg in args:
         if isinstance(arg, platform.Secret):
