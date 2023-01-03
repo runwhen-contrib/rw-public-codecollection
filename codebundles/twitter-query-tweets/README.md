@@ -1,4 +1,4 @@
-# Twitter Query Tweers
+# Twitter Query Tweets
 
 ## SLI
 Queries Twitter to count amount of tweets within a specified time range for a specific user handle.

@@ -72,7 +72,7 @@ Run Postgres Query And Return Result As Metric
     ...    database=${psql_database}
     ...    username=${psql_username}
     ...    password=${psql_password}
-    ${shell_secrets}=    RW.Utils.Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
+    ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
     ${rsp}=    RW.K8s.Shell
     ...    cmd=${binary_name} exec ${WORKLOAD_NAME} -- bash -c "${templated_query}"
     ...    target_service=${kubectl}
