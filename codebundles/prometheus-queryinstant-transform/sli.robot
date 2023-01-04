@@ -72,7 +72,7 @@ Querying Prometheus Instance And Pushing Aggregated Data
     ...    api_url=${PROMETHEUS_HOSTNAME}
     ...    query=${QUERY}
     ...    optional_headers=${OPTIONAL_HEADERS}
-    ...    step=${STEP}
+    # ...    step=${STEP}
     ...    target_service=${CURL_SERVICE}
     ${data}=    Set Variable    ${rsp["data"]}
     ${metric}=    RW.Prometheus.Transform Data
