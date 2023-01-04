@@ -9,4 +9,3 @@ Create an alert in Opsgenie.
 
 ## TODO
 - [ ] Add additional documentation
-test
