@@ -52,8 +52,14 @@ class OpsSuite():
 
     def get_token(self, gcp_credentials : platform.Secret=None) -> object:
         """
-        Revtrieve short lived bearer token from service account authentication.
-        :return: The bearer token.
+        Retrieve short lived bearer token from service account authentication.
+
+        If used directly in a codebundle, should use `Set Log Level None` to keep sensitive tokens out of logs. 
+
+        Examples:
+        | RW.GCP.OpsSuite.Get Token  | gcp_credentials=${ops-suite-sa}
+        Return Value:
+        | The access token, good for 3600s.   |
         """
         if not gcp_credentials:
             raise ValueError(f"service_account is empty")
@@ -62,8 +68,8 @@ class OpsSuite():
         
         # See https://cloud.google.com/docs/authentication/token-types#access-contents
         # Access tokens are by default good for 1 hour / 3600 seconds 
-        # It would be ideal to shorten this to say, 2-5 minuites
         # https://github.com/googleapis/google-auth-library-python/blob/main/google/oauth2/service_account.py
+
         request = google.auth.transport.requests.Request()
         creds.refresh(request)
         return creds.token
@@ -90,14 +96,6 @@ class OpsSuite():
         page_result = client.query_time_series(request=request)
         rsp = [type(r).to_dict(r) for r in page_result]
         return rsp
-
-    def promql_query(self, project_name, promql_statement, no_result_overwrite, no_result_value, gcp_credentials : platform.Secret=None, sort_most_recent=True):
-        if gcp_credentials:
-            self.authenticate(gcp_credentials)
-        prometheus_url = f"https://monitoring.googleapis.com/v1/projects/{project_name}/location/global/prometheus/api/v1"
-        # creds=self.get_credentials()
-        # rsp=Prometheus.query_instant()
-        return prometheus_url
 
     def metric_query(self, project_name, mql_statement, no_result_overwrite, no_result_value, gcp_credentials : platform.Secret=None, sort_most_recent=True):
         """
