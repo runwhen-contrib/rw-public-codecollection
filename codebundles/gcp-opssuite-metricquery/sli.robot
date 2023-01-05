@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Performs a metric query using a Google MQL statement on the Ops Suite API
 ...               and pushes the result as an SLI metric.
+Force Tags        GCP    OpsSuite    MQL
 Library           RW.GCP.OpsSuite
 Library           RW.Core
 Suite Setup       Suite Initialization

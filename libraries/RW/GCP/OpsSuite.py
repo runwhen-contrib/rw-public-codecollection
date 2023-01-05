@@ -7,6 +7,7 @@ import json
 import urllib
 import re
 import dateutil.parser
+import google.auth.transport.requests
 from datetime import datetime, timezone
 from dataclasses import dataclass
 from google.oauth2 import service_account
@@ -14,7 +15,7 @@ from google.cloud import monitoring_v3, logging
 from google.protobuf.json_format import MessageToDict
 from typing import Optional
 from RW.Utils import parse_timedelta
-from RW import platform
+from RW import platform, Prometheus
 
 
 class OpsSuite():
@@ -48,6 +49,42 @@ class OpsSuite():
         :return: The credentials
         """
         return self._credentials
+
+    def get_token(self, gcp_credentials : platform.Secret=None) -> platform.Secret:
+        """
+        Retrieve short lived bearer token from service account authentication in the form of a platform secret.
+
+        Examples:
+        | RW.GCP.OpsSuite.Get Token  | gcp_credentials=${ops-suite-sa}
+        Return Value:
+        | A secret in the form of key=token value=access_token, good for 3600s.   |
+        """
+        if not gcp_credentials:
+            raise ValueError(f"service_account is empty")
+        sa = json.loads(gcp_credentials.value, strict=False)
+        creds = service_account.Credentials.from_service_account_info(sa, scopes=['https://www.googleapis.com/auth/cloud-platform'])
+        
+        # See https://cloud.google.com/docs/authentication/token-types#access-contents
+        # Access tokens are by default good for 1 hour / 3600 seconds 
+        # https://github.com/googleapis/google-auth-library-python/blob/main/google/oauth2/service_account.py
+
+        request = google.auth.transport.requests.Request()
+        creds.refresh(request)
+        return platform.Secret(key="token", val=creds.token)
+
+    def get_access_token_header(self, gcp_credentials : platform.Secret=None) -> platform.Secret:
+        """
+        Retrieve an access token header with a short lived bearer token from service account 
+        authentication in the form of a platform secret.
+
+        Examples:
+        | RW.GCP.OpsSuite.Get Access Token Header  | gcp_credentials=${ops-suite-sa}
+        Return Value:
+        | A secret in the form of key=optional_headers value='{"Authorization": "Bearer [token]"}', good for 3600s.   |
+        """
+        access_token = self.get_token(gcp_credentials)
+        access_token_header = {"Authorization":"Bearer {}".format(access_token.value)}
+        return platform.Secret(key="optional_headers", val=json.dumps(access_token_header))
 
     def run_mql(self, project_name, mql_statement, sort_most_recent=True):
         """
