@@ -35,6 +35,7 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | gcp-opssuite-logquery-dashboard | TaskSet | [runbook.robot](./codebundles/gcp-opssuite-logquery-dashboard/runbook.robot) |      Generate a link to the GCP Log Explorer. |
 | gcp-opssuite-logquery | SLI | [sli.robot](./codebundles/gcp-opssuite-logquery/sli.robot) |      Retrieve the number of results of a GCP Log Explorer query. |
 | gcp-opssuite-metricquery | SLI | [sli.robot](./codebundles/gcp-opssuite-metricquery/sli.robot) |      Performs a metric query using a Google MQL statement on the Ops Suite API |
+| gcp-opssuite-promql | SLI | [sli.robot](./codebundles/gcp-opssuite-promql/sli.robot) |      Performs a metric query using a PromQL statement on the Ops Suite API |
 | gcp-serviceshealth | SLI | [sli.robot](./codebundles/gcp-serviceshealth/sli.robot) |      This codebundle sets up a monitor for a specific region and GCP Product, which is then periodically checked for |
 | github-actions-workflowtiming | SLI | [sli.robot](./codebundles/github-actions-workflowtiming/sli.robot) |      Monitors the average timing of a github actions workflow file within a repo |
 | github-get-repos-latency | TaskSet | [runbook.robot](./codebundles/github-get-repos-latency/runbook.robot) |      Create a new issue in GitHub Issues. |
