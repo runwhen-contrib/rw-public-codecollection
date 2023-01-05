@@ -50,16 +50,14 @@ class OpsSuite():
         """
         return self._credentials
 
-    def get_token(self, gcp_credentials : platform.Secret=None) -> object:
+    def get_token(self, gcp_credentials : platform.Secret=None) -> platform.Secret:
         """
-        Retrieve short lived bearer token from service account authentication.
-
-        If used directly in a codebundle, should use `Set Log Level None` to keep sensitive tokens out of logs. 
+        Retrieve short lived bearer token from service account authentication in the form of a platform secret.
 
         Examples:
         | RW.GCP.OpsSuite.Get Token  | gcp_credentials=${ops-suite-sa}
         Return Value:
-        | The access token, good for 3600s.   |
+        | A secret in the form of key=token value=access_token, good for 3600s.   |
         """
         if not gcp_credentials:
             raise ValueError(f"service_account is empty")
@@ -72,8 +70,22 @@ class OpsSuite():
 
         request = google.auth.transport.requests.Request()
         creds.refresh(request)
-        return creds.token
-    
+        return platform.Secret(key="token", val=creds.token)
+
+    def get_access_token_header(self, gcp_credentials : platform.Secret=None) -> platform.Secret:
+        """
+        Retrieve an access token header with a short lived bearer token from service account 
+        authentication in the form of a platform secret.
+
+        Examples:
+        | RW.GCP.OpsSuite.Get Access Token Header  | gcp_credentials=${ops-suite-sa}
+        Return Value:
+        | A secret in the form of key=optional_headers value='{"Authorization": "Bearer [token]"}', good for 3600s.   |
+        """
+        access_token = self.get_token(gcp_credentials)
+        access_token_header = {"Authorization":"Bearer {}".format(access_token.value)}
+        return platform.Secret(key="optional_headers", val=json.dumps(access_token_header))
+
     def run_mql(self, project_name, mql_statement, sort_most_recent=True):
         """
         *DEPRECATED*

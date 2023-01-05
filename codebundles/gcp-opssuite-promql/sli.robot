@@ -11,21 +11,11 @@ Suite Setup       Suite Initialization
 
 *** Tasks ***
 Run Prometheus Instant Query Against Google Prom API Endpoint
-    # Disable logging to hide auth token details
-    Set Log Level    NONE
-    
-    # Get an oauth2 access token from service account json
-    ${token}=    RW.GCP.OpsSuite.Get Token  gcp_credentials=${ops-suite-sa}
-    ${header_secret}=   RW.Utils.Create Secret  key=optional_headers  val={"Authorization":"Bearer ${token}"}
-    
-    # Re-enable logging
-    Set Log Level    INFO
-
-    # Use Prom Instant Query with Google API and Oauth access token
+    ${access_token_header_secret}=  RW.GCP.OpsSuite.Get Access Token Header  gcp_credentials=${ops-suite-sa}
     ${rsp}=      RW.Prometheus.Query Instant
     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
     ...    query=${PROMQL_STATEMENT}
-    ...    optional_headers=${header_secret}
+    ...    optional_headers=${access_token_header_secret}
     ...    target_service=${CURL_SERVICE}
     ${data}=    Set Variable    ${rsp["data"]}
     ${metric}=    RW.Prometheus.Transform Data
