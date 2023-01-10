@@ -104,7 +104,6 @@ def string_to_json(data: str)-> str:
     return json.loads(data)
 
 def search_json(data: dict, pattern: str)-> dict:
-    # BuiltIn().run_keyword('Log', f'{pattern} {data}')
     result = jmespath.search(pattern, data) 
     return result
 

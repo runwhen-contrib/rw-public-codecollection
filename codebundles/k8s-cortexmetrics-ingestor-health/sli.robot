@@ -17,7 +17,7 @@ Force Tags          k8s    kubernetes    kube    k8    cortex    metrics    heal
 *** Tasks ***
 Determine Cortex Ingester Ring Health
     ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${CORTEX_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- wget -O - --header 'Accept: application/json' http://127.0.0.1:8080/ring
+    ...    cmd=${binary_name} exec ${CORTEX_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- wget -O - --header 'Accept: application/json' ${CORTEX_INGESTER_RING_URL}
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
 
@@ -48,6 +48,13 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=deployment/cortex-distributor
     ...    example=deployment/cortex-distributor
+    ${CORTEX_INGESTER_RING_URL}=    RW.Core.Import User Variable
+    ...    CORTEX_INGESTER_RING_URL
+    ...    type=string
+    ...    description=Host to query that resolves the ingester ring endpoint. Typically http://127.0.0.1:8080/ring if querying from a distributor pod.
+    ...    pattern=\w*
+    ...    default='http://127.0.0.1:8080/ring'
+    ...    example='http://127.0.0.1:8080/ring'
     ${NAMESPACE}=    RW.Core.Import User Variable    NAMESPACE
     ...    type=string
     ...    description=The name of the Kubernetes namespace where cortex is deployed.
@@ -78,3 +85,4 @@ Suite Initialization
     Set Suite Variable    ${DISTRIBUTION}    ${DISTRIBUTION}
     Set Suite Variable    ${NAMESPACE}    ${NAMESPACE}
     Set Suite Variable    ${CORTEX_RESOURCE_NAME}    ${CORTEX_RESOURCE_NAME}
+    Set Suite Variable    ${CORTEX_INGESTER_RING_URL}    ${CORTEX_INGESTER_RING_URL}
