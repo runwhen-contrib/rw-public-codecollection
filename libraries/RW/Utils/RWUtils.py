@@ -162,32 +162,3 @@ class RWUtils:
         """
         return utils.encode_url(hostname, params, verbose)
     
-    # def get_values_from_json(self, doc: JSONType, expr: str) -> list:
-    #     """Get all values from a JSON serializable object that match the given expression.
-
-    #     :param doc: JSON serializable object or string
-    #     :param expr: JSONPath expression
-    #     :return: list of values that match
-
-    #     Short Robot Framework Example:
-
-    #     .. code::
-
-    #         *** Task ***
-    #         Get all the names for all people
-    #             &{people}=    Convert string to JSON   {"People": [{"Name": "Mark"}, {"Name": "Jane"}]}
-    #             @{names}=     Get values from JSON     ${people}   $.People[*].Name
-        
-    #     Code written by and found on https://github.com/robocorp/rpaframework 
-    #     """  
-    #     self.logger.info("Get values from JSON with expression: %r", expr)
-    #     return [match.value for match in parse(expr).find(doc)]
-
-    def get_values_from_json(self, *args, **kwargs) -> list:
-        """Convert a string to a JSON serializable object and return it.
-
-        :param str: JSON string
-        :return: JSON serializable object of the string
-
-        """
-        return utils.get_values_from_json(*args, **kwargs) 
