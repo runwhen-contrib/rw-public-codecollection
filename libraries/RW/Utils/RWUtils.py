@@ -15,6 +15,7 @@ from RW import platform
 from RW.Utils import utils
 
 
+
 class RWUtils:
     #TODO: merge with utils
     """Utility keyword library for useful bits and bobs."""
@@ -53,6 +54,25 @@ class RWUtils:
         Convert from Python dictionary to JSON string.
         """
         return utils.to_json(*args, **kwargs)
+
+    def string_to_json(self, *args, **kwargs) -> str:
+        """Convert a string to a JSON serializable object and return it.
+
+        :param str: JSON string
+        :return: JSON serializable object of the string
+
+        """
+        return utils.string_to_json(*args, **kwargs) 
+
+    def search_json(self, *args, **kwargs) -> dict:
+        """Search JSON dictionary using jmespath.
+
+        :data dict: JSON dictionary to search through. 
+        :pattern str: Pattern to search. See https://jmespath.org/? to test search strings.
+        :return: JSON Dict of search results. 
+
+        """
+        return utils.search_json(*args, **kwargs) 
 
     def from_json(self, *args, **kwargs) -> object:
         """
@@ -141,3 +161,4 @@ class RWUtils:
         :return str
         """
         return utils.encode_url(hostname, params, verbose)
+    
