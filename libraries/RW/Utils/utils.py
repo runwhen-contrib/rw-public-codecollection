@@ -5,6 +5,7 @@ Robot Keywords via RW.Utils.
 """
 from typing import Iterable, Any, Union, Optional
 import os, pprint, functools, time, json, datetime, yaml, logging, re, xml.dom.minidom, urllib.parse
+import jmespath
 from enum import Enum
 from benedict import benedict
 from robot.libraries.BuiltIn import BuiltIn
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 #TODO: refresh funcs using outdated dependencies
 #TODO: port RWUtils over to here / merge / deduplicate
 #TODO: add control structure keywords
+
 
 class Status(Enum):
     NOT_OK = 0
@@ -97,6 +99,14 @@ def from_json(json_str, strict: bool = False) -> object:
 
 def to_json(data: object) -> str:
     return json.dumps(data)
+
+def string_to_json(data: str)-> str:
+    return json.loads(data)
+
+def search_json(data: dict, pattern: str)-> dict:
+    # BuiltIn().run_keyword('Log', f'{pattern} {data}')
+    result = jmespath.search(pattern, data) 
+    return result
 
 
 def from_yaml(yaml_str) -> object:

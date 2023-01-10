@@ -15,6 +15,7 @@ from RW import platform
 from RW.Utils import utils
 
 
+
 class RWUtils:
     #TODO: merge with utils
     """Utility keyword library for useful bits and bobs."""
@@ -53,6 +54,25 @@ class RWUtils:
         Convert from Python dictionary to JSON string.
         """
         return utils.to_json(*args, **kwargs)
+
+    def string_to_json(self, *args, **kwargs) -> str:
+        """Convert a string to a JSON serializable object and return it.
+
+        :param str: JSON string
+        :return: JSON serializable object of the string
+
+        """
+        return utils.string_to_json(*args, **kwargs) 
+
+    def search_json(self, *args, **kwargs) -> dict:
+        """Search JSON dictionary using jmespath.
+
+        :data dict: JSON dictionary to search through. 
+        :pattern str: Pattern to search. See https://jmespath.org/? to test search strings.
+        :return: JSON Dict of search results. 
+
+        """
+        return utils.search_json(*args, **kwargs) 
 
     def from_json(self, *args, **kwargs) -> object:
         """
@@ -141,3 +161,33 @@ class RWUtils:
         :return str
         """
         return utils.encode_url(hostname, params, verbose)
+    
+    # def get_values_from_json(self, doc: JSONType, expr: str) -> list:
+    #     """Get all values from a JSON serializable object that match the given expression.
+
+    #     :param doc: JSON serializable object or string
+    #     :param expr: JSONPath expression
+    #     :return: list of values that match
+
+    #     Short Robot Framework Example:
+
+    #     .. code::
+
+    #         *** Task ***
+    #         Get all the names for all people
+    #             &{people}=    Convert string to JSON   {"People": [{"Name": "Mark"}, {"Name": "Jane"}]}
+    #             @{names}=     Get values from JSON     ${people}   $.People[*].Name
+        
+    #     Code written by and found on https://github.com/robocorp/rpaframework 
+    #     """  
+    #     self.logger.info("Get values from JSON with expression: %r", expr)
+    #     return [match.value for match in parse(expr).find(doc)]
+
+    def get_values_from_json(self, *args, **kwargs) -> list:
+        """Convert a string to a JSON serializable object and return it.
+
+        :param str: JSON string
+        :return: JSON serializable object of the string
+
+        """
+        return utils.get_values_from_json(*args, **kwargs) 
