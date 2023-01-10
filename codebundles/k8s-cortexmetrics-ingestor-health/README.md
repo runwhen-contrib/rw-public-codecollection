@@ -6,6 +6,8 @@ Periodically checks the state of the cortex metrics ingestors and returns a scor
 - Be considered "ACTIVE" in the ingester ring as published by the http api endpoint `/ring`
 - Have as many "ACTIVE" ingester ring members as specified in the SLI configuration variable EXPECTED_RING_MEMBERS
 
+The defaults will target a distributor pod which can locally reach http://127.0.0.1:8080/ring to obtain the status, but this can be overridden if another pod is used to query this endpoint within the cluster. 
+
 ## TaskSet
 Queries the state of ingestors and returns the state of each along with the latest timestamp . This TaskSet performs the query by executing a `kubectl exec` into a Kubernetes resource, leveraging existing Kubernetes API authentication. 
 
