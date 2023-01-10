@@ -16,3 +16,4 @@ Queries the state of ingestors and returns the state of each along with the late
 
 ## TODO
 - [ ] Add additional documentation
+- [ ] Add additional taskset checks 
