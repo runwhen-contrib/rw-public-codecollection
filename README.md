@@ -52,6 +52,8 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | http-ok | SLI | [sli.robot](./codebundles/http-ok/sli.robot) |      Check if an HTTP request against a URL fails or times out of a given latency window. |
 | jira-search-issues-latency | TaskSet | [runbook.robot](./codebundles/jira-search-issues-latency/runbook.robot) |      Create an issue in Jira. |
 | jira-search-issues-latency | SLI | [sli.robot](./codebundles/jira-search-issues-latency/sli.robot) |      Check Jira latency when searching issues by current user. |
+| k8s-cortexmetrics-ingestor-health | TaskSet | [runbook.robot](./codebundles/k8s-cortexmetrics-ingestor-health/runbook.robot) |        Uses kubectl to query the state of a ingestor ring. Returns the json of injester id, status and timestamp. |
+| k8s-cortexmetrics-ingestor-health | SLI | [sli.robot](./codebundles/k8s-cortexmetrics-ingestor-health/sli.robot) |        Uses kubectl to query the state of a ingestor ring and determine if it's healthy. Returns 1 if healthy, 0 if unhealthy. |
 | k8s-daemonset-healthcheck | SLI | [sli.robot](./codebundles/k8s-daemonset-healthcheck/sli.robot) |        Checks that the current state of a daemonset is healthy and returns a score of either 1 (healthy) or 0 (unhealthy). |
 | k8s-decommission-workloads | TaskSet | [runbook.robot](./codebundles/k8s-decommission-workloads/runbook.robot) |      Searches a namespace for matching objects and provides the commands to decommission them. |
 | k8s-kubectl-apiserverhealth | SLI | [sli.robot](./codebundles/k8s-kubectl-apiserverhealth/sli.robot) |      Check the health of a Kubernetes API server using kubectl. |
