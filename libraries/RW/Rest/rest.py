@@ -1,4 +1,6 @@
 import requests
+from requests.auth import HTTPBasicAuth
+
 import logging
 import urllib
 import json
@@ -6,6 +8,7 @@ import jmespath
 import dateutil.parser
 from RW import platform
 from RW.Utils.utils import is_json, from_json
+from typing import Union
 
 from datetime import datetime, timedelta
 
@@ -15,6 +18,7 @@ logger = logging.getLogger(__name__)
 class Rest:
     """
     A keyword library for housing general-purpose REST keywords.
+    Note: session was avoided on purpose to reduce state
     TODO: support explicit oauth2 flow
     """
 
@@ -42,17 +46,17 @@ class Rest:
         Returns:
             requests.Response: the Response object.
         """
-        # handle headers if passed in as platform secret
-        if "headers" in kwargs.keys() and isinstance(kwargs.get("headers"), platform.Secret):
-            headers: platform.Secret = kwargs.pop("headers")
-            headers_val = headers.value
-            if is_json(headers_val):
-                headers = from_json(headers_val)
-        # for fields expected to be json strings, convert to dictionaries
-        for request_field in ["params", "json", "headers"]:
+        for request_field in ["params", "data", "json", "headers"]:
             if request_field in kwargs.keys() and is_json(kwargs.get(request_field)):
                 kwargs[request_field] = from_json(kwargs.get(request_field))
-        rsp: requests.Response = requests.request(url=url, method=method, headers=headers, **kwargs)
+            if request_field in kwargs.keys() and isinstance(kwargs.get(request_field), platform.Secret):
+                request_secret: platform.Secret = kwargs.pop(request_field)
+                secret_val = request_secret.value
+                if is_json(secret_val):
+                    kwargs[request_field] = from_json(secret_val)
+                else:
+                    kwargs[request_field] = secret_val
+        rsp: requests.Response = requests.request(url=url, method=method, **kwargs)
         return rsp
 
     def request_as_secret(
@@ -74,9 +78,9 @@ class Rest:
             platform.Secret: a platform secret containing the rsp content.
         """
         rsp: requests.Response = self.request(**kwargs)
-        if rsp_as_json and not rsp_extract_key:
+        if rsp_as_json and not rsp_extract_json_path:
             rsp = rsp.json()
-        if rsp_extract_key:
+        if rsp_extract_json_path:
             rsp = self.handle_response(rsp=rsp, json_path=rsp_extract_json_path)
         return platform.Secret(created_secret_key, rsp)
 
@@ -116,3 +120,29 @@ class Rest:
                     f"the json_path {json_path} did not return a valid value from the json document: {rsp_data}"
                 )
         return rsp_data
+
+    def create_basic_auth(self, username: platform.Secret, password: platform.Secret) -> requests.auth.HTTPBasicAuth:
+        """
+        Takes a username and password as platform secrets and uses them to construct a requests.auth.HTTPBasicAuth object.
+        The resulting object properly encapsulates the credentials and so does not require being wrapped in a platform secret itself.
+
+        Args:
+            username (platform.Secret): the username to use.
+            password (platform.Secret): the password to use.
+
+        Returns:
+            requests.auth.HTTPBasicAuth: auth object to be used as the `auth` parameter in other keywords.
+        """
+        return requests.auth.HTTPBasicAuth(username=username.value, password=password.value)
+
+    def create_basic_auth_secret(self, username: platform.Secret, password: platform.Secret) -> platform.Secret:
+        basic_auth_data = {"username": username.value, "password": password.value}
+        basic_auth_json = json.dumps(basic_auth_data)
+        basic_auth_data: platform.Secret = platform.Secret(key="basic_auth", val=basic_auth_json)
+        return basic_auth_data
+
+    def create_bearer_token_header(self, token: Union[platform.Secret, str]) -> platform.Secret:
+        if isinstance(token, platform.Secret):
+            token = token.value
+        bearer_token: platform.Secret = platform.Secret("bearer_token", '{"Authorization":"Bearer ' + token + '"}')
+        return bearer_token

@@ -1,19 +1,29 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a implicit oauth2 flow.
-Force Tags        HTTP    REST    OAUTH2    DATA    GET    POST    VERBS    REQUEST
+Documentation     A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a basic auth flow.
+Force Tags        HTTP    REST    BASIC    DATA    GET    POST    VERBS    REQUEST
 Suite Setup       Suite Initialization
 Library           RW.Core
 Library           RW.Rest
 
 *** Keywords ***
 Suite Initialization
+    ${USERNAME}=    RW.Core.Import Secret    USERNAME
+    ...    type=string
+    ...    description=The username used for basic auth.
+    ...    pattern=\w*
+    ...    example=mysupersecretuser
+    ${PASSWORD}=    RW.Core.Import Secret    PASSWORD
+    ...    type=string
+    ...    description=The password used for basic auth.
+    ...    pattern=\w*
+    ...    example=mysupersecretpassword
     ${HEADERS}=    RW.Core.Import Secret    HEADERS
     ...    type=string
     ...    description=Optional. A json string of headers to include in the request against the REST endpoint. This can include your token.
     ...    pattern=\w*
     ...    default='{}'
-    ...    example='{"Content-Type":"application/json", "my-header":"my-value", "Authorization":"Bearer mytoken"}'
+    ...    example='{"Content-Type":"application/json"}'
     ${URL}=    RW.Core.Import User Variable    URL
     ...    type=string
     ...    description=The URL to perform the request against.
@@ -38,6 +48,8 @@ Suite Initialization
     ...    pattern=\w*
     ...    example=data.myfield.nestedfield
     ...    default=args.mygetparam
+    Set Suite Variable    ${USERNAME}    ${USERNAME}
+    Set Suite Variable    ${PASSWORD}    ${PASSWORD}
     Set Suite Variable    ${HEADERS}    ${HEADERS}
     Set Suite Variable    ${URL}    ${URL}
     Set Suite Variable    ${JSON_DATA}    ${JSON_DATA}
@@ -46,8 +58,10 @@ Suite Initialization
 
 *** Tasks ***
 Request Data From Rest Endpoint
+    ${basic_auth}=    RW.Rest.Create Basic Auth    username=${USERNAME}    password=${PASSWORD}
     ${rsp}=    RW.Rest.Request
     ...    url=${URL}
+    ...    auth=${basic_auth}
     ...    json=${JSON_DATA}
     ...    params=${PARAMS}
     ...    headers=${HEADERS}
@@ -55,4 +69,3 @@ Request Data From Rest Endpoint
     ...    rsp=${rsp}
     ...    json_path=${JSON_PATH}
     RW.Core.Push Metric    ${metric}
-
