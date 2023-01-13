@@ -14,9 +14,9 @@ from RW import platform
 
 logger = logging.getLogger(__name__)
 
-#TODO: refresh funcs using outdated dependencies
-#TODO: port RWUtils over to here / merge / deduplicate
-#TODO: add control structure keywords
+# TODO: refresh funcs using outdated dependencies
+# TODO: port RWUtils over to here / merge / deduplicate
+# TODO: add control structure keywords
 
 
 class Status(Enum):
@@ -100,11 +100,13 @@ def from_json(json_str, strict: bool = False) -> object:
 def to_json(data: object) -> str:
     return json.dumps(data)
 
-def string_to_json(data: str)-> str:
+
+def string_to_json(data: str) -> str:
     return json.loads(data)
 
-def search_json(data: dict, pattern: str)-> dict:
-    result = jmespath.search(pattern, data) 
+
+def search_json(data: dict, pattern: str) -> dict:
+    result = jmespath.search(pattern, data)
     return result
 
 
@@ -150,9 +152,8 @@ def to_int(v) -> Union[int, list[int]]:
     elif is_list(v):
         return [int(x) for x in v]
     else:
-        raise ValueError(
-            f"Expected a scalar or list value (actual value: {v})"
-        )
+        raise ValueError(f"Expected a scalar or list value (actual value: {v})")
+
 
 def to_float(v) -> Union[float, list[float]]:
     """
@@ -164,9 +165,8 @@ def to_float(v) -> Union[float, list[float]]:
     elif is_list(v):
         return [float(x) for x in v]
     else:
-        raise ValueError(
-            f"Expected a scalar or list value (actual value: {v})"
-        )
+        raise ValueError(f"Expected a scalar or list value (actual value: {v})")
+
 
 def prettify(data) -> str:
     return pprint.pformat(data, indent=1, width=80)
@@ -192,9 +192,7 @@ def _calc_latency(func):
             console=False,
         )
         if unit not in ["s", "ms"]:
-            raise platform.TaskError(
-                f"Latency unit is {unit!r} (should be 's' or 'ms')."
-            )
+            raise platform.TaskError(f"Latency unit is {unit!r} (should be 's' or 'ms').")
         if unit == "ms":
             run_time *= 1000.0
         return (round(run_time, ndigits), val)
@@ -208,6 +206,7 @@ def latency(func, *args, **kwargs):
         return func(*args, **kwargs)
 
     return doit(*args, **kwargs)
+
 
 def parse_url(url: str, verbose: bool = False) -> Union[str, int]:
     parsed_url = urllib.parse.urlparse(url)
@@ -223,10 +222,10 @@ def encode_url(hostname: str, params: dict, verbose: bool = False) -> str:
         platform.debug_log(f"Encoded URL: {encoded_url}", console=False)
     return encoded_url
 
+
 def parse_numerical(numeric_str: str):
-    return float(
-        "".join(i for i in numeric_str if i.isdigit() or i in [".", "-"])
-    )
+    return float("".join(i for i in numeric_str if i.isdigit() or i in [".", "-"]))
+
 
 def parse_timedelta(timestring: str) -> datetime.timedelta:
 
@@ -239,20 +238,21 @@ def parse_timedelta(timestring: str) -> datetime.timedelta:
         # TODO: Deal with negative timedelta values?
         return datetime.timedelta(**parts)
     else:
-        raise platform.TaskError(
-            f"{timestring!r} is not a valid time duration."
-        )
+        raise platform.TaskError(f"{timestring!r} is not a valid time duration.")
+
 
 def stdout_to_list(stdout: str, delimiter: str = ""):
     if delimiter:
         return stdout.split(delimiter)
     return stdout.split()
 
+
 def stdout_to_grid(stdout):
     stdout_grid = []
     for line in stdout.splitlines():
         stdout_grid.append(line.split())
     return stdout_grid
+
 
 def get_stdout_grid_column(stdout_grid, index: int):
     """
@@ -263,6 +263,7 @@ def get_stdout_grid_column(stdout_grid, index: int):
         result_column.append(row[index])
     return result_column
 
+
 def remove_units(
     data_points,
 ):
@@ -271,11 +272,10 @@ def remove_units(
     """
     cleaned = []
     for d in data_points:
-        numerical = float(
-            "".join(i for i in d if i.isdigit() or i in [".", "-"])
-        )
+        numerical = float("".join(i for i in d if i.isdigit() or i in [".", "-"]))
         cleaned.append(numerical)
     return cleaned
+
 
 def aggregate(method: str, column: list):
     method = method.capitalize()
@@ -292,22 +292,27 @@ def aggregate(method: str, column: list):
     elif method == "Last":
         return column[-1]
 
+
 def yaml_to_dict(yaml_str: str):
     return yaml.safe_load(yaml_str)
+
 
 def dict_to_yaml(data: Union[dict, benedict]):
     if isinstance(data, benedict):
         return data.to_yaml()
     return yaml.dump(data)
 
-def list_to_string(data_list: list, join_with: str= "\n") -> str:
+
+def list_to_string(data_list: list, join_with: str = "\n") -> str:
     return join_with.join(data_list)
+
 
 def string_if_else(check_boolean: bool, if_str: str, else_str) -> str:
     return if_str if check_boolean else else_str
 
-def csv_to_list(csv_str: str, strip_entries: bool=True) -> list:
-    csv_list : list = []
+
+def csv_to_list(csv_str: str, strip_entries: bool = True) -> list:
+    csv_list: list = []
     if csv_str == "":
         csv_list = []
     else:
@@ -316,15 +321,18 @@ def csv_to_list(csv_str: str, strip_entries: bool=True) -> list:
         csv_list = [entry.strip() for entry in csv_list]
     return csv_list
 
-def lists_to_dict(keys : list, values : list) -> dict:
+
+def lists_to_dict(keys: list, values: list) -> dict:
     return dict(zip(keys, values))
 
-def templated_string_list(template_string : str, values : list, key_name="item") -> list:
-    str_list : list = []
+
+def templated_string_list(template_string: str, values: list, key_name="item") -> list:
+    str_list: list = []
     for value in values:
-        format_map = {key_name:value}
+        format_map = {key_name: value}
         str_list.append(template_string.format(**format_map))
     return str_list
+
 
 def create_secrets_list(*args) -> [platform.Secret]:
     secrets_list: [platform.Secrets] = []
@@ -333,11 +341,28 @@ def create_secrets_list(*args) -> [platform.Secret]:
             secrets_list.append(arg)
     return secrets_list
 
+
 def get_source_dir() -> str:
     builtin: BuiltIn = BuiltIn()
     src_path = builtin.get_variable_value("${SUITE SOURCE}")
     src_dir = "/".join(src_path.split("/")[:-1])
     return src_dir
 
+
 def create_secret(key: str, val: Any) -> platform.Secret:
     return platform.Secret(key, val)
+
+
+def merge_json_secrets(*args) -> platform.Secret:
+    secret_data: dict = {}
+    for secret in args:
+        if not isinstance(secret, platform.Secret):
+            break
+        secret_value = secret.value
+        if not is_json(secret_value):
+            break
+        secret_value = from_json(secret_value)
+        secret_data = {**secret_data, **secret_value}
+    secret_data = to_json(secret_data)
+    merged_secret: platform.Secret = platform.Secret("json_secrets", secret_data)
+    return merged_secret
