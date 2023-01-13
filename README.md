@@ -77,6 +77,10 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | prometheus-queryinstant-transform | SLI | [sli.robot](./codebundles/prometheus-queryinstant-transform/sli.robot) |      Run a PromQL query against Prometheus instant query API, perform a provided transform, and return the result. |
 | prometheus-queryrange-transform | SLI | [sli.robot](./codebundles/prometheus-queryrange-transform/sli.robot) |      Run a PromQL query against Prometheus range query API, perform a provided transform, and return the result. |
 | remote-http-ok | SLI | [sli.robot](./codebundles/remote-http-ok/sli.robot) |      Check that a HTTP endpoint is healthy and returns in a target latency. |
+| rest-basicauth | SLI | [sli.robot](./codebundles/rest-basicauth/sli.robot) |      A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a basic auth flow. |
+| rest-explicitoauth2-basicauth | SLI | [sli.robot](./codebundles/rest-explicitoauth2-basicauth/sli.robot) |      A REST SLI for querying and extracting data from a REST endpoint that needs an explicit oauth2 flow. |
+| rest-explicitoauth2-tokenheader | SLI | [sli.robot](./codebundles/rest-explicitoauth2-tokenheader/sli.robot) |      A REST SLI for querying and extracting data from a REST endpoint that needs an explicit oauth2 flow. |
+| rest-generic | SLI | [sli.robot](./codebundles/rest-generic/sli.robot) |      A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a implicit oauth2 flow. |
 | rocketchat-plain-notification | TaskSet | [runbook.robot](./codebundles/rocketchat-plain-notification/runbook.robot) |      Send a message to an RocketChat channel. |
 | sysdig-monitor-metric | SLI | [sli.robot](./codebundles/sysdig-monitor-metric/sli.robot) |      Queries the Sysdig data API to fetch metric data. |
 | sysdig-monitor-promqlmetric | SLI | [sli.robot](./codebundles/sysdig-monitor-promqlmetric/sli.robot) |      Queries the Sysdig data API with a PromQL query to fetch metric data. |
