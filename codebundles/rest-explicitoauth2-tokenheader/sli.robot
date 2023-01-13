@@ -31,8 +31,8 @@ Suite Initialization
     ...    type=string
     ...    description=Optional. A json string of headers to include in the request against the REST endpoint. This can include your token.
     ...    pattern=\w*
-    ...    default='{}'
-    ...    example='{"Content-Type":"application/json"}'
+    ...    default={}
+    ...    example={"Content-Type":"application/json"}
     ${URL}=    RW.Core.Import User Variable    URL
     ...    type=string
     ...    description=The URL to perform the request against.
