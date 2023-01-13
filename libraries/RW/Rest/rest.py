@@ -112,7 +112,6 @@ class Rest:
                 f"The HTTP response code {rsp.status_code} is not in the expected list {expected_status_codes} for {rsp}"
             )
         rsp_data = rsp.json()
-        logger.info(f"Handling rsp json: {rsp_data}")
         if json_path:
             rsp_data = jmespath.search(json_path, rsp_data)
             if rsp_data == None:
