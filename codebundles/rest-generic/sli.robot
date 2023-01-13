@@ -34,7 +34,7 @@ Suite Initialization
     ...    default={"myjsondata":"data"}
     ${JSON_PATH}=    RW.Core.Import User Variable    JSON_PATH
     ...    type=string
-    ...    description=A json path string that is used to extract data from the request.
+    ...    description=A json path string that is used to extract data from the response.
     ...    pattern=\w*
     ...    example=data.myfield.nestedfield
     ...    default=args.mygetparam
