@@ -3,7 +3,7 @@
 ## SLI
 This codebundle is the general-purpose base OAuth2 REST SLI. It should be capable of extracting metric data from the vast majority of REST API endpoints.
 
-In many cases you can use this generic REST codebundle. If you're able to request your data with a curl call then it should directly translate to this codebundle. For differing workflows see the various `When to use` sections below. For an example of the codebundle in action you can deploy it with the default fields and it will return a metric of 1.
+In many cases you can use this generic REST codebundle. If you're able to request your data with a curl call then it should directly translate to this codebundle. If you're unable to perform your flow with this codebundle, then for differing workflows see the various `When to use` sections below. For an example of the codebundle in action you can deploy it with the default fields and it will return a metric of 1.
 
 The flow of this codebundle is:
 1. Authenticate via implicit OAuth2 with a long-lived access token
@@ -22,6 +22,10 @@ In practice with the default values:
 - Integrate with various REST APIs such as Prometheus
 - Translate your curl calls to regular healthchecks by extending this codebundle
 
+### When to use [this](https://docs.runwhen.com/public/v/codebundles/rest-generic) codebundle:
+- You're able to authenticate and fetch your data in a single curl call and you'd like to translate it to a codebundle
+- your authentication is achieved with a long-lived access token in the header
+
 ### When to use [Basic Authentication](https://docs.runwhen.com/public/v/codebundles/rest-basicauth):
 - If your REST endpoint is still using the username & password approach for authentication. This codebundle contains fields for setting those secrets.
 
@@ -36,6 +40,11 @@ In practice with the default values:
 - or your bearer token is short-lived and needs to be routinely fetched
 
 ## Requirements
+### For this codebundle:
+- `URL` the HTTP url to perform a request against
+- `JSON_PATH` which is the json path string used to extract data. Explore https://jmespath.org/ for examples.
+- If you require authentication against the HTTP endpoint, Provide a JSON string in the `HEADER` field describing your headers.
+eg: `{"Content-Type":"application/json", "my-header":"my-value", "Authorization":"Bearer mytoken"}`
 ### For basic auth:
 - `USERNAME` the username credential used to login for access
 - `PASSWORD` the password credential used when logging in for access
