@@ -17,7 +17,7 @@ Periodically checks a list of objects deployed by ArgoCD are in a healthy state.
 ```
 
 ## Requirements
-- A `kubeconfig` with adequate access permissions to the execution workload running the query.
+- A `kubeconfig` with get access on the argocd workloads. (deployments and statefulsets)
 - The `namespace` to check in.
 
 ## TODO
