@@ -78,14 +78,14 @@ Suite Initialization
     ...    description=Which namespace the workload is in.
     ...    pattern=\w*
     ...    example=my-database-namespace
-    ...    default=""
+    ...    required=false
     ${WORKLOAD_CONTAINER}=    RW.Core.Import User Variable
     ...    WORKLOAD_CONTAINER
     ...    type=string
     ...    description=Which container contains the psql binary. Not all pods will default to the correct container - set this to specify the container name.
     ...    pattern=\w*
     ...    example=database
-    ...    default=""
+    ...    required=false
     ${QUERY}=    RW.Core.Import User Variable
     ...    QUERY
     ...    type=string
@@ -108,5 +108,3 @@ Suite Initialization
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
-    Set Suite Variable    ${WORKLOAD_CONTAINER}    ${WORKLOAD_CONTAINER}
-    Set Suite Variable    ${WORKLOAD_NAMESPACE}    ${WORKLOAD_NAMESPACE}
