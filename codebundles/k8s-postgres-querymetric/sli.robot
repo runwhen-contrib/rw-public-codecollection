@@ -67,7 +67,7 @@ Suite Initialization
     ${WORKLOAD_NAME}=    RW.Core.Import User Variable
     ...    WORKLOAD_NAME
     ...    type=string
-    ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints.
+    ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired.
     ...    pattern=\w*
     ...    example=deployment/myapp
     ${WORKLOAD_NAMESPACE}=    RW.Core.Import User Variable
