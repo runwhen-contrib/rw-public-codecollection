@@ -45,10 +45,9 @@ class Postgres:
             psql_result (str): Expeects a multi-line string with the metric result and query timing. e.g. '52\nTime: 2.023 ms'
 
         Returns:
-            query_details: a dict containing the metric and query time(ms). e.g. {'metric': '52', 'time': '2.163 '}
+            query_details: a dict containing the metric and query time. e.g. {'metric': '52', 'time': '2.163 ms'}
         """
         psql_result = psql_result.split("Time: ")
         psql_result[0] = psql_result[0].replace("\n","")
-        psql_result[1] = psql_result[1].replace("ms","")
         query_details = dict({"metric": psql_result[0], "time": psql_result[1]})
         return query_details
