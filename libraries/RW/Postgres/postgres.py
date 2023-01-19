@@ -48,6 +48,7 @@ class Postgres:
             query_details: a dict containing the metric and query time. e.g. {'metric': '52', 'time': '2.163 ms'}
         """
         psql_result = psql_result.split("Time: ")
-        psql_result[0] = psql_result[0].replace("\n","")
+        for item in range(len(psql_result)):
+            psql_result[item] = psql_result[item].replace("\n","")
         query_details = dict({"metric": psql_result[0], "time": psql_result[1]})
         return query_details
