@@ -24,8 +24,12 @@ Run Postgres Query And Return Result As Metric
     ...    username=${psql_username}
     ...    password=${psql_password}
     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
+    ${workload}=    RW.K8s.Template Workload
+    ...    workload_name=${WORKLOAD_NAME}
+    ...    workload_namespace=${WORKLOAD_NAMESPACE}
+    ...    workload_container=${WORKLOAD_CONTAINER}
     ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${WORKLOAD_NAME} -- bash -c "${templated_query}"
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}"
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
@@ -66,6 +70,18 @@ Suite Initialization
     ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints.
     ...    pattern=\w*
     ...    example=deployment/myapp
+    ${WORKLOAD_NAMESPACE}=    RW.Core.Import User Variable
+    ...    WORKLOAD_NAMESPACE
+    ...    type=string
+    ...    description=Which namespace the workload is in.
+    ...    pattern=\w
+    ...    example=my-database-namespace
+    ${WORKLOAD_CONTAINER}=    RW.Core.Import User Variable
+    ...    WORKLOAD_CONTAINER
+    ...    type=string
+    ...    description=Which container contains the psql binary. Not all pods will default to the correct container - set this to specify the container name.
+    ...    pattern=\w
+    ...    example=database
     ${QUERY}=    RW.Core.Import User Variable
     ...    QUERY
     ...    type=string
@@ -77,7 +93,7 @@ Suite Initialization
     ...    HOSTNAME
     ...    type=string
     ...    description=The hostname specified in the psql connection string. Use localhost if the execution workload is the database workload.
-    ...    pattern=\w*
+    ...    pattern=\w
     ...    example=localhost
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
     ...    type=string
