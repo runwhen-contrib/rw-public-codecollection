@@ -76,14 +76,12 @@ Suite Initialization
     ...    WORKLOAD_NAMESPACE
     ...    type=string
     ...    description=Which namespace the workload is in.
-    ...    pattern=\w*
     ...    example=my-database-namespace
     ...    required=false
     ${WORKLOAD_CONTAINER}=    RW.Core.Import User Variable
     ...    WORKLOAD_CONTAINER
     ...    type=string
     ...    description=Which container contains the psql binary. Not all pods will default to the correct container - set this to specify the container name.
-    ...    pattern=\w*
     ...    example=database
     ...    required=false
     ${QUERY}=    RW.Core.Import User Variable
