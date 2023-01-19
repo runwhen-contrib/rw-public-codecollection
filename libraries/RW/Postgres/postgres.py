@@ -22,8 +22,15 @@ class Postgres:
         database: platform.Secret,
         username: platform.Secret,
         password: platform.Secret,
-        hostname: str="hostname",
+        hostname: str=None,
         default_flags: str="-qAt"
     ) -> str:
-        command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} -c '{query}'"
+        if not database:
+                raise ValueError(f"Error: Database not specified.")
+        if len(password.value) == 0:
+                raise ValueError(f"Error: Password is empty.")
+        if not hostname: 
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -c '{query}'"
+        else:
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} -c '{query}'"
         return command
