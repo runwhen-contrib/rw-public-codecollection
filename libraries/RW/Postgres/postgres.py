@@ -23,16 +23,21 @@ class Postgres:
         username: platform.Secret,
         password: platform.Secret,
         hostname: str=None,
-        default_flags: str="-qAt"
+        default_flags: str="-qAt",
+        report: str=None
     ) -> str:
         if not database:
                 raise ValueError(f"Error: Database not specified.")
         if len(password.value) == 0:
                 raise ValueError(f"Error: Password is empty.")
+        if report in "true": 
+            query_options = "-c '\\t off' -c '\\a'"
+        else: 
+            query_options = ""
         if not hostname: 
-            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -c '\\timing on' -c '{query}'"
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} {query_options} -c '\\timing on' -c '{query}'"
         else:
-            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} -c '\\timing on' -c '{query}'"
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} {query_options} -c '\\timing on' -c '{query}'"
         return command
 
     def parse_metric_and_time(

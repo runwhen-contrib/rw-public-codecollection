@@ -1,8 +1,8 @@
 *** Settings ***
-Documentation       Runs a postgres SQL query and pushes the returned query result as an SLI metric.
+Documentation       Runs a postgres SQL query and pushes the returned result into a report.
 ...                 During execution, the SQL query should be passed to a Kubernetes workload that has access to the psql binary.
-...                 The workload will run the query and return the result from stdout.
-Metadata            Author    Jonathan Funk
+...                 The workload will run the query and return the results from stdout.
+Metadata            Author    Shea Stewart
 
 Library             RW.Core
 Library             RW.K8s
@@ -16,13 +16,14 @@ Force Tags          k8s    kubernetes    postgres    sql    database    psql
 
 
 *** Tasks ***
-Run Postgres Query And Return Result As Metric
+Run Postgres Query And Results to Report
     ${templated_query}=    RW.Postgres.Template Command
     ...    query=${QUERY}
     ...    hostname=${HOSTNAME}
     ...    database=${psql_database}
     ...    username=${psql_username}
     ...    password=${psql_password}
+    ...    report=true
     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
     ${workload}=    RW.K8s.Template Workload
     ...    workload_name=${WORKLOAD_NAME}
@@ -33,9 +34,7 @@ Run Postgres Query And Return Result As Metric
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
-    ${results}=    RW.Postgres.Parse Metric And Time    psql_result=${rsp}
-    ${metric}=    RW.Utils.To Float    ${results['metric']}
-    RW.Core.Push Metric    ${metric}    sub_name=with_labels    time=${results['time']}
+    RW.Core.Add Pre To Report    ${rsp}
 
 
 *** Keywords ***
@@ -93,6 +92,12 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=SELECT 1;
     ...    example=SELECT COUNT(id) FROM my_table;
+    # ${QUERY}=    RW.Core.Import User Variable
+    # ...    QUERY_OPTIONS
+    # ...    type=string
+    # ...    description=Optional query commands to use when performing the query.
+    # ...    pattern=\w*
+    # ...    example="-c '\a' -c '\t off'"
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string
