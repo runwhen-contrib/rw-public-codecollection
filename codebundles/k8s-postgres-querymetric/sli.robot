@@ -71,19 +71,16 @@ Suite Initialization
     ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired.
     ...    pattern=\w*
     ...    example=deployment/myapp
-    ...    default=""
     ${WORKLOAD_NAMESPACE}=    RW.Core.Import User Variable
     ...    WORKLOAD_NAMESPACE
     ...    type=string
     ...    description=Which namespace the workload is in.
     ...    example=my-database-namespace
-    ...    required=false
     ${WORKLOAD_CONTAINER}=    RW.Core.Import User Variable
     ...    WORKLOAD_CONTAINER
     ...    type=string
     ...    description=Which container contains the psql binary. Not all pods will default to the correct container - set this to specify the container name.
     ...    example=database
-    ...    required=false
     ${QUERY}=    RW.Core.Import User Variable
     ...    QUERY
     ...    type=string
