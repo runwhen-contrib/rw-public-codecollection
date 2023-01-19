@@ -75,13 +75,13 @@ Suite Initialization
     ...    WORKLOAD_NAMESPACE
     ...    type=string
     ...    description=Which namespace the workload is in.
-    ...    pattern=\w
+    ...    pattern=\w*
     ...    example=my-database-namespace
     ${WORKLOAD_CONTAINER}=    RW.Core.Import User Variable
     ...    WORKLOAD_CONTAINER
     ...    type=string
     ...    description=Which container contains the psql binary. Not all pods will default to the correct container - set this to specify the container name.
-    ...    pattern=\w
+    ...    pattern=\w*
     ...    example=database
     ${QUERY}=    RW.Core.Import User Variable
     ...    QUERY
@@ -94,7 +94,7 @@ Suite Initialization
     ...    HOSTNAME
     ...    type=string
     ...    description=The hostname specified in the psql connection string. Use localhost if the execution workload is the database workload.
-    ...    pattern=\w
+    ...    pattern=\w*
     ...    example=localhost
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
     ...    type=string
