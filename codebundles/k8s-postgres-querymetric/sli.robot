@@ -105,3 +105,5 @@ Suite Initialization
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
+    Set Suite Variable    ${WORKLOAD_CONTAINER}    ${WORKLOAD_CONTAINER}
+    Set Suite Variable    ${WORKLOAD_NAMESPACE}    ${WORKLOAD_NAMESPACE}
