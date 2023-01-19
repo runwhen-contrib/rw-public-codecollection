@@ -33,8 +33,9 @@ Run Postgres Query And Return Result As Metric
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
-    ${metric}=    RW.Utils.To Float    ${rsp}
-    RW.Core.Push Metric    ${metric}
+    ${results}=    RW.Postgres.Parse Metric And Time    psql_result=${rsp}
+    ${metric}=    RW.Utils.To Float    ${results['metric']}
+    RW.Core.Push Metric    ${metric}    sub_name=with_labels    time=${results['time']}
 
 
 *** Keywords ***

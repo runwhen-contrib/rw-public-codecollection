@@ -30,7 +30,25 @@ class Postgres:
         if len(password.value) == 0:
                 raise ValueError(f"Error: Password is empty.")
         if not hostname: 
-            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -c '{query}'"
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -c '\\timing on' -c '{query}'"
         else:
-            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} -c '{query}'"
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} -c '\\timing on' -c '{query}'"
         return command
+
+    def parse_metric_and_time(
+        self,
+        psql_result: str
+    ) -> object:
+        """Convert the output of the psql query and time into a dict with a metric and timing in ms.
+
+        Args:
+            psql_result (str): Expeects a multi-line string with the metric result and query timing. e.g. '52\nTime: 2.023 ms'
+
+        Returns:
+            query_details: a dict containing the metric and query time(ms). e.g. {'metric': '52', 'time': '2.163 '}
+        """
+        psql_result = psql_result.split("Time: ")
+        psql_result[0] = psql_result[0].replace("\n","")
+        psql_result[1] = psql_result[1].replace("ms","")
+        query_details = dict({"metric": psql_result[0], "time": psql_result[1]})
+        return query_details
