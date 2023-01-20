@@ -92,16 +92,10 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=SELECT 1;
     ...    example=SELECT COUNT(id) FROM my_table;
-    # ${QUERY}=    RW.Core.Import User Variable
-    # ...    QUERY_OPTIONS
-    # ...    type=string
-    # ...    description=Optional query commands to use when performing the query.
-    # ...    pattern=\w*
-    # ...    example="-c '\a' -c '\t off'"
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string
-    ...    description=The hostname specified in the psql connection string. Use localhost if the execution workload is the database workload.
+    ...    description=The hostname specified in the psql connection string. Use localhost, or leave blank, if the execution workload is also hosting the database.
     ...    pattern=\w*
     ...    example=localhost
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION

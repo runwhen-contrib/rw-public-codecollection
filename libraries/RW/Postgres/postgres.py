@@ -24,7 +24,7 @@ class Postgres:
         password: platform.Secret,
         hostname: str=None,
         default_flags: str="-qAt",
-        report: str=None
+        report: str="false"
     ) -> str:
         if not database:
                 raise ValueError(f"Error: Database not specified.")

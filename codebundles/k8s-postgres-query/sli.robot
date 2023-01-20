@@ -96,7 +96,7 @@ Suite Initialization
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string
-    ...    description=The hostname specified in the psql connection string. Use localhost if the execution workload is the database workload.
+    ...    description=The hostname specified in the psql connection string. Use localhost, or leave blank, if the execution workload is also hosting the database.
     ...    pattern=\w*
     ...    example=localhost
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
