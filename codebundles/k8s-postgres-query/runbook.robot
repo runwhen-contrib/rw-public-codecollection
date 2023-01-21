@@ -23,7 +23,7 @@ Run Postgres Query And Results to Report
     ...    database=${psql_database}
     ...    username=${psql_username}
     ...    password=${psql_password}
-    ...    report=true
+    ...    report=True
     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
     ${workload}=    RW.K8s.Template Workload
     ...    workload_name=${WORKLOAD_NAME}
