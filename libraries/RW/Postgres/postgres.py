@@ -24,13 +24,13 @@ class Postgres:
         password: platform.Secret,
         hostname: str=None,
         default_flags: str="-qAt",
-        report: str="false"
+        report: bool=False
     ) -> str:
         if not database:
                 raise ValueError(f"Error: Database not specified.")
         if len(password.value) == 0:
                 raise ValueError(f"Error: Password is empty.")
-        if report in "true": 
+        if report is True: 
             query_options = "-c '\\t off' -c '\\a'"
         else: 
             query_options = ""
