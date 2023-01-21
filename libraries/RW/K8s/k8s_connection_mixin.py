@@ -131,7 +131,7 @@ class K8sConnectionMixin:
             workload: a string containing the the expanded workload parameters.
         """
         # Check if the namespace is provided in the workload name and return the vlaue verbatim
-        if " -n" or " --namespace" in workload_name: 
+        if " -n" in workload_name or " --namespace" in workload_name: 
             workload = f"{workload_name}"
             return workload
         if not workload_name:
