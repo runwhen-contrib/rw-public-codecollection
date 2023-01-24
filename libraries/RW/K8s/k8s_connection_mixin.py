@@ -114,6 +114,36 @@ class K8sConnectionMixin:
         logger.info("shell stdout: %s", rsp.stdout)
         return rsp.stdout
 
+    def template_workload(
+        self,
+        workload_name: str,
+        workload_namespace: str,
+        workload_container: str
+    ) -> str:
+        """Take in the workload variables and construct a valid string that specifies the namespace and container. 
+
+        Args:
+            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset
+            workload_namespace (str): a kubernetes namespace or openshift project name
+            workload_container (str): a specific container within a pod, as pods may not default to the desired container
+
+        Returns:
+            workload: a string containing the the expanded workload parameters.
+        """
+        # Check if the namespace is provided in the workload name and return the vlaue verbatim
+        if " -n" in workload_name or " --namespace" in workload_name: 
+            workload = f"{workload_name}"
+            return workload
+        if not workload_name:
+            raise ValueError(f"Error: No workload is specified.")
+        if not workload_namespace:
+            raise ValueError(f"Error: Namespace is not specified.")
+        if not workload_container: 
+            workload = f"{workload_name} -n {workload_namespace}"
+        else:
+            workload = f"{workload_name} -n {workload_namespace} -c {workload_container}"
+        return workload
+
     def template_shell(
         self,
         cmd: str,
