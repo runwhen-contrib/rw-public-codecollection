@@ -53,7 +53,7 @@ Suite Initialization
     ...    type=string
     ...    pattern=\w*
     ...    description=The field or property to perform calculation with if using sum or average.
-    ...    default="status.containerStatuses[].restartCount"
+    ...    example="status.containerStatuses[].restartCount"
     ${SEARCH_FILTER}=    RW.Core.Import User Variable    SEARCH_FILTER
     ...    type=string
     ...    pattern=\w*
