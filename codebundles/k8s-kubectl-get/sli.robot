@@ -25,8 +25,7 @@ Running Kubectl get and push the metric
     ...    search_filter=${SEARCH_FILTER}
     ...    calculation_field=${CALCULATION_FIELD}
     ...    calculation=${CALCULATION}
-#    RW.Core.Push Metric    ${metric}    sub_name=with_labels    time=${results['time']}
-    # RW.Core.Push Metric    ${metric}
+    RW.Core.Push Metric    ${metric}
 
 
 *** Keywords ***
@@ -54,12 +53,12 @@ Suite Initialization
     ...    type=string
     ...    pattern=\w*
     ...    description=The field or property to perform calculation with if using sum or average.
-    ...    default="status.containerStatuses[*].restartCount"
+    ...    default="status.containerStatuses[].restartCount"
     ${SEARCH_FILTER}=    RW.Core.Import User Variable    SEARCH_FILTER
     ...    type=string
     ...    pattern=\w*
-    ...    description=A filter to apply to the search results.
-    ...    example=status.containerStatuses.ready: true
+    ...    description=A filter to apply to the search results. Note: Use backticks in text filtering.
+    ...    example=status.phase==`Running`
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
     ...    type=string
     ...    description=Which distribution of Kubernetes to use for operations, such as: Kubernetes, OpenShift, etc.
