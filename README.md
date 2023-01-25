@@ -11,6 +11,7 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 ## Codebundle Index
 | Folder Name | Type | Path | Documentation |
 |---|---|---|---|
+| argocd-healthcheck | SLI | [sli.robot](./codebundles/argocd-healthcheck/sli.robot) |      Check the health of ArgoCD platfrom by checking the availability of its underlying Deployments and StatefulSets. |
 | artifactory-ok | SLI | [sli.robot](./codebundles/artifactory-ok/sli.robot) |      Checks an Artifactory instance health endpoint to determine its operational status. |
 | aws-account-limit | TaskSet | [runbook.robot](./codebundles/aws-account-limit/runbook.robot) |      Retrieve all recently created AWS accounts. |
 | aws-account-limit | SLI | [sli.robot](./codebundles/aws-account-limit/sli.robot) |      Retrieve the count of all AWS accounts in an organization. |
@@ -64,7 +65,8 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | k8s-kubectl-top | SLI | [sli.robot](./codebundles/k8s-kubectl-top/sli.robot) |      Retreieve aggregate data via kubectl top command. |
 | k8s-namespace-healthcheck | SLI | [sli.robot](./codebundles/k8s-namespace-healthcheck/sli.robot) |        Scores the health of a Kubernetes namespace by examining both namespace events and Prometheus metrics. |
 | k8s-patroni-healthcheck | SLI | [sli.robot](./codebundles/k8s-patroni-healthcheck/sli.robot) |      Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy. |
-| k8s-postgres-querymetric | SLI | [sli.robot](./codebundles/k8s-postgres-querymetric/sli.robot) |      Runs a postgres SQL query and pushes the returned query result as an SLI metric. |
+| k8s-postgres-query | TaskSet | [runbook.robot](./codebundles/k8s-postgres-query/runbook.robot) |        Runs a postgres SQL query and pushes the returned result into a report. |
+| k8s-postgres-query | SLI | [sli.robot](./codebundles/k8s-postgres-query/sli.robot) |        Runs a postgres SQL query and pushes the returned query result as an SLI metric. |
 | k8s-triage-deploymentreplicas | TaskSet | [runbook.robot](./codebundles/k8s-triage-deploymentreplicas/runbook.robot) |      Triages issues related to a deployment's replicas. |
 | k8s-triage-patroni | TaskSet | [runbook.robot](./codebundles/k8s-triage-patroni/runbook.robot) |      Taskset to triage issues related to patroni. |
 | k8s-triage-statefulset | TaskSet | [runbook.robot](./codebundles/k8s-triage-statefulset/runbook.robot) |      A taskset for troubleshooting issues for StatefulSets and their related resources. |
