@@ -45,7 +45,7 @@ With this configuration, users could now apply an SLO to fire off alerts or Task
 ### Use Case: SLI: Count all Flux HelmReleases that are **NOT** "Ready"
 In this use case, we can query a  cluster for HelmReleases that are NOT in a Ready state: 
 ```
-CALCULATION='Sum'
+CALCULATION='Count'
 SEARCH_FILTER='status.conditions[?type==`Ready` && status!=`True`]'
 KUBECTL_COMMAND='kubectl get helmreleases.helm.toolkit.fluxcd.io --all-namespaces'
 CALULATION_FIELD=''
