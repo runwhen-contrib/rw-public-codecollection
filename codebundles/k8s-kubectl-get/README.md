@@ -2,13 +2,12 @@
 The `kubectl get` codebundles run an arbitrary `kubectl get` command that fetches objects with json output. The results from the desired command are returned, filtered, and computed using json output and jmespath as directed by the configuration. 
 
 ## SLI
-The SLI and provides a single metric. First, the `kubectl get ...` command can be input as desired with the results returned as json. The resultset can be further refined as needed through the `SEARCH_FILTER` and `CALCULATION_FIELD` configuration options, though most users 
-will likely want to just copy/paste helpful `kubectl get` commands that they are familiar with (such as `kubectl get pods -l app=[labelname]`). 
+The SLI and provides a single metric. First, the `kubectl get [parameters]` command can be input as desired with the results returned as json. The results can be further refined as needed through the `SEARCH_FILTER` and `CALCULATION_FIELD` configuration options, though most users will likely want to just copy/paste helpful `kubectl get` commands that they are familiar with (such as `kubectl get pods -l app=[labelname]`). 
 
 The SLI supports the following calculations: 
-- Count: Returns the number of items returned from the query.
-- Sum: Sums up all values in the specified `calculation field` for all returned objects. 
-- Average: Provides the average of all values in the specified  `calculation field` for all returned objects. 
+- **Count**: Returns the number of items returned from the query.
+- **Sum**: Sums up all values in the specified `calculation field` for all returned objects. 
+- **Average**: Provides the average of all values in the specified  `calculation field` for all returned objects. 
 
 ## Use Cases
 ### Use Case: SLI: Query all Certificates that are **NOT** "Ready" in a namespace
@@ -57,7 +56,7 @@ With this configuration, users could now apply an SLO to fire off alerts or Task
 ### Use Case: SLI: Count all Kubernetes API Services
 In this use case, we can query a  cluster for count of API Services: 
 ```
-CALCULATION='Sum'
+CALCULATION='Count'
 SEARCH_FILTER=''
 KUBECTL_COMMAND='kubectl get apiservice'
 CALULATION_FIELD=''
@@ -66,7 +65,7 @@ CALULATION_FIELD=''
 ### Use Case: SLI: Count all Kubernetes API Services that are **NOT** "Ready"
 In this use case, we can query a  cluster for API Services that are NOT in a Ready state: 
 ```
-CALCULATION='Sum'
+CALCULATION='Count'
 SEARCH_FILTER='status.conditions[?type==`Ready` && status!=`True`]'
 KUBECTL_COMMAND='kubectl get apiservice'
 CALULATION_FIELD=''
