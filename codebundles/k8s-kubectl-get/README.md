@@ -77,8 +77,8 @@ With this configuration, users could now apply an SLO to fire off alerts or Task
 - A kubeconfig with `get` permissions to on the objects/namespaces that are involved in the query.
 
 ## Resources
-JMESPath is used to help in the filtering of results and calculation fields. A useful pattern is to run your commands with the json output option (e.g. `kubectl get pods -n [mynamespace] -o json`) and copy the output into https://jmespath.org/ for testing of various search filters. 
+- JMESPath is used to help in the filtering of results and calculation fields. A useful pattern is to run your commands with the json output option (e.g. `kubectl get pods -n [mynamespace] -o json`) and copy the output into https://jmespath.org/ for testing of various search filters. 
 
 
 ## TODO
-- [ ] Add additional documentation
+- Add additional rbac and kubectl resources and use cases
