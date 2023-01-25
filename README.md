@@ -60,6 +60,7 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | k8s-kubectl-apiserverhealth | SLI | [sli.robot](./codebundles/k8s-kubectl-apiserverhealth/sli.robot) |      Check the health of a Kubernetes API server using kubectl. |
 | k8s-kubectl-canaryvolumemount | SLI | [sli.robot](./codebundles/k8s-kubectl-canaryvolumemount/sli.robot) |        Creates an adhoc one-shot job which mounts a PVC as a canary test, which is polled for success before being torn down. |
 | k8s-kubectl-eventquery | SLI | [sli.robot](./codebundles/k8s-kubectl-eventquery/sli.robot) |        Returns the number of events with matching messages as an SLI metric. |
+| k8s-kubectl-get | SLI | [sli.robot](./codebundles/k8s-kubectl-get/sli.robot) |        This codebundle runs a kubectl get command that produces a value and pushes the metric. |
 | k8s-kubectl-run | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-run/runbook.robot) |      This codebundle runs an arbitrary kubectl command and writes the stdout to a report. |
 | k8s-kubectl-sanitycheck | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-sanitycheck/runbook.robot) |      Used for troubleshooting the shellservice-based kubectl service |
 | k8s-kubectl-top | SLI | [sli.robot](./codebundles/k8s-kubectl-top/sli.robot) |      Retreieve aggregate data via kubectl top command. |
