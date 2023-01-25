@@ -12,7 +12,6 @@ from RW import platform
 from RW.Utils import utils
 from enum import Enum
 from .namespace_tasks_mixin import NamespaceTasksMixin
-from robot.libraries.BuiltIn import BuiltIn 
 
 logger = logging.getLogger(__name__)
 
