@@ -24,7 +24,7 @@ Suite Initialization
     ...    example=kubectl-service.shared
     ${PATRONI_RESOURCE_NAME}=    RW.Core.Import User Variable    PATRONI_RESOURCE_NAME
     ...    type=string
-    ...    description=Determine which object is queried for health information.
+    ...    description=Determine which object is queried for information to determine the action taken, if any.
     ...    pattern=\w*
     ...    example=statefulset/my-patroni
     ${NAMESPACE}=    RW.Core.Import User Variable    NAMESPACE
@@ -45,10 +45,16 @@ Suite Initialization
     ...    example=Kubernetes
     ${LAG_TOLERANCE}=    RW.Core.Import User Variable    LAG_TOLERANCE
     ...    type=string
-    ...    description=Determines the tolerance of data drift between the leader and replicas. Value represents MB akin to the output of 'patronictl list'.
+    ...    description=Replica(s) beyond this threshold will be deleted. Value represents MB akin to the output of 'patronictl list'.
     ...    pattern=^\d+$
     ...    example=1
     ...    default=1
+    ${DOC_LINK}=    RW.Core.Import User Variable    CONTEXT
+    ...    type=string
+    ...    description=A URL to provide for followup docs in the report.
+    ...    pattern=\w*
+    ...    example=https://my-awesome-teamdocs-for-patroni.com
+    ...    default=
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
@@ -60,6 +66,20 @@ Determine Patroni Health
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
-    ${is_healthy}=    RW.Patroni.K8s Patroni State Healthy    state=${state_yaml}    lag_tolerance=${LAG_TOLERANCE}
-    ${metric}=    Evaluate    1 if ${is_healthy} else 0
-    RW.Core.Push Metric    ${metric}
+    ${most_lagged_member}=    RW.Patroni.K8s Patroni Get Max Lag Member    state=${state_yaml}    min_lag=${LAG_TOLERANCE}
+    ${dlt_cmd}=    RW.Patroni.K8s Patroni Template Deletemember
+    ...    member_name=${most_lagged_member}
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    Run Keyword If    ${dlt_cmd} == ''    RW.Core.Add To Report    Did not find a replica to delete!
+    Run Keyword If    ${dlt_cmd} != ''    RW.Core.Add To Report    Running the following command to delete a lagging replica:
+    Run Keyword If    ${dlt_cmd} != ''    RW.Core.Add Code To Report    ${dlt_cmd}
+    # Run Keyword If    ${dlt_cmd} != ''    RW.K8s.Shell
+    # ...    cmd=${dlt_cmd}
+    # ...    target_service=${kubectl}
+    # ...    kubeconfig=${kubeconfig}
+    RW.Core.Add To Report    If you're still having issues with Patroni after this has run, please refer to ${DOC_LINK}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Command History:\n${history}
+

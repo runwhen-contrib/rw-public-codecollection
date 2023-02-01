@@ -43,23 +43,17 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
-    ${LAG_TOLERANCE}=    RW.Core.Import User Variable    LAG_TOLERANCE
-    ...    type=string
-    ...    description=Determines the tolerance of data drift between the leader and replicas. Value represents MB akin to the output of 'patronictl list'.
-    ...    pattern=^\d+$
-    ...    example=1
-    ...    default=1
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
 
 *** Tasks ***
-Determine Patroni Health
+Measure Patroni Member Lag
     ${stdout}=    RW.K8s.Shell
     ...    cmd=${binary_name} exec ${PATRONI_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- patronictl list -e -f yaml
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
-    ${is_healthy}=    RW.Patroni.K8s Patroni State Healthy    state=${state_yaml}    lag_tolerance=${LAG_TOLERANCE}
-    ${metric}=    Evaluate    1 if ${is_healthy} else 0
+    ${max_lag}=    RW.Patroni.K8s Patroni Get Max Lag    state=${state_yaml}
+    ${metric}=    Set Variable     ${max_lag}
     RW.Core.Push Metric    ${metric}
