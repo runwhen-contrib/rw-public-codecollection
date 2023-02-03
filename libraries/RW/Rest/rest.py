@@ -26,7 +26,7 @@ class Rest:
 
     def request(
         self,
-        url: str,
+        url,
         method: str = "GET",
         **kwargs,
     ) -> requests.Response:
@@ -38,7 +38,7 @@ class Rest:
         - if params, json or headers are passed as json strings, they will be converted to dictionaries.
 
         Args:
-            url (str): the URL to perform the request against.
+            url: the URL to perform the request against. Should be a secret or string type.
             method (str, optional): the verb to use during the HTTP request. Defaults to "GET".
 
         Refer to requests.request documentation for other parameters as these will be passed through via kwargs.
@@ -56,6 +56,9 @@ class Rest:
                     kwargs[request_field] = from_json(secret_val)
                 else:
                     kwargs[request_field] = secret_val
+        # if the url is a secret like a webhook, get the value
+        if isinstance(url, platform.Secret):
+            url = url.value
         rsp: requests.Response = requests.request(url=url, method=method, **kwargs)
         return rsp
 
