@@ -1,8 +1,8 @@
 
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     Sends a static Google Chat message via webhook. Contains optional configuration for including runsession info.
-Force Tags        GoogleChat    Message    Messaging    Send    Alert    Notify
+Documentation     Sends a static Rocketchat message via webhook. Contains optional configuration for including runsession info.
+Force Tags        Rocketchat    Message    Messaging    Send    Alert    Notify
 Library           RW.Core
 Library           RW.RunWhen.Papi
 Library           RW.Rest
@@ -18,7 +18,7 @@ Send Chat Message
     # we need to json encode just the msg contents to escape any json special characters
     ${msg}=    RW.Utils.To Json    ${msg}
     # google chat expects msg contents in the text key
-    ${data}=   RW.Utils.From Json    {"text":${msg}}
+    ${data}=   RW.Utils.From Json    {"alias":"${BOT_ALIAS}","text":${msg}}
     ${rsp}=    RW.Rest.Request    url=${webhook_url}    method=POST    json=${data}
     RW.Rest.Handle Response    rsp=${rsp}
     RW.Core.Add To Report    Sent Message: ${msg}
@@ -38,6 +38,12 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=We've detected a workspace event!
     ...    example=We've detected a workspace event!
+    RW.Core.Import User Variable    BOT_ALIAS
+    ...    type=string
+    ...    description=The alias name of the bot sending the message.
+    ...    pattern=\w*
+    ...    default=RunWhen Bot
+    ...    example=RunWhen Bot
     RW.Core.Import User Variable    INCLUDE_RUNSESSION_LINK
     ...    type=string
     ...    enum=[YES,NO]
@@ -52,5 +58,6 @@ Suite Initialization
     ...    description=Whether or not the message includes associated runsession data.
     Set Suite Variable    ${webhook_url}    ${webhook_url}
     Set Suite Variable    ${MESSAGE}    ${MESSAGE}
+    Set Suite Variable    ${BOT_ALIAS}    ${BOT_ALIAS}
     Set Suite Variable    ${INCLUDE_RUNSESSION_LINK}    ${INCLUDE_RUNSESSION_LINK}
     Set Suite Variable    ${INCLUDE_REPORTS}    ${INCLUDE_REPORTS}

@@ -97,6 +97,8 @@ class Rest:
         It can verify the response status code and extract data from the response object based on a
         json_path string allowing users to provide query-like config and handle generalized json responses.
 
+        Note: if the server did not respect json as the content type in its response, then this may fallback to text
+
         Args:
             rsp (requests.Response): the rsp ojbect to validate/extract data from.
             json_path (str, optional): if provided, transform/extract data from the json path. Defaults to None.
@@ -114,8 +116,14 @@ class Rest:
             raise requests.RequestException(
                 f"The HTTP response code {rsp.status_code} is not in the expected list {expected_status_codes} for {rsp}"
             )
-        rsp_data = rsp.json()
-        if json_path:
+        # attempt to fetch json response
+        # if server did not respect content type then fallback to text
+        try:
+            rsp_data = rsp.json()
+        except Exception as e:
+            logger.info(f"Failed to parse json response due to: {e} - falling back to text")
+            rsp_data = rsp.text
+        if json_path and is_json(rsp_data):
             rsp_data = jmespath.search(json_path, rsp_data)
             if rsp_data == None:
                 raise ValueError(
