@@ -403,7 +403,7 @@ class Papi:
         output: str = ""
         runsession_url: str = ""
         runsession_stdout: str = ""
-        if not include_runsession_link and not include_runsesssion_stdout:
+        if not include_runsession_link and not include_runsession_stdout:
             return output
         if include_runsession_link:
             runsession_url = f"\n{self.get_runsession_url()}"

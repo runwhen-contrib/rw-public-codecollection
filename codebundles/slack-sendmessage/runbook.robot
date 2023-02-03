@@ -17,7 +17,7 @@ Send Chat Message
     ${msg}=    Catenate    SEPARATOR=\n    ${MESSAGE}    ${runsession_info}
     # we need to json encode just the msg contents to escape any json special characters
     ${msg}=    RW.Utils.To Json    ${msg}
-    # google chat expects msg contents in the text key
+    # slack expects msg contents in the text key
     ${data}=   RW.Utils.From Json    {"text":${msg}}
     ${rsp}=    RW.Rest.Request    url=${webhook_url}    method=POST    json=${data}
     RW.Rest.Handle Response    rsp=${rsp}

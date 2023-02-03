@@ -91,7 +91,7 @@ class Rest:
         self,
         rsp: requests.Response,
         json_path: str = None,
-        expected_status_codes: list[int] = [200, 201],
+        expected_status_codes: list[int] = [200, 201, 204],
     ) -> any:
         """Generic handler for inspecting the response received from a HTTP request.
         It can verify the response status code and extract data from the response object based on a
@@ -111,7 +111,7 @@ class Rest:
         Returns:
             any: the return type depends on what is extracted from the json document.
         """
-        rsp_data = None
+        rsp_data = ""
         if rsp.status_code not in expected_status_codes:
             raise requests.RequestException(
                 f"The HTTP response code {rsp.status_code} is not in the expected list {expected_status_codes} for {rsp}"
