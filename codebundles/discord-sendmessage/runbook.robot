@@ -16,7 +16,7 @@ Send Chat Message
     ${msg}=    Catenate    SEPARATOR=\n    ${MESSAGE}    ${runsession_info}
     # we need to json encode just the msg contents to escape any json special characters
     ${msg}=    RW.Utils.To Json    ${msg}
-    # discord expects msg contents in the text key
+    # discord expects msg contents in the content key
     ${data}=   RW.Utils.From Json    {"content":${msg}}
     ${rsp}=    RW.Rest.Request    url=${webhook_url}    method=POST    json=${data}
     RW.Rest.Handle Response    rsp=${rsp}
