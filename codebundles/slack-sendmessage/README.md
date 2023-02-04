@@ -1,7 +1,7 @@
-# Discord Send Message
+# Slack Send Message
 
 ## TaskSet 
-Sends a static message to a Discord chat channel via webhook. There is optional configuration for including live runsession info and links
+Sends a static message to a Slack chat channel via webhook. There is optional configuration for including live runsession info and links
 for team members to quickly access running sessions.
 
 ## Use Cases
