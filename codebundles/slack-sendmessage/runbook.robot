@@ -2,7 +2,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Documentation     Sends a static Slack message via webhook. Contains optional configuration for including runsession info.
-Force Tags        GoogleChat    Message    Messaging    Send    Alert    Notify
+Force Tags        Slack    Chat    Message    Messaging    Send    Alert    Notify
 Library           RW.Core
 Library           RW.RunWhen.Papi
 Library           RW.Rest
