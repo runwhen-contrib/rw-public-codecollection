@@ -30,7 +30,7 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | cert-manager-expirations | SLI | [sli.robot](./codebundles/cert-manager-expirations/sli.robot) |      Retrieve number of expired TLS certificates managed by cert-manager within a given window. |
 | cert-manager-healthcheck | SLI | [sli.robot](./codebundles/cert-manager-healthcheck/sli.robot) |      Check the health of pods deployed by cert-manager. |
 | datadog-system-load | SLI | [sli.robot](./codebundles/datadog-system-load/sli.robot) |      Retrieve a DataDog instance's "System Load" metric |
-| discord-send-message | TaskSet | [runbook.robot](./codebundles/discord-send-message/runbook.robot) |      Send a message to a Discord channel. |
+| discord-sendmessage | TaskSet | [runbook.robot](./codebundles/discord-sendmessage/runbook.robot) |      Sends a static Discord message via webhook. Contains optional configuration for including runsession info. |
 | dns-latency | SLI | [sli.robot](./codebundles/dns-latency/sli.robot) |      Check DNS latency for Google Resolver. |
 | elasticsearch-health | SLI | [sli.robot](./codebundles/elasticsearch-health/sli.robot) |    Check Elasticsearch cluster health |
 | gcp-opssuite-logquery-dashboard | TaskSet | [runbook.robot](./codebundles/gcp-opssuite-logquery-dashboard/runbook.robot) |      Generate a link to the GCP Log Explorer. |
@@ -47,6 +47,7 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | gitlab-availability | TaskSet | [runbook.robot](./codebundles/gitlab-availability/runbook.robot) |      Troubleshoot issues with GitLab server availability. |
 | gitlab-availability | SLI | [sli.robot](./codebundles/gitlab-availability/sli.robot) |      Check availability of a GitLab server. |
 | gitlab-get-repos-latency | SLI | [sli.robot](./codebundles/gitlab-get-repos-latency/sli.robot) |      Check GitLab latency by getting a list of repo names. |
+| googlechat-sendmessage | TaskSet | [runbook.robot](./codebundles/googlechat-sendmessage/runbook.robot) |      Sends a static Google Chat message via webhook. Contains optional configuration for including runsession info. |
 | grafana-health | SLI | [sli.robot](./codebundles/grafana-health/sli.robot) |      Check Grafana server health. |
 | hello-world | TaskSet | [runbook.robot](./codebundles/hello-world/runbook.robot) |      Basic Hello-World TaskSet |
 | http-latency | SLI | [sli.robot](./codebundles/http-latency/sli.robot) |      Measure HTTP latency against a given URL. |
@@ -84,7 +85,8 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | rest-explicitoauth2-basicauth | SLI | [sli.robot](./codebundles/rest-explicitoauth2-basicauth/sli.robot) |      A REST SLI for querying and extracting data from a REST endpoint that needs an explicit oauth2 flow. |
 | rest-explicitoauth2-tokenheader | SLI | [sli.robot](./codebundles/rest-explicitoauth2-tokenheader/sli.robot) |      A REST SLI for querying and extracting data from a REST endpoint that needs an explicit oauth2 flow. |
 | rest-generic | SLI | [sli.robot](./codebundles/rest-generic/sli.robot) |      A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a implicit oauth2 flow. |
-| rocketchat-plain-notification | TaskSet | [runbook.robot](./codebundles/rocketchat-plain-notification/runbook.robot) |      Send a message to an RocketChat channel. |
+| rocketchat-sendmessage | TaskSet | [runbook.robot](./codebundles/rocketchat-sendmessage/runbook.robot) |      Sends a static Rocketchat message via webhook. Contains optional configuration for including runsession info. |
+| slack-sendmessage | TaskSet | [runbook.robot](./codebundles/slack-sendmessage/runbook.robot) |      Sends a static Slack message via webhook. Contains optional configuration for including runsession info. |
 | sysdig-monitor-metric | SLI | [sli.robot](./codebundles/sysdig-monitor-metric/sli.robot) |      Queries the Sysdig data API to fetch metric data. |
 | sysdig-monitor-promqlmetric | SLI | [sli.robot](./codebundles/sysdig-monitor-promqlmetric/sli.robot) |      Queries the Sysdig data API with a PromQL query to fetch metric data. |
 | twitter-query-tweets | TaskSet | [runbook.robot](./codebundles/twitter-query-tweets/runbook.robot) |      Queries Twitter to fetch tweets within a specified time range for a specific user handle add them to a report. |
