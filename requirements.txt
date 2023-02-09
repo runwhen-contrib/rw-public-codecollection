@@ -17,3 +17,4 @@ snscrape>=0.4.3.20220106
 jq>=1.3.0
 pandas>=1.5.2
 jmespath>=1.0.1
+datadog-api-client==2.8.0
