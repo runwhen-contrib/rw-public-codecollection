@@ -14,7 +14,7 @@ Suite Initialization
     ...    description=Optional. A json string of headers to include in the request against the REST endpoint. This can include your token.
     ...    pattern=\w*
     ...    default="{}"
-    ...    example=`{"Content-Type":"application/json"}`
+    ...    example='{"Content-Type":"application/json"}'
     ${CURL_COMMAND}=    RW.Core.Import User Variable    CURL_COMMAND
     ...    type=string
     ...    description=Curl command to run; should return a single metric. Can use jq for json parsing.  
