@@ -366,3 +366,32 @@ def merge_json_secrets(*args) -> platform.Secret:
     secret_data = to_json(secret_data)
     merged_secret: platform.Secret = platform.Secret("json_secrets", secret_data)
     return merged_secret
+
+
+def secret_to_curl_headers(optional_headers: platform.Secret) -> platform.Secret:
+    header_list = []
+    headers = {
+        "content-type":"application/json",
+    }
+    headers.update(json.loads(optional_headers.value))
+    for k,v in headers.items():
+        header_list.append(f"-H \"{k}: {v}\"")
+    optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=" ".join(header_list))
+    return optional_headers
+
+def create_curl(cmd, optional_headers: platform.Secret) -> str:
+    """
+    Helper method to generate a curl string equivalent to a Requests object (roughly)
+    Note that headers are inserted as a $variable to be substituted in the location service by an environment variable.
+    This is identified by the secret.key
+    """
+    # Check for pipes in command
+    if '|' in cmd:
+        # split command at first pipe
+        cmd_prefix,cmd_suffix = cmd.split('|')
+        # we use eval so that the location service evaluates the secret headers as multiple tokens
+        curl = f"eval $(echo \"{cmd_prefix} ${optional_headers.key} | {cmd_suffix} \")"
+    else: 
+        # we use eval so that the location service evaluates the secret headers as multiple tokens
+        curl = f"eval $(echo \"{cmd} ${optional_headers.key} \")"
+    return curl
