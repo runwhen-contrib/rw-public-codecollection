@@ -244,8 +244,8 @@ class NamespaceTasksMixin(
             return 0
 
     def _convert_age_to_search_time (self, age) -> str: 
-        age = int(age.split('m')[0])
         current_time = datetime.now()
+        age = int(age.split('m')[0])
         search_time = current_time - timedelta(hours=0, minutes=age) 
         return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
@@ -262,11 +262,20 @@ class NamespaceTasksMixin(
     ) -> float:
         # K8s Event Ref: https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/event-v1/
         search_time=self._convert_age_to_search_time(age=event_age)
+        search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}`"
         if "ALL" in namespace: 
             cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
+        elif "," in namespace: 
+            ## Combine csv into jmespath OR query
+            # e.g. items[?type==`Normal` && lastTimestamp >= `2023-02-13T12:25:46Z` && (metadata.namespace == `gmp-system` || metadata.namespace == `flux-system`) ]
+            cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
+            namespace_list=namespace.split(',')
+            for num,namespace_name in enumerate(namespace_list):
+                namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
+            namespace_search_string=' || '.join(namespace_list)
+            search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}` && ({namespace_search_string})"
         else: 
             cmd = f"{binary_name} get events -n {namespace} --context {context} -o json"
-        search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}`"
         events_json: str = self.shell(
             cmd=cmd,
             target_service=target_service,

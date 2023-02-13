@@ -51,7 +51,7 @@ Suite Initialization
     ...    default=(Warning)
     ${EVENT_AGE}=    RW.Core.Import User Variable    EVENT_AGE
     ...    type=string
-    ...    description=The error pattern to use when grep-ing logs.
+    ...    description=The time window in minutes as to when the event was last seen.
     ...    pattern=\w*
     ...    example=5m
     ...    default=5m
