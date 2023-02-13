@@ -15,10 +15,15 @@ from .network_tasks_mixin import NetworkTasksMixin
 from .statefulset_tasks_mixin import StatefuletTasksMixin
 from .job_tasks_mixin import JobTasksMixin
 from .daemonset_tasks_mixin import DaemonsetTasksMixin
+from .k8sutils import K8sUtils
 from RW.Utils.utils import dict_to_yaml
 from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
 from RW.Utils.Check import Check
+import dateutil.parser
+from datetime import datetime, timedelta
+
+from robot.libraries.BuiltIn import BuiltIn
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +37,7 @@ class NamespaceTasksMixin(
     NetworkTasksMixin,
     JobTasksMixin,
     DaemonsetTasksMixin,
-    StatefuletTasksMixin
+    StatefuletTasksMixin,
     ):
 
     def get_object_names(self, k8s_items, distinct_values:bool=True) -> list:
@@ -144,7 +149,7 @@ class NamespaceTasksMixin(
                     symbol=bool(status),
                 ))
         return "\n".join([str(c) for c in checks])
-
+ 
     def check_namespace_errors(
         self,
         context : str,
@@ -152,7 +157,7 @@ class NamespaceTasksMixin(
         kubeconfig : platform.Secret,
         target_service : platform.Service,
         binary_name: str = "kubectl",
-        error_pattern: str = "(Error|Exception)",
+        error_pattern: str = "(Error|Exception|Warning)",
     ) -> str:
         checks: list(Checks) = []
         stdout: str = self.shell(
@@ -223,8 +228,10 @@ class NamespaceTasksMixin(
         target_service: platform.Service,
         event_pattern:str = "*",
         binary_name: str = "kubectl",
-        event_type: str = "Warning"
+        event_type: str = "Warning",
     ) -> int:
+
+
         events_stdout: str = self.shell(
             cmd=f"{binary_name} get events -n {namespace} --context {context} --no-headers --field-selector type={event_type} | grep -E -i \"{event_pattern}\"",
             target_service=target_service,
@@ -235,3 +242,41 @@ class NamespaceTasksMixin(
             return len(event_rows)
         else:
             return 0
+
+    def _convert_age_to_search_time (self, age) -> str: 
+        age = int(age.split('m')[0])
+        current_time = datetime.now()
+        search_time = current_time - timedelta(hours=0, minutes=age) 
+        return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+
+    def count_events_by_age_and_type (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        event_age: str = None, 
+        event_type: str = "Warning",
+    ) -> float:
+        # K8s Event Ref: https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/event-v1/
+        search_time=self._convert_age_to_search_time(age=event_age)
+        if "ALL" in namespace: 
+            cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
+        else: 
+            cmd = f"{binary_name} get events -n {namespace} --context {context} -o json"
+        search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}`"
+        events_json: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        BuiltIn().log(cmd)
+        BuiltIn().log(search_filter)
+        return K8sUtils.convert_to_metric(
+            command=cmd, 
+            data=events_json, 
+            search_filter= search_filter,
+            calculation_field="Count"
+            )

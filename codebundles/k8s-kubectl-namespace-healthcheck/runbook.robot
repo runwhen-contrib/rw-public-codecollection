@@ -39,27 +39,12 @@ Suite Initialization
     ...    example=Kubernetes
     ${ERROR_PATTERN}=    RW.Core.Import User Variable    ERROR_PATTERN
     ...    type=string
-    ...    description=The error pattern to use when grep-ing logs or searching events.
-    ...    pattern=\w*
-    ...    example=(Error|Exception|Warning)
-    ...    default=(Error|Exception|Warning)
-    ${ERROR_AGE}=    RW.Core.Import User Variable    ERROR_AGE
-    ...    type=string
     ...    description=The error pattern to use when grep-ing logs.
     ...    pattern=\w*
-    ...    example=5m
-    ...    default=5m
-    ${ERROR_THRESHOLD}=    RW.Core.Import User Variable    ERROR_THRESHOLD
-    ...    type=string
-    ...    description=The error pattern to use when grep-ing logs.
-    ...    pattern=\w*
-    ...    example=5m
-    ...    default=5m
+    ...    example=(Error|Exception)
+    ...    default=(Error|Exception)
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
-    Set Suite Variable    ${ERROR_PATTERN} ${ERROR_PATTERN}
-    Set Suite Variable    ${ERROR_AGE}    ${ERROR_AGE}
-    Set Suite Variable    ${ERROR_THRESHOLD}    ${ERROR_PATTERN}
 
 *** Tasks ***
 Troubleshoot Namespace
