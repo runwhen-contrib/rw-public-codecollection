@@ -57,10 +57,22 @@ Suite Initialization
     ...    default=5m
     ${EVENT_THRESHOLD}=    RW.Core.Import User Variable    EVENT_THRESHOLD
     ...    type=string
-    ...    description=The error pattern to use when grep-ing logs.
+    ...    description=The maximum total events to be still considered healthy. 
+    ...    pattern=\w*
+    ...    example=2
+    ...    default=0
+    ${CONTAINER_RESTART_AGE}=    RW.Core.Import User Variable    CONTAINER_RESTART_AGE
+    ...    type=string
+    ...    description=The time window in minutes as search for container restarts.
     ...    pattern=\w*
     ...    example=5m
     ...    default=5m
+    ${CONTAINER_RESTART_THRESHOLD}=    RW.Core.Import User Variable    CONTAINER_RESTART_THRESHOLD
+    ...    type=string
+    ...    description=The maximum total container restarts to be still considered healthy. 
+    ...    pattern=\w*
+    ...    example=2
+    ...    default=0
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
 
@@ -97,17 +109,22 @@ Get Event Count and Score
     ...    binary_name=${binary_name}
     ...    event_age=${EVENT_AGE}
     ...    event_type=${EVENT_TYPE}
-    Log    ${event_count}
+    Log    ${event_count} total events found with event type ${event_type} up to age ${event_age}
+    ${event_score}=     Evaluate    1 if ${event_count} < ${EVENT_THRESHOLD}
 
+Get Container Restarts and Score
+    ${event_count}=    RW.K8s.Count Events By Age and Type
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    ...    kubeconfig=${kubeconfig}
+    ...    target_service=${kubectl}
+    ...    binary_name=${binary_name}
+    ...    container_restart_age=${CONTAINER_RESTART_AGE}
 
-# Find Namespace Errors and Score
-#     ${error_results}=    RW.K8s.Check Namespace Errors
-#     ...    context=${CONTEXT}
-#     ...    namespace=${NAMESPACE}
-#     ...    target_service=${kubectl}
-#     ...    kubeconfig=${kubeconfig}
-#     ...    error_pattern=${ERROR_PATTERN}
-#     ${history}=    RW.K8s.Pop Shell History
-#     ${history}=    RW.Utils.List To String    data_list=${history}
-#     RW.Core.Add Pre To Report    ${error_results}
-#     RW.Core.Add Pre To Report    Commands Used:\n${history}
+    ${metric}=    RW.K8s.Convert to metric
+    ...    cmd=${KUBECTL_COMMAND}
+    ...    data=${stdout_json}
+    ...    search_filter=${SEARCH_FILTER}
+    ...    calculation_field=${CALCULATION_FIELD}
+    ...    calculation=Count
+    RW.Core.Push Metric    ${metric}

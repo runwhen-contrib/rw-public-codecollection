@@ -289,3 +289,40 @@ class NamespaceTasksMixin(
             search_filter= search_filter,
             calculation_field="Count"
             )
+
+    def count_container_restarts_by_age (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        container_restart_window: str = None, 
+    ) -> float:
+        search_time=self._convert_age_to_search_time(age=container_restart_window)
+        search_filter=f"status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
+        if "ALL" in namespace: 
+            cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
+        elif "," in namespace: 
+            ## Combine csv into jmespath OR query
+            cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
+            namespace_list=namespace.split(',')
+            for num,namespace_name in enumerate(namespace_list):
+                namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
+            namespace_search_string=' || '.join(namespace_list)
+            search_filter=f"({namespace_search_string}) status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
+        else: 
+            cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"
+        events_json: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        BuiltIn().log(cmd)
+        BuiltIn().log(search_filter)
+        return K8sUtils.convert_to_metric(
+            command=cmd, 
+            data=events_json, 
+            search_filter= search_filter,
+            calculation_field="Count"
+            )

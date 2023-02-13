@@ -5,6 +5,7 @@ Metadata            Author    Shea Stewart
 
 Library             RW.Core
 Library             RW.K8s
+Library             RW.K8s.K8sUtils
 Library             RW.Utils
 Library             RW.platform
 
