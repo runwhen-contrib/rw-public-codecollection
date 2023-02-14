@@ -37,7 +37,7 @@ class NamespaceTasksMixin(
     NetworkTasksMixin,
     JobTasksMixin,
     DaemonsetTasksMixin,
-    StatefuletTasksMixin,
+    StatefuletTasksMixin
     ):
 
     def get_object_names(self, k8s_items, distinct_values:bool=True) -> list:
@@ -157,7 +157,7 @@ class NamespaceTasksMixin(
         kubeconfig : platform.Secret,
         target_service : platform.Service,
         binary_name: str = "kubectl",
-        error_pattern: str = "(Error|Exception|Warning)",
+        error_pattern: str = "(Error|Exception)",
     ) -> str:
         checks: list(Checks) = []
         stdout: str = self.shell(
