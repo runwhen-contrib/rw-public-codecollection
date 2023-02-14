@@ -41,8 +41,8 @@ Suite Initialization
     ...    type=string
     ...    description=The error pattern to use when grep-ing logs or searching events.
     ...    pattern=\w*
-    ...    example=(Normal|Warning)
-    ...    default=(Warning)
+    ...    example=Normal|Warning
+    ...    default=Warning
     ${EVENT_AGE}=    RW.Core.Import User Variable    EVENT_AGE
     ...    type=string
     ...    description=The time window in minutes as to when the event was last seen.
