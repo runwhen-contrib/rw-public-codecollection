@@ -29,6 +29,9 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | aws-vm-triage | TaskSet | [runbook.robot](./codebundles/aws-vm-triage/runbook.robot) |      Triage and troubleshoot performance and usage of an AWS EC2 instance |
 | cert-manager-expirations | SLI | [sli.robot](./codebundles/cert-manager-expirations/sli.robot) |      Retrieve number of expired TLS certificates managed by cert-manager within a given window. |
 | cert-manager-healthcheck | SLI | [sli.robot](./codebundles/cert-manager-healthcheck/sli.robot) |      Check the health of pods deployed by cert-manager. |
+| curl-generic | TaskSet | [runbook.robot](./codebundles/curl-generic/runbook.robot) |      A curl TaskSet for querying and extracting data from a generic curl call. Supports jq. Adds results to the report. |
+| curl-generic | SLI | [sli.robot](./codebundles/curl-generic/sli.robot) |      A curl SLI for querying and extracting data from a generic curl call. Supports jq. Should prodice a single metric. |
+| datadog-metricquery | SLI | [sli.robot](./codebundles/datadog-metricquery/sli.robot) |      Fetch the results of a datadog metric timeseries and push the extracted value as an SLI metric. |
 | datadog-system-load | SLI | [sli.robot](./codebundles/datadog-system-load/sli.robot) |      Retrieve a DataDog instance's "System Load" metric |
 | discord-sendmessage | TaskSet | [runbook.robot](./codebundles/discord-sendmessage/runbook.robot) |      Sends a static Discord message via webhook. Contains optional configuration for including runsession info. |
 | dns-latency | SLI | [sli.robot](./codebundles/dns-latency/sli.robot) |      Check DNS latency for Google Resolver. |
