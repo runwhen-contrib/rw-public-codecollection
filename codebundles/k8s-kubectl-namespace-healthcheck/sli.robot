@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Shea Stewart
-Documentation     This SLI uses kubectl to investigate a namespace for issues and produce an overall score of namespace health. Looks for container restarts, events, and pods not ready. Produces a value between 0 (completely failing thet test) and 1 (fully passying the test). 
+Documentation     This SLI uses kubectl to score namespace health. Produces a value between 0 (completely failing thet test) and 1 (fully passying the test). Looks for container restarts, events, and pods not ready.
 Force Tags        K8s    Kubernetes    Kube    K8
 Suite Setup       Suite Initialization
 Library           BuiltIn
