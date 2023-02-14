@@ -37,12 +37,6 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
-    ${ERROR_PATTERN}=    RW.Core.Import User Variable    ERROR_PATTERN
-    ...    type=string
-    ...    description=The error pattern to use when grep-ing logs or searching events.
-    ...    pattern=\w*
-    ...    example=(Error|Exception|Warning)
-    ...    default=(Error|Exception|Warning)
     ${EVENT_TYPE}=    RW.Core.Import User Variable    EVENT_TYPE
     ...    type=string
     ...    description=The error pattern to use when grep-ing logs or searching events.
