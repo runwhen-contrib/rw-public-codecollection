@@ -14,14 +14,14 @@ from enum import Enum
 
 logger = logging.getLogger(__name__)
 
-class K8sUtils():
+class K8sUtils:
     """
     K8s utils to help format K8s output.
     """
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
     
-    def convert_to_metric(
+    def convert_to_metric(self, 
         command: str=None,
         data: str=None,
         search_filter: str="",

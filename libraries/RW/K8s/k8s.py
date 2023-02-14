@@ -16,7 +16,7 @@ from .namespace_tasks_mixin import NamespaceTasksMixin
 logger = logging.getLogger(__name__)
 
 class K8s(
-    NamespaceTasksMixin
+    NamespaceTasksMixin,
     ):
     """
     K8s keyword library can be used to interact with Kubernetes clusters.

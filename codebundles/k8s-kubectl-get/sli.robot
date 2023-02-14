@@ -21,7 +21,7 @@ Running Kubectl get and push the metric
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${metric}=    RW.K8s.K8sUtils.Convert to metric
-    ...    cmd=${KUBECTL_COMMAND}
+    ...    command=${KUBECTL_COMMAND}
     ...    data=${stdout_json}
     ...    search_filter=${SEARCH_FILTER}
     ...    calculation_field=${CALCULATION_FIELD}

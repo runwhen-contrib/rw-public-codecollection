@@ -109,5 +109,6 @@ Get NotReady Pods
     Set Global Variable    ${pods_notready_score}
 
 Generate Namspace Score
-    ${namspace_health_score}=      Evaluate     (${event_score} + ${container_restart_score} + ${pods_notready_score}) / 3
-    RW.Core.Push Metric    ${namspace_health_score}
+    ${namespace_health_score}=      Evaluate  (${event_score} + ${container_restart_score} + ${pods_notready_score}) / 3
+    ${health_score}=      Convert to Number    ${namespace_health_score}  2
+    RW.Core.Push Metric    ${health_score}
