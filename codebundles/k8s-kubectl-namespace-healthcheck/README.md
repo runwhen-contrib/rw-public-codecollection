@@ -25,6 +25,8 @@ export CONTAINER_RESTART_THRESHOLD=0
 
 With the example above, a namespace would be be considerd a 0 (unhealthy) if there are any container restarts within 5m, any Warning events within 5m, and any pod is NotReady. If all pods are ready but Warning events or container restarts occur within 5m, it could receive a score of 0.33 or 0.66. If the namespace has zero Warning events, zero container restarts, and all pods are Ready, the score is 1 (healthy). 
 
+> This SLI supports one, multiple, or ALL namespaces. If creating a score from multiple namespaces, consider a larger interval, such as 60s or greater, between each run. This SLI directly accesses the Kube API and querying for pods & events across multiple or ALL namespaces can generate a lot of volume. 
+
 ## TaskSet
 This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries.
 
@@ -33,4 +35,5 @@ This taskset runs general troubleshooting checks against all applicable objects 
 
 
 ## TODO
-- [ ] Optimize the multi-namespace configuration. 
+- [ ] Optimize the multi-namespace configuration for SLI
+- [ ] Optimize the troubleshoot namespace to reduce call frequency & load
