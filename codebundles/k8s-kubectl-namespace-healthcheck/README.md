@@ -1,5 +1,5 @@
 # Kubernetes Namespace Health Check
-Periodically inspect the state of a Kubernetes namespace to determine if its score is 1 (healthy) or 0 (unhealthy) using kubectl. 
+Check the health of a Kubernetes namespace and its objects. 
 
 # SLI 
 Periodically inspect the state of a Kubernetes namespace to determine if its score is 1 (healthy) or 0 (unhealthy). Supports values that are between 0 and 1 depending on the result of each test. The suite of checks considered are:
@@ -24,3 +24,13 @@ export CONTAINER_RESTART_THRESHOLD=0
 ```
 
 With the example above, a namespace would be be considerd a 0 (unhealthy) if there are any container restarts within 5m, any Warning events within 5m, and any pod is NotReady. If all pods are ready but Warning events or container restarts occur within 5m, it could receive a score of 0.33 or 0.66. If the namespace has zero Warning events, zero container restarts, and all pods are Ready, the score is 1 (healthy). 
+
+## TaskSet
+This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries.
+
+## Requirements
+- kubeconfig with appropriate RBAC permissions to `get` `pods` and `events` on desired namespaces
+
+
+## TODO
+- [ ] Optimize the multi-namespace configuration. 
