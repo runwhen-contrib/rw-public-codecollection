@@ -1,6 +1,6 @@
 *** Settings ***
 Metadata          Author    Shea Stewart
-Documentation     This SLI uses kubectl to investigate a namespace for issues and produce an overall score of namespace health. 
+Documentation     This SLI uses kubectl to investigate a namespace for issues and produce an overall score of namespace health. Looks for container restarts, events, and pods not ready. Produces a value between 0 (completely failing thet test) and 1 (fully passying the test). 
 Force Tags        K8s    Kubernetes    Kube    K8
 Suite Setup       Suite Initialization
 Library           BuiltIn
@@ -77,28 +77,6 @@ Suite Initialization
     Set Suite Variable    ${binary_name}    ${binary_name}
 
 *** Tasks ***
-# Fetch Namespace Objects and Score
-#     ${stdout}=    RW.K8s.Shell
-#     ...    cmd=kubectl api-resources --verbs=list --namespaced --context=${CONTEXT} --namespace=${NAMESPACE} -o name
-#     ...    target_service=${kubectl}
-#     ...    kubeconfig=${kubeconfig}
-#     ${resource_types}=    RW.Utils.Stdout To List    stdout=${stdout}
-#     ${object_names}=    RW.K8s.Loop Template Shell
-#     ...    items=${resource_types}
-#     ...    cmd=kubectl get {item} --no-headers --show-kind --ignore-not-found --context=${CONTEXT} --namespace=${NAMESPACE} -o name
-#     ...    target_service=${kubectl}
-#     ...    kubeconfig=${kubeconfig}
-#     ...    newline_as_separate=True
-#     ${ts_results}=    RW.K8s.Check Namespace Objects
-#     ...    k8s_object_names=${object_names}
-#     ...    context=${CONTEXT}
-#     ...    namespace=${NAMESPACE}
-#     ...    target_service=${kubectl}
-#     ...    kubeconfig=${kubeconfig}
-#     ${history}=    RW.K8s.Pop Shell History
-#     ${history}=    RW.Utils.List To String    data_list=${history}
-#     RW.Core.Add Pre To Report    ${ts_results}
-#     RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 Get Event Count and Score
     ${event_count}=    RW.K8s.Count Events By Age and Type
@@ -110,21 +88,32 @@ Get Event Count and Score
     ...    event_age=${EVENT_AGE}
     ...    event_type=${EVENT_TYPE}
     Log    ${event_count} total events found with event type ${event_type} up to age ${event_age}
-    ${event_score}=     Evaluate    1 if ${event_count} < ${EVENT_THRESHOLD}
+    ${event_score}=    Evaluate    1 if ${event_count} <= ${EVENT_THRESHOLD} else 0
+    Set Global Variable    ${event_score}
 
 Get Container Restarts and Score
-    ${event_count}=    RW.K8s.Count Events By Age and Type
+    ${container_restart_count}=    RW.K8s.Count Container Restarts By Age
     ...    namespace=${NAMESPACE}
     ...    context=${CONTEXT}
     ...    kubeconfig=${kubeconfig}
     ...    target_service=${kubectl}
     ...    binary_name=${binary_name}
     ...    container_restart_age=${CONTAINER_RESTART_AGE}
+    Log    ${container_restart_count} total container restarts found in the last ${CONTAINER_RESTART_AGE}
+    ${container_restart_score}=    Evaluate    1 if ${container_restart_count} <= ${CONTAINER_RESTART_THRESHOLD} else 0
+    Set Global Variable    ${container_restart_score}
 
-    ${metric}=    RW.K8s.Convert to metric
-    ...    cmd=${KUBECTL_COMMAND}
-    ...    data=${stdout_json}
-    ...    search_filter=${SEARCH_FILTER}
-    ...    calculation_field=${CALCULATION_FIELD}
-    ...    calculation=Count
-    RW.Core.Push Metric    ${metric}
+Get NotReady Pods
+    ${pods_notready_count}=    RW.K8s.Count Notready Pods
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    ...    kubeconfig=${kubeconfig}
+    ...    target_service=${kubectl}
+    ...    binary_name=${binary_name}
+    Log    ${pods_notready_count} total unready pods
+    ${pods_notready_score}=    Evaluate    1 if ${pods_notready_count} == 0 else 0
+    Set Global Variable    ${pods_notready_score}
+
+Generate Namspace Score
+    ${namspace_health_score}=      Evaluate     (${event_score} + ${container_restart_score} + ${pods_notready_score}) / 3
+    RW.Core.Push Metric    ${namspace_health_score}
