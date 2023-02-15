@@ -6,11 +6,13 @@ Scope: Global
 import re, kubernetes, yaml, logging, json, jmespath
 from struct import unpack
 import dateutil.parser
+from datetime import datetime, timedelta
 from benedict import benedict
 from typing import Optional, Union
 from RW import platform
 from RW.Utils import utils
 from enum import Enum
+from robot.libraries.BuiltIn import BuiltIn
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,9 @@ class K8sUtils:
             raise ValueError(f"Error: Data does not appear to be valid json")
         else: 
             payload=json.loads(data)
-        
+        # Log search filter - keep this so that useres can validate their patterns with jmespath
+        BuiltIn().run_keyword('Log', search_filter)
+
         # Set search prefix to narrow down results and to support simpler user input.
         if search_filter: 
             search_pattern_prefix="items[?"+search_filter+"]"
@@ -76,3 +80,18 @@ class K8sUtils:
         if calculation == "Avg":
             metric = utils.search_json(data=payload, pattern="avg("+search_pattern_prefix+"."+calculation_field+")")
             return float(metric)
+
+    def convert_age_to_search_time (age) -> str: 
+        current_time = datetime.now()
+        time_values={
+            'days': {'short': 'd', 'long': 'days', 'value': 0},
+            'hours': {'short': 'h', 'long': 'hours', 'value': 0},
+            'minutes': {'short': 'm', 'long': 'minutes', 'value': 0}
+        }
+        for item_name, item_details in time_values.items(): 
+            if item_details['short'] in age:  
+                age = int(age.split(item_details['short'])[0])
+                time_values[item_name]['value'] = age
+                break
+        search_time = current_time - timedelta(days=time_values['days']['value'], hours=time_values['hours']['value'], minutes=time_values['minutes']['value']) 
+        return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')

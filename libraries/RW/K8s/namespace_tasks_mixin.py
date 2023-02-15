@@ -20,8 +20,6 @@ from RW.Utils.utils import dict_to_yaml
 from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
 from RW.Utils.Check import Check
-import dateutil.parser
-from datetime import datetime, timedelta
 
 from robot.libraries.BuiltIn import BuiltIn
 
@@ -243,11 +241,11 @@ class NamespaceTasksMixin(
         else:
             return 0
 
-    def _convert_age_to_search_time (self, age) -> str: 
-        current_time = datetime.now()
-        age = int(age.split("m")[0])
-        search_time = current_time - timedelta(hours=0, minutes=age) 
-        return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+    # def _convert_age_to_search_time (self, age) -> str: 
+    #     current_time = datetime.now()
+    #     age = int(age.split("m")[0])
+    #     search_time = current_time - timedelta(hours=0, minutes=age) 
+    #     return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
     def count_events_by_age_and_type (
@@ -261,7 +259,7 @@ class NamespaceTasksMixin(
         event_type: str = "Warning",
     ) -> float:
         # K8s Event Ref: https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/event-v1/
-        search_time=self._convert_age_to_search_time(age=event_age)
+        search_time=K8sUtils.convert_age_to_search_time(age=event_age)
         search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}`"
         if "ALL" in namespace: 
             cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
@@ -297,7 +295,7 @@ class NamespaceTasksMixin(
         binary_name: str = "kubectl",
         container_restart_age: str = None, 
     ) -> float:
-        search_time=self._convert_age_to_search_time(age=container_restart_age)
+        search_time=K8sUtils.convert_age_to_search_time(age=container_restart_age)
         search_filter=f"status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
         if "ALL" in namespace: 
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
