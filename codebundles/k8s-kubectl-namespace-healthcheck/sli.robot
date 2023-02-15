@@ -63,7 +63,7 @@ Suite Initialization
     ${CONTAINER_RESTART_THRESHOLD}=    RW.Core.Import User Variable    CONTAINER_RESTART_THRESHOLD
     ...    type=string
     ...    description=The maximum total container restarts to be still considered healthy. 
-    ...    pattern=\w*
+    ...    pattern=^\d+$
     ...    example=2
     ...    default=0
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
