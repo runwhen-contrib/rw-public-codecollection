@@ -245,7 +245,7 @@ class NamespaceTasksMixin(
 
     def _convert_age_to_search_time (self, age) -> str: 
         current_time = datetime.now()
-        age = int(age.split('m')[0])
+        age = int(age.split("m")[0])
         search_time = current_time - timedelta(hours=0, minutes=age) 
         return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')
 
