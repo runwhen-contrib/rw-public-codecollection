@@ -262,7 +262,7 @@ class NamespaceTasksMixin(
             # e.g. items[?type==`Normal` && lastTimestamp >= `2023-02-13T12:25:46Z` && (metadata.namespace == `gmp-system` || metadata.namespace == `flux-system`) ]
             cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
             namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
-            search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}` && ({namespace_search_string})"
+            search_filter=f"({namespace_search_string}) && type==`{event_type}` && lastTimestamp >= `{search_time}`"
         else: 
             cmd = f"{binary_name} get events -n {namespace} --context {context} -o json"
         events_json: str = self.shell(
