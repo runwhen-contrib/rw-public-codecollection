@@ -48,7 +48,7 @@ class Datadog:
             raise Exception(f"status of response not ok: {rsp}")
         extracted_data = utils.search_json(rsp, json_path)
         if not extracted_data:
-            raise Exception(f"No data could be extracted with json path: {json_path}")
+            raise Exception(f"No data could be extracted with json path: {json_path} on rsp: {rsp}")
         return extracted_data
 
     def metric_query(
@@ -58,7 +58,7 @@ class Datadog:
         query_str: str,
         within_time: str = "60s",
         site: str = "datadoghq.com",
-    ) -> object:
+    ) -> dict:
         """
         Returns a timeseries result from the datadog metric timeseries API.
         You can extract data from this response using the handle_timeseries_data keyword.
@@ -89,4 +89,7 @@ class Datadog:
                 to=end_time,
                 query=query_str,
             )
+        # cast https://datadoghq.dev/datadog-api-client-python/datadog_api_client.v1.model.html#datadog_api_client.v1.model.metrics_query_response.MetricsQueryResponse
+        # to dict
+        rsp = rsp.to_dict()
         return rsp
