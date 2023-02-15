@@ -65,10 +65,16 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | k8s-kubectl-canaryvolumemount | SLI | [sli.robot](./codebundles/k8s-kubectl-canaryvolumemount/sli.robot) |        Creates an adhoc one-shot job which mounts a PVC as a canary test, which is polled for success before being torn down. |
 | k8s-kubectl-eventquery | SLI | [sli.robot](./codebundles/k8s-kubectl-eventquery/sli.robot) |        Returns the number of events with matching messages as an SLI metric. |
 | k8s-kubectl-get | SLI | [sli.robot](./codebundles/k8s-kubectl-get/sli.robot) |        This codebundle runs a kubectl get command that produces a value and pushes the metric. |
+| 'Use Case: SLI: Query all Certificates that are **NOT** "Ready" in a namespace
+Use Case: SLI: Sum, up all container restarts in a namespace
+Use Case: SLI: Count all Flux HelmReleases that are **NOT** "Ready"
+Use Case: SLI: Count all Kubernetes API Services
+Use Case: SLI: Count all Kubernetes API Services that are **NOT** "Ready"' |
+| k8s-kubectl-namespace-healthcheck | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-namespace-healthcheck/runbook.robot) |      This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries. |
+| k8s-kubectl-namespace-healthcheck | SLI | [sli.robot](./codebundles/k8s-kubectl-namespace-healthcheck/sli.robot) |      This SLI uses kubectl to score namespace health. Produces a value between 0 (completely failing thet test) and 1 (fully passing the test). Looks for container restarts, events, and pods not ready. |
 | k8s-kubectl-run | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-run/runbook.robot) |      This codebundle runs an arbitrary kubectl command and writes the stdout to a report. |
 | k8s-kubectl-sanitycheck | TaskSet | [runbook.robot](./codebundles/k8s-kubectl-sanitycheck/runbook.robot) |      Used for troubleshooting the shellservice-based kubectl service |
 | k8s-kubectl-top | SLI | [sli.robot](./codebundles/k8s-kubectl-top/sli.robot) |      Retreieve aggregate data via kubectl top command. |
-| k8s-namespace-healthcheck | SLI | [sli.robot](./codebundles/k8s-namespace-healthcheck/sli.robot) |        Scores the health of a Kubernetes namespace by examining both namespace events and Prometheus metrics. |
 | k8s-patroni-healthcheck | SLI | [sli.robot](./codebundles/k8s-patroni-healthcheck/sli.robot) |      Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy. |
 | k8s-postgres-query | TaskSet | [runbook.robot](./codebundles/k8s-postgres-query/runbook.robot) |        Runs a postgres SQL query and pushes the returned result into a report. |
 | k8s-postgres-query | SLI | [sli.robot](./codebundles/k8s-postgres-query/sli.robot) |        Runs a postgres SQL query and pushes the returned query result as an SLI metric. |
@@ -76,11 +82,10 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | k8s-triage-patroni | TaskSet | [runbook.robot](./codebundles/k8s-triage-patroni/runbook.robot) |      Taskset to triage issues related to patroni. |
 | k8s-triage-statefulset | TaskSet | [runbook.robot](./codebundles/k8s-triage-statefulset/runbook.robot) |      A taskset for troubleshooting issues for StatefulSets and their related resources. |
 | k8s-troubleshoot-deployment | TaskSet | [runbook.robot](./codebundles/k8s-troubleshoot-deployment/runbook.robot) |      A taskset for troubleshooting general issues associated with typical kubernetes deployment resources. |
-| k8s-troubleshoot-namespace | TaskSet | [runbook.robot](./codebundles/k8s-troubleshoot-namespace/runbook.robot) |      This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries. |
 | msteams-send-message | TaskSet | [runbook.robot](./codebundles/msteams-send-message/runbook.robot) |      Send a message to an MS Teams channel. |
 | opsgenie-alert | TaskSet | [runbook.robot](./codebundles/opsgenie-alert/runbook.robot) |      Create an alert in Opsgenie. |
-| ping-host-availability | SLI | [sli.robot](./codebundles/ping-host-availability/sli.robot) |      Ping a host and retrieve packet loss percentage. |
 | pingdom-health | SLI | [sli.robot](./codebundles/pingdom-health/sli.robot) |      Check health of Pingdom platform. |
+| ping-host-availability | SLI | [sli.robot](./codebundles/ping-host-availability/sli.robot) |      Ping a host and retrieve packet loss percentage. |
 | prometheus-queryinstant-transform | SLI | [sli.robot](./codebundles/prometheus-queryinstant-transform/sli.robot) |      Run a PromQL query against Prometheus instant query API, perform a provided transform, and return the result. |
 | prometheus-queryrange-transform | SLI | [sli.robot](./codebundles/prometheus-queryrange-transform/sli.robot) |      Run a PromQL query against Prometheus range query API, perform a provided transform, and return the result. |
 | remote-http-ok | SLI | [sli.robot](./codebundles/remote-http-ok/sli.robot) |      Check that a HTTP endpoint is healthy and returns in a target latency. |
