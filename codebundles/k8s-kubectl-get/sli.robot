@@ -5,6 +5,7 @@ Metadata            Author    Shea Stewart
 
 Library             RW.Core
 Library             RW.K8s
+Library             RW.K8s.K8sUtils
 Library             RW.Utils
 Library             RW.platform
 
@@ -19,8 +20,7 @@ Running Kubectl get and push the metric
     ...    cmd=${KUBECTL_COMMAND} -o json
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
-    ${metric}=    RW.K8s.Convert to metric
-    ...    cmd=${KUBECTL_COMMAND}
+    ${metric}=    RW.K8s.K8sUtils.Convert to metric
     ...    data=${stdout_json}
     ...    search_filter=${SEARCH_FILTER}
     ...    calculation_field=${CALCULATION_FIELD}

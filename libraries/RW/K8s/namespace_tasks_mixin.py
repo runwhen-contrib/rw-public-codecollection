@@ -15,10 +15,13 @@ from .network_tasks_mixin import NetworkTasksMixin
 from .statefulset_tasks_mixin import StatefuletTasksMixin
 from .job_tasks_mixin import JobTasksMixin
 from .daemonset_tasks_mixin import DaemonsetTasksMixin
+from .k8sutils import K8sUtils
 from RW.Utils.utils import dict_to_yaml
 from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
 from RW.Utils.Check import Check
+
+from robot.libraries.BuiltIn import BuiltIn
 
 logger = logging.getLogger(__name__)
 
@@ -144,7 +147,7 @@ class NamespaceTasksMixin(
                     symbol=bool(status),
                 ))
         return "\n".join([str(c) for c in checks])
-
+ 
     def check_namespace_errors(
         self,
         context : str,
@@ -223,8 +226,10 @@ class NamespaceTasksMixin(
         target_service: platform.Service,
         event_pattern:str = "*",
         binary_name: str = "kubectl",
-        event_type: str = "Warning"
+        event_type: str = "Warning",
     ) -> int:
+
+
         events_stdout: str = self.shell(
             cmd=f"{binary_name} get events -n {namespace} --context {context} --no-headers --field-selector type={event_type} | grep -E -i \"{event_pattern}\"",
             target_service=target_service,
@@ -235,3 +240,98 @@ class NamespaceTasksMixin(
             return len(event_rows)
         else:
             return 0
+
+
+    def count_events_by_age_and_type (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        event_age: str = None, 
+        event_type: str = "Warning",
+    ) -> float:
+        # K8s Event Ref: https://kubernetes.io/docs/reference/kubernetes-api/cluster-resources/event-v1/
+        search_time=K8sUtils.convert_age_to_search_time(age=event_age)
+        search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}`"
+        if "ALL" in namespace: 
+            cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
+        elif "," in namespace: 
+            ## Combine csv into jmespath OR query
+            # e.g. items[?type==`Normal` && lastTimestamp >= `2023-02-13T12:25:46Z` && (metadata.namespace == `gmp-system` || metadata.namespace == `flux-system`) ]
+            cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
+            namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
+            search_filter=f"({namespace_search_string}) && type==`{event_type}` && lastTimestamp >= `{search_time}`"
+        else: 
+            cmd = f"{binary_name} get events -n {namespace} --context {context} -o json"
+        events_json: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        return K8sUtils.convert_to_metric( 
+            data=events_json, 
+            search_filter= search_filter,
+            calculation_field="Count"
+            )
+
+    def count_container_restarts_by_age (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        container_restart_age: str = None, 
+    ) -> float:
+        search_time=K8sUtils.convert_age_to_search_time(age=container_restart_age)
+        search_filter=f"status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
+        if "ALL" in namespace: 
+            cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
+        elif "," in namespace: 
+            ## Combine csv into jmespath OR query
+            cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
+            namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
+            search_filter=f"({namespace_search_string}) && status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
+        else: 
+            cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"
+        events_json: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        return K8sUtils.convert_to_metric(
+            data=events_json, 
+            search_filter= search_filter,
+            calculation_field="Count"
+            )
+
+    def count_notready_pods (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+    ) -> float:
+        search_filter=f"status.conditions[?type==`Ready` && status!=`True`]"
+        if "ALL" in namespace: 
+            cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
+        elif "," in namespace: 
+            ## Combine csv into jmespath OR query
+            cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
+            namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
+            search_filter=f"({namespace_search_string}) && status.conditions[?type==`Ready` && status!=`True`]"
+        else: 
+            cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"
+        events_json: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        return K8sUtils.convert_to_metric(
+            data=events_json, 
+            search_filter= search_filter,
+            calculation_field="Count"
+            )
