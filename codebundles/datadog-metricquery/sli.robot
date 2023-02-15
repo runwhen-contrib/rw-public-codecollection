@@ -8,13 +8,13 @@ Library           RW.Datadog
 
 *** Keywords ***
 Suite Initialization
-    ${HEADERS}=    RW.Core.Import Secret    DATADOG_API_KEY
+    ${DATADOG_API_KEY}=    RW.Core.Import Secret    DATADOG_API_KEY
     ...    type=string
     ...    description=The Datadog API key used to authenticate with the API endpoint.
     ...    pattern=\w*
     ...    default=
     ...    example=27437462aebc-myapi-key
-    ${HEADERS}=    RW.Core.Import Secret    DATADOG_APP_KEY
+    ${DATADOG_APP_KEY}=    RW.Core.Import Secret    DATADOG_APP_KEY
     ...    type=string
     ...    description=The Datadog app key used to uniquely identify the application interacting with the Datadog API endpoint.
     ...    pattern=\w*
@@ -26,7 +26,7 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=datadoghq.com
     ...    example=us3.datadoghq.com (prepend your zone)
-    ${JSON_DATA}=    RW.Core.Import User Variable    METRIC_QUERY
+    ${METRIC_QUERY}=    RW.Core.Import User Variable    METRIC_QUERY
     ...    type=string
     ...    description=The Datadog metric query used. See https://docs.datadoghq.com/metrics/advanced-filtering/
     ...    pattern=\w*
