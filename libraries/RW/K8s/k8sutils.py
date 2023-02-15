@@ -18,14 +18,12 @@ logger = logging.getLogger(__name__)
 
 class K8sUtils:
     """
-    K8s utils to help format K8s output.
+    K8s helper functions.
     """
 
-    ROBOT_LIBRARY_SCOPE = "GLOBAL"
-    
-    def convert_to_metric(self, 
-        command: str=None,
-        data: str=None,
+    @staticmethod
+    def convert_to_metric(
+        data: str="",
         search_filter: str="",
         calculation_field: str="",
         calculation: str="Count"

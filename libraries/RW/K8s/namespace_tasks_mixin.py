@@ -279,8 +279,7 @@ class NamespaceTasksMixin(
             target_service=target_service,
             kubeconfig=kubeconfig,
         )
-        return K8sUtils.convert_to_metric(self, 
-            command=cmd, 
+        return K8sUtils.convert_to_metric( 
             data=events_json, 
             search_filter= search_filter,
             calculation_field="Count"
@@ -314,8 +313,7 @@ class NamespaceTasksMixin(
             target_service=target_service,
             kubeconfig=kubeconfig,
         )
-        return K8sUtils.convert_to_metric(self,
-            command=cmd, 
+        return K8sUtils.convert_to_metric(
             data=events_json, 
             search_filter= search_filter,
             calculation_field="Count"
@@ -347,8 +345,7 @@ class NamespaceTasksMixin(
             target_service=target_service,
             kubeconfig=kubeconfig,
         )
-        return K8sUtils.convert_to_metric(self,
-            command=cmd, 
+        return K8sUtils.convert_to_metric(
             data=events_json, 
             search_filter= search_filter,
             calculation_field="Count"
