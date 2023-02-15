@@ -3,7 +3,7 @@ name = "runwhen-keywords"
 version = "0.0.1"
 description = "A set of RunWhen published keywords and python libraries"
 license = "Apache-2.0"
-authors = ["Kyle Forster <kyle.forster@runwhen.com>","Jonathan Funk <jonathan.funk@runwhen.com>"]
+authors = ["Kyle Forster <kyle.forster@runwhen.com>","Jonathan Funk <jonathan.funk@runwhen.com>", "Shea Stewart <shea.stewart@runwhen.com>"]
 packages = [
   { include = "RW"}
 ]
