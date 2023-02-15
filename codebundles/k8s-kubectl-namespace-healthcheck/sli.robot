@@ -36,13 +36,11 @@ Suite Initialization
     ...    description=Which distribution of Kubernetes to use for operations, such as: Kubernetes, OpenShift, etc.
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
-    ...    example=Kubernetes
     ${EVENT_TYPE}=    RW.Core.Import User Variable    EVENT_TYPE
     ...    type=string
     ...    description=The error pattern to use when grep-ing logs or searching events.
     ...    pattern=\w*
-    ...    enum=[Normal|Warning]
-    ...    example=Normal|Warning
+    ...    enum=[Normal,Warning]
     ...    default=Warning
     ${EVENT_AGE}=    RW.Core.Import User Variable    EVENT_AGE
     ...    type=string
