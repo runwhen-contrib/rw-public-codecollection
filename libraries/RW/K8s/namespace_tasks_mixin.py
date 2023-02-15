@@ -241,6 +241,7 @@ class NamespaceTasksMixin(
         else:
             return 0
 
+
     def count_events_by_age_and_type (
         self, 
         namespace:str,
@@ -260,10 +261,7 @@ class NamespaceTasksMixin(
             ## Combine csv into jmespath OR query
             # e.g. items[?type==`Normal` && lastTimestamp >= `2023-02-13T12:25:46Z` && (metadata.namespace == `gmp-system` || metadata.namespace == `flux-system`) ]
             cmd = f"{binary_name} get events --all-namespaces --context {context} -o json"
-            namespace_list=namespace.split(',')
-            for num,namespace_name in enumerate(namespace_list):
-                namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
-            namespace_search_string=' || '.join(namespace_list)
+            namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
             search_filter=f"type==`{event_type}` && lastTimestamp >= `{search_time}` && ({namespace_search_string})"
         else: 
             cmd = f"{binary_name} get events -n {namespace} --context {context} -o json"
@@ -294,10 +292,7 @@ class NamespaceTasksMixin(
         elif "," in namespace: 
             ## Combine csv into jmespath OR query
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
-            namespace_list=namespace.split(',')
-            for num,namespace_name in enumerate(namespace_list):
-                namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
-            namespace_search_string=' || '.join(namespace_list)
+            namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
             search_filter=f"({namespace_search_string}) && status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
         else: 
             cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"
@@ -326,10 +321,7 @@ class NamespaceTasksMixin(
         elif "," in namespace: 
             ## Combine csv into jmespath OR query
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
-            namespace_list=namespace.split(',')
-            for num,namespace_name in enumerate(namespace_list):
-                namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
-            namespace_search_string=' || '.join(namespace_list)
+            namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
             search_filter=f"({namespace_search_string}) && status.conditions[?type==`Ready` && status!=`True`]"
         else: 
             cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"

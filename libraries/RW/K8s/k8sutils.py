@@ -21,7 +21,7 @@ class K8sUtils:
     K8s helper functions.
     """
     # TODO: add in original command to help with utils that parse various command details. Not yet needed - but projected to be useful. 
-    
+
     @staticmethod
     def convert_to_metric(
         data: str="",
@@ -94,3 +94,10 @@ class K8sUtils:
                 break
         search_time = current_time - timedelta(days=time_values['days']['value'], hours=time_values['hours']['value'], minutes=time_values['minutes']['value']) 
         return search_time.strftime('%Y-%m-%dT%H:%M:%SZ')
+
+    def jmespath_namespace_search_string (namespaces) -> str: 
+        namespace_list=namespaces.split(',')
+        for num,namespace_name in enumerate(namespace_list):
+            namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
+        namespace_search_string=' || '.join(namespace_list)
+        return namespace_search_string
