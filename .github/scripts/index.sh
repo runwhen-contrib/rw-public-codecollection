@@ -15,10 +15,7 @@ echo -e "\n" >> $OUTPUT_FILE
 
 # set markdown headers
 echo "## Codebundle Index" >> $OUTPUT_FILE
-# echo "| Folder Name | Type | Path | Documentation | Use-Cases |" >> $OUTPUT_FILE
- echo "| Folder Name | Type | Path | Documentation | " >> $OUTPUT_FILE
-# echo "| Folder Name | Type | Path | Documentation |" >> $OUTPUT_FILE
-# echo "|---|---|---|---|---|" >> $OUTPUT_FILE
+echo "| Folder Name | Type | Path | Documentation | " >> $OUTPUT_FILE
 echo "|---|---|---|---|" >> $OUTPUT_FILE
 
 
