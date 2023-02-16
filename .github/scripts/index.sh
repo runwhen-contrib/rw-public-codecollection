@@ -31,20 +31,20 @@ for file in ${codebundle_index[@]}
         IFS='/' read -ra path_split <<< ${file}
         docstring=$(cat ${file} | grep Documentation | head -1 | sed s/"Documentation"//)
         readme_ref="${path_split[0]}/${path_split[1]}/${path_split[2]}/README.md"
-        # sli_use_cases=$(cat ${readme_ref} | grep "Use Case: SLI" | sed 's/^# *//')
+        path_ref="${path_split[0]}/${path_split[1]}/${path_split[2]}/"
         sli_use_cases=$(cat ${readme_ref} | grep "Use Case: SLI" | sed 's/#* //' | sed 's/$/<br>/' | sed 's/Use Case: SLI:/**Use Case**:/')
         sli_use_cases=$(echo $sli_use_cases)
         taskset_use_cases=$(cat ${readme_ref} | grep "Use Case: TaskSet" | sed 's/#* //' | sed 's/$/<br>/' | sed 's/Use Case: TaskSet:/**Use Case**:/')
         taskset_use_cases=$(echo $tasket_use_cases)
 
         if [[ ${path_split[3]} = "sli" || ${path_split[3]} = "sli.robot" ]]; then
-        echo "| [${path_split[2]}](${readme_ref}) | SLI | [sli.robot](${file}) | $docstring<br>$sli_use_cases |" >> $OUTPUT_FILE
+        echo "| [${path_split[2]}](${path_ref}) | SLI | [sli.robot](${file}) | $docstring<br>$sli_use_cases |" >> $OUTPUT_FILE
 
         elif  [[ ${path_split[3]} = "slo" || ${path_split[3]} = "slo.robot" ]]; then
-        echo "| [${path_split[2]}](${readme_ref}) | SLO | [slo.robot](${file}) | $docstring |" >> $OUTPUT_FILE
+        echo "| [${path_split[2]}](${path_ref}) | SLO | [slo.robot](${file}) | $docstring |" >> $OUTPUT_FILE
 
         elif  [[ ${path_split[3]} = "runbook" || ${path_split[3]} = "runbook.robot" ]]; then
-        echo "| [${path_split[2]}](${readme_ref}) | TaskSet | [runbook.robot](${file}) | $docstring<br>$taskset_use_cases | ">> $OUTPUT_FILE
+        echo "| [${path_split[2]}](${path_ref}) | TaskSet | [runbook.robot](${file}) | $docstring<br>$taskset_use_cases | ">> $OUTPUT_FILE
         fi    
 
 done

@@ -6,7 +6,7 @@ Performs a metric query using a Google MQL statement on the Ops Suite API
 
 ## Use Cases
 
-### SLI: QCP Exceeded Quotas
+### Use Case: SLI: QCP Exceeded Quotas
 If quotas are being exeeced, you might be experienceing issues with providsioning new services. Use this code bundle with the following configuration to identify if any quotas are exceeded in the GCP project. 
 
 - MQL Statement: 
