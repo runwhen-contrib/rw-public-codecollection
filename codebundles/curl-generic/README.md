@@ -14,7 +14,7 @@ This example uses the SLI to collect the list of stargazers on a GitHub repo, us
 ```
 CURL_COMMAND="curl --silent -X GET https://api.github.com/repos/runwhen-contrib/rw-public-codecollection/stargazers | jq length"
 ```
-### SLI: Generate a report of GitHub Repo Stargazers by login-name
+### TaskSet: Generate a report of GitHub Repo Stargazers by login-name
 This example uses the SLI to collect the list of stargazers on a GitHub repo, uses jq to count them up, and pushes the metric. 
 
 ```

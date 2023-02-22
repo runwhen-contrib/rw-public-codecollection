@@ -90,6 +90,17 @@ CALULATION_FIELD=''
 
 With this configuration, users could now apply an SLO to fire off alerts or TaskSets if this number is abnormal (since a failing apiservice might be affecting other other services).
 
+### Use Case: SLI: Count all Services without Endpoints
+In this use case, we can query a namespace for all services that do not have an associated endpoint: 
+```
+CALCULATION='Count'
+SEARCH_FILTER='!subsets'
+KUBECTL_COMMAND='kubectl get endpoints -n [namespace]'
+CALULATION_FIELD=''
+```
+> It may be desirable to have some services that do not have endpoints, but and the associated SLO could account for this, but mmany general application deployments will have a service associated with one or more endpoints. 
+
+
 ## Requirements
 - A kubeconfig with `get` permissions to on the objects/namespaces that are involved in the query.
 
