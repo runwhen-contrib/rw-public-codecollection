@@ -102,7 +102,7 @@ class Prometheus:
         step: str=None,
         target_service: platform.Service=None,
         optional_headers: platform.Secret=None,
-        point_in_time=datetime.now()
+        point_in_time = None
     ):
         """
         Performs a query against the prometheus instant API for metrics with a single data point.
@@ -114,6 +114,8 @@ class Prometheus:
         Return Value:
         |   prometheus_response: dict  |
         """
+        if point_in_time == None:
+            point_in_time=datetime.now()
         time = f"{point_in_time.isoformat()}Z"
         api_url = f"{api_url}/query"
         params = {

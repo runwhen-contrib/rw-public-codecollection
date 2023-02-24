@@ -161,4 +161,3 @@ class RWUtils:
         :return str
         """
         return utils.encode_url(hostname, params, verbose)
-    

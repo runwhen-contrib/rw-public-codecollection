@@ -35,7 +35,9 @@ Run Postgres Query And Return Result As Metric
     ...    shell_secrets=${shell_secrets}
     ${results}=    RW.Postgres.Parse Metric And Time    psql_result=${rsp}
     ${metric}=    RW.Utils.To Float    ${results['metric']}
-    RW.Core.Push Metric    ${metric}    sub_name=with_labels    time=${results['time']}
+    RW.Core.Push Metric    ${metric}
+    # Add this back in when the UI supports metrics with labels
+    # RW.Core.Push Metric    ${metric}    sub_name=with_labels    time=${results['time']}
 
 
 *** Keywords ***

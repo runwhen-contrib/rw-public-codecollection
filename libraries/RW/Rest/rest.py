@@ -26,7 +26,7 @@ class Rest:
 
     def request(
         self,
-        url: str,
+        url,
         method: str = "GET",
         **kwargs,
     ) -> requests.Response:
@@ -38,7 +38,7 @@ class Rest:
         - if params, json or headers are passed as json strings, they will be converted to dictionaries.
 
         Args:
-            url (str): the URL to perform the request against.
+            url: the URL to perform the request against. Should be a secret or string type.
             method (str, optional): the verb to use during the HTTP request. Defaults to "GET".
 
         Refer to requests.request documentation for other parameters as these will be passed through via kwargs.
@@ -56,6 +56,9 @@ class Rest:
                     kwargs[request_field] = from_json(secret_val)
                 else:
                     kwargs[request_field] = secret_val
+        # if the url is a secret like a webhook, get the value
+        if isinstance(url, platform.Secret):
+            url = url.value
         rsp: requests.Response = requests.request(url=url, method=method, **kwargs)
         return rsp
 
@@ -88,11 +91,13 @@ class Rest:
         self,
         rsp: requests.Response,
         json_path: str = None,
-        expected_status_codes: list[int] = [200, 201],
+        expected_status_codes: list[int] = [200, 201, 204],
     ) -> any:
         """Generic handler for inspecting the response received from a HTTP request.
         It can verify the response status code and extract data from the response object based on a
         json_path string allowing users to provide query-like config and handle generalized json responses.
+
+        Note: if the server did not respect json as the content type in its response, then this may fallback to text
 
         Args:
             rsp (requests.Response): the rsp ojbect to validate/extract data from.
@@ -106,13 +111,19 @@ class Rest:
         Returns:
             any: the return type depends on what is extracted from the json document.
         """
-        rsp_data = None
+        rsp_data = ""
         if rsp.status_code not in expected_status_codes:
             raise requests.RequestException(
                 f"The HTTP response code {rsp.status_code} is not in the expected list {expected_status_codes} for {rsp}"
             )
-        rsp_data = rsp.json()
-        if json_path:
+        # attempt to fetch json response
+        # if server did not respect content type then fallback to text
+        try:
+            rsp_data = rsp.json()
+        except Exception as e:
+            logger.info(f"Failed to parse json response due to: {e} - falling back to text")
+            rsp_data = rsp.text
+        if json_path and is_json(rsp_data):
             rsp_data = jmespath.search(json_path, rsp_data)
             if rsp_data == None:
                 raise ValueError(

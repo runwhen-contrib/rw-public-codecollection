@@ -11,6 +11,10 @@ The defaults will target a distributor pod which can locally reach http://127.0.
 ## TaskSet
 Queries the state of ingestors and returns the state of each along with the latest timestamp . This TaskSet performs the query by executing a `kubectl exec` into a Kubernetes resource, leveraging existing Kubernetes API authentication. 
 
+## Use Cases
+### Use Case: SLI: Monitoring Grafana Mimir Ingester Health
+As Grafana Mimir is based on Cortex metrics, this codebundle could be use in same way to inspect the health of Grafan Mimir ingesters.  
+
 ## Requirements
 - A kubeconfig with `get, list` access on cortex objects in the chosen namespace, along with the verb `create` on resource `pods/exec`
 - A chosen `namespace` and `context` to use from the kubeconfig

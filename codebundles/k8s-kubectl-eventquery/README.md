@@ -1,6 +1,6 @@
 # Kubernetes Kubectl Event Query
 
-## TaskSet
+## SLI
 This codebundle returns the number of events in a Kubernetes namespace which have messages matching a regex pattern.
 Note that this does not sum up the message occurence count, only the Kubernetes object count.
 

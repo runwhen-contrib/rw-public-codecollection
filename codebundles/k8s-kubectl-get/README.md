@@ -29,6 +29,23 @@ CALULATION_FIELD=''
 
 With this configuration, users could now apply an SLO to fire off alerts or TaskSets if this number is greater than 0 (since Certificates that aren't ready could cause problems). 
 
+### Use Case: SLI: Count unhealthy Crossplane resources
+See [here](https://docs.runwhen.com/public/use-cases/kubernetes-environments/crossplane-resources-health-check) for a very detailed use case on monitoring custom resources (using Crossplane managed resources as the example). 
+
+In this use case, we can query a cluster for the status of Crossplane managed resources (GKE clusters, Kubernetes Objects, Helm Releases): 
+```
+DISTRIBUTION: Kubernetes
+KUBECTL_COMMAND: kubectl get clusters,objects,releases
+CALCULATION: Count
+CALCULATION_FIELD: ''
+SEARCH_FILTER: >-
+      status.conditions[?(type==`Ready` && status!=`True`) || (type==`Synced` &&
+      status!=`True`)]
+```
+
+With this configuration, users could now apply an SLO to fire off alerts or TaskSets if any of these objects are considered NotReady). 
+
+
 ### Use Case: SLI: Sum, up all container restarts in a namespace
 In this use case, we can query a namespace all pods and add up every container restart: 
 ```
@@ -72,6 +89,17 @@ CALULATION_FIELD=''
 ```
 
 With this configuration, users could now apply an SLO to fire off alerts or TaskSets if this number is abnormal (since a failing apiservice might be affecting other other services).
+
+### Use Case: SLI: Count all Services without Endpoints
+In this use case, we can query a namespace for all services that do not have an associated endpoint: 
+```
+CALCULATION='Count'
+SEARCH_FILTER='!subsets'
+KUBECTL_COMMAND='kubectl get endpoints -n [namespace]'
+CALULATION_FIELD=''
+```
+> It may be desirable to have some services that do not have endpoints, but and the associated SLO could account for this, but mmany general application deployments will have a service associated with one or more endpoints. 
+
 
 ## Requirements
 - A kubeconfig with `get` permissions to on the objects/namespaces that are involved in the query.
