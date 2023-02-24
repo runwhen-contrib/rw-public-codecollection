@@ -11,18 +11,18 @@ The sli will use kubectl to access the Patroni API via `patronictl` in a workloa
 and fetch the state of the patroni cluster, eg:
 ```
 [{'Cluster': 'mypatroni-1',
-  'Host': '10.97.15.95',
+  'Host': '0.0.0.0',
   'Member': 'mypatroni-1-0',
   'Role': 'Leader',
   'State': 'running',
-  'TL': 2714},
+  'TL': 12},
  {'Cluster': 'mypatroni-1',
-  'Host': '10.97.18.106',
+  'Host': '0.0.0.0',
   'Lag in MB': 7,
   'Member': 'mypatroni-1-1',
   'Role': 'Replica',
   'State': 'running',
-  'TL': 2714}]
+  'TL': 12}]
 ```
 
 In this case, the SLI will report the maximum lag value `7` as the SLI value. By configuring an SLO with for example a threshold of `5` this will cause an alert to fire if persistent for long enough to burn budget. You can automatically remediate severly lagging replicas which are unable catch up by reinitializing them. See the taskset use case below.
