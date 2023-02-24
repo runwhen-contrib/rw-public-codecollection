@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy.
-Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health
+Documentation     Detects and reinitializes laggy Patroni cluster members which are unable to catchup in replication using kubectl and patronictl.
+Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health    Reinitialize    Lag    patronictl
 Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core

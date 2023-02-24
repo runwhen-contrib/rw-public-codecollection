@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy.
-Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health
+Documentation     Measures the maximum replica lag across a Patroni cluster.
+Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health    Lag    Replicas    Members
 Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
