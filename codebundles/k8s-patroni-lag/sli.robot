@@ -1,7 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
-Documentation     Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy.
-Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health
+Documentation     Measures the maximum replica lag across a Patroni cluster.
+Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health    Lag    Replicas    Members
 Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
@@ -43,23 +43,21 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
-    ${LAG_TOLERANCE}=    RW.Core.Import User Variable    LAG_TOLERANCE
-    ...    type=string
-    ...    description=Determines the tolerance of data drift between the leader and replicas. Value represents MB akin to the output of 'patronictl list'.
-    ...    pattern=^\d+$
-    ...    example=1
-    ...    default=1
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
+    Set Suite Variable    ${kubectl}    ${kubectl}
+    Set Suite Variable    ${NAMESPACE}    ${NAMESPACE}
+    Set Suite Variable    ${CONTEXT}    ${CONTEXT}
+    Set Suite Variable    ${PATRONI_RESOURCE_NAME}    ${PATRONI_RESOURCE_NAME}
 
 *** Tasks ***
-Determine Patroni Health
+Measure Patroni Member Lag
     ${stdout}=    RW.K8s.Shell
     ...    cmd=${binary_name} exec ${PATRONI_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- patronictl list -e -f yaml
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
-    ${is_healthy}=    RW.Patroni.K8s Patroni State Healthy    state=${state_yaml}    lag_tolerance=${LAG_TOLERANCE}
-    ${metric}=    Evaluate    1 if ${is_healthy} else 0
+    ${max_lag}=    RW.Patroni.K8s Patroni Get Max Lag    state=${state_yaml}
+    ${metric}=    Set Variable     ${max_lag}
     RW.Core.Push Metric    ${metric}
