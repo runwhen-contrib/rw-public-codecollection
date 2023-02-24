@@ -47,9 +47,9 @@ Suite Initialization
     ...    type=string
     ...    description=Replica(s) beyond this threshold will be deleted. Value represents MB akin to the output of 'patronictl list'.
     ...    pattern=^\d+$
-    ...    example=1
-    ...    default=1
-    ${DOC_LINK}=    RW.Core.Import User Variable    CONTEXT
+    ...    example=5
+    ...    default=5
+    ${DOC_LINK}=    RW.Core.Import User Variable    DOC_LINK
     ...    type=string
     ...    description=A URL to provide for followup docs in the report.
     ...    pattern=\w*
@@ -58,6 +58,12 @@ Suite Initialization
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
+    Set Suite Variable    ${kubectl}    ${kubectl}
+    Set Suite Variable    ${NAMESPACE}    ${NAMESPACE}
+    Set Suite Variable    ${CONTEXT}    ${CONTEXT}
+    Set Suite Variable    ${PATRONI_RESOURCE_NAME}    ${PATRONI_RESOURCE_NAME}
+    Set Suite Variable    ${LAG_TOLERANCE}    ${LAG_TOLERANCE}
+    Set Suite Variable    ${DOC_LINK}    ${DOC_LINK}
 
 *** Tasks ***
 Determine Patroni Health
@@ -66,19 +72,26 @@ Determine Patroni Health
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
-    ${most_lagged_member}=    RW.Patroni.K8s Patroni Get Max Lag Member    state=${state_yaml}    min_lag=${LAG_TOLERANCE}
-    ${dlt_cmd}=    RW.Patroni.K8s Patroni Template Deletemember
-    ...    member_name=${most_lagged_member}
-    ...    namespace=${NAMESPACE}
-    ...    context=${CONTEXT}
-    Run Keyword If    ${dlt_cmd} == ''    RW.Core.Add To Report    Did not find a replica to delete!
-    Run Keyword If    ${dlt_cmd} != ''    RW.Core.Add To Report    Running the following command to delete a lagging replica:
-    Run Keyword If    ${dlt_cmd} != ''    RW.Core.Add Code To Report    ${dlt_cmd}
-    # Run Keyword If    ${dlt_cmd} != ''    RW.K8s.Shell
-    # ...    cmd=${dlt_cmd}
-    # ...    target_service=${kubectl}
-    # ...    kubeconfig=${kubeconfig}
-    RW.Core.Add To Report    If you're still having issues with Patroni after this has run, please refer to ${DOC_LINK}
+    ${cluster_name}=    RW.Patroni.K8s Patroni Get Cluster Name    state=${state_yaml}
+    ${laggy_members}=    RW.Patroni.K8s Patroni Get Laggy Members    state=${state_yaml}    lag_tolerance=${LAG_TOLERANCE}
+    Run Keyword If    len($laggy_members) == 0    RW.Core.Add To Report    Did not find a replica to delete!
+    ${reinit_cmd}=    Run Keyword If    len($laggy_members) > 0    Set Variable    ${binary_name} exec ${PATRONI_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- patronictl reinit ${cluster_name} ${laggy_members[0]} --force
+    Run Keyword If    len($laggy_members) > 0    RW.Core.Add To Report    Running the following command to delete a lagging replica:
+    Run Keyword If    len($laggy_members) > 0    RW.Core.Add Code To Report    ${reinit_cmd}
+    ${stdout}=    Run Keyword If    len($laggy_members) > 0    RW.K8s.Shell
+    ...    cmd=${reinit_cmd}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${kubeconfig}
+    Run Keyword If    len($laggy_members) > 0    RW.Core.Add To Report    Reinitializing member ${laggy_members[0]} in cluster ${cluster_name}
+    Run Keyword If    len($laggy_members) > 0    RW.Core.Add To Report    ${stdout}
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} exec ${PATRONI_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- patronictl list -e -f yaml
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${kubeconfig}
+    ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
+    RW.Core.Add To Report    Post-run state:
+    RW.Core.Add To Report    ${state_yaml}
+    Run Keyword If    "${DOC_LINK}" != ""    RW.Core.Add To Report    If you're still having issues with Patroni after this has run, please refer to ${DOC_LINK}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    Command History:\n${history}

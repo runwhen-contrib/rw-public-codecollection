@@ -46,6 +46,10 @@ Suite Initialization
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
+    Set Suite Variable    ${kubectl}    ${kubectl}
+    Set Suite Variable    ${NAMESPACE}    ${NAMESPACE}
+    Set Suite Variable    ${CONTEXT}    ${CONTEXT}
+    Set Suite Variable    ${PATRONI_RESOURCE_NAME}    ${PATRONI_RESOURCE_NAME}
 
 *** Tasks ***
 Measure Patroni Member Lag
