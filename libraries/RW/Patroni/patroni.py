@@ -98,10 +98,3 @@ class Patroni:
             return cmd_str
         cmd_str = f"{binary_name} delete pod/{member_name} -n {namespace} --context {context}"
         return cmd_str
-
-    def k8s_patroni_template_reinit(self, member_name, namespace, context, binary_name: str = "kubectl") -> str:
-        cmd_str: str = ""
-        if not member_name:
-            return cmd_str
-        cmd_str = f"{binary_name} delete pod/{member_name} -n {namespace} --context {context}"
-        return cmd_str
