@@ -43,21 +43,18 @@ Describe Custom Resources
     RW.Core.Add Pre To Report    ${custom_resource_details}
     RW.Core.Add Pre To Report    Commands Used: ${history} 
 
-   
-#     RW.Core.Add Pre To Report    ${rsp}
-# Get Pod Resource Utilization
-#     ${rsp}=    RW.K8s.Shell
-#     ...    cmd=${binary_name} 
-#     ...    target_service=${kubectl}
-#     ...    kubeconfig=${KUBECONFIG}
-#     ...    shell_secrets=${shell_secrets}
-#     RW.Core.Add Pre To Report    ${rsp}
-
-# Get Pod Health and Logs
-
-
-# Get Namespace Events
-
+Get Pod Logs & Events
+    ${pod_logs}=     RW.K8s.Fetch Pod Logs and Events By Label
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    namespace=${NAMESPACE}
+    ...    resource_labels=${RESOURCE_LABELS}
+    ...    log_lines=${LOG_LINES}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    ${pod_logs}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 # Get DB Logs
 
@@ -138,6 +135,12 @@ Suite Initialization
     ...    type=string
     ...    description=Labels that can be used to identify all resources associated with the database. 
     ...    example=postgres-operator.crunchydata.com/cluster=main-db
+    ${LOG_LINES}=    RW.Core.Import User Variable
+    ...    LOG_LINES
+    ...    type=string
+    ...    description=How many logs to fetch. -1 fetches all logs. 
+    ...    example=100 
+    ...    default=100    
     ${WORKLOAD_NAME}=    RW.Core.Import User Variable
     ...    WORKLOAD_NAME
     ...    type=string

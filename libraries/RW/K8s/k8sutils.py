@@ -101,3 +101,4 @@ class K8sUtils:
             namespace_list[num]=f"metadata.namespace == `{namespace_name}`" 
         namespace_search_string=' || '.join(namespace_list)
         return namespace_search_string
+        
