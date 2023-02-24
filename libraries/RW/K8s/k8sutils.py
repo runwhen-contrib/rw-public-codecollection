@@ -65,7 +65,7 @@ class K8sUtils:
         if not calculation_field: 
             raise ValueError(f"Error: Calculation field must be set for calcluations that are sum or avg.")
         
-        # Check if calculation field contains rults as well as anything but a number
+        # Check if calculation field contains results as well as anything but a number
         value_test = utils.search_json(data=payload, pattern=search_pattern_prefix+"."+calculation_field)
         if len(value_test) == 0:
             raise ValueError(f"Error: Could not find value at calculation field.")

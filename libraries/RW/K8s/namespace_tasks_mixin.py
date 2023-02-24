@@ -1,4 +1,4 @@
-import re, kubernetes, yaml, logging
+import re, kubernetes, yaml, logging, json
 from struct import unpack
 import dateutil.parser
 from benedict import benedict
@@ -16,6 +16,7 @@ from .statefulset_tasks_mixin import StatefuletTasksMixin
 from .job_tasks_mixin import JobTasksMixin
 from .daemonset_tasks_mixin import DaemonsetTasksMixin
 from .k8sutils import K8sUtils
+from RW.Utils.utils import search_json
 from RW.Utils.utils import dict_to_yaml
 from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
@@ -335,3 +336,70 @@ class NamespaceTasksMixin(
             search_filter= search_filter,
             calculation_field="Count"
             )
+
+    def get_custom_resources (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        crd_filter: str = ""
+    ) -> list:
+        """Takes in a search string to search for available custom resource definition types (searching metadata.name only). Accepts a namespace, and a context and returns any custom resource names that match the filter as a list. 
+
+        Args: 
+            :namespace str: The namespace to query for results.  
+            :context str: The kubnerets context to use, as listed in the kubeconfig secret. 
+            :crd_filter str: A string that filters which CRDs to search for. 
+            :kubeconfig paltform.Secret: A kubeconfig that provides access to the necessary resources. 
+            :target_service platform.Service: Which service to use (typically kubectl) 
+            :binary_name str:  The binary to use. Typically kubectl, but could also be oc, or another k8s distribution.
+            :return list: A list of custom resource definitions that matched the filter.   
+
+        """
+        ## TODO Expand search capabilities to look through annotations or labels
+        search_filter=f"items[?contains(metadata.name, `{crd_filter}`)].metadata.name"
+        cmd = f"{binary_name} get crd --context {context} -o json" 
+        crd_list: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        # Log search filter - keep this so that useres can validate their patterns with jmespath
+        BuiltIn().run_keyword('Log', search_filter)
+        crd_name_list = search_json(data=json.loads(crd_list), pattern=search_filter)
+        return crd_name_list
+
+    def describe_custom_resources (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        custom_resources: list = ""
+    ) -> str:
+        """Takes in a list of custom resources, a namespace, and a context and returns the output of kubectl describe for all matching objects. 
+
+        Args: 
+            :namespace str: The namespace to query for results.  
+            :context str: The kubnerets context to use, as listed in the kubeconfig secret. 
+            :custom_resources list: A list of custom resources to search for. 
+            :kubeconfig paltform.Secret: A kubeconfig that provides access to the necessary resources. 
+            :target_service platform.Service: Which service to use (typically kubectl) 
+            :binary_name str:  The binary to use. Typically kubectl, but could also be oc, or another k8s distribution.
+            :return str: The string output of the query results.  
+
+        """
+        ## TODO add filtering / search capability
+        output: str = ""
+        for resource in custom_resources: 
+          cmd = f"{binary_name} describe {resource} -n {namespace} --context {context}" 
+          crd_list: str = self.shell(
+              cmd=cmd,
+              target_service=target_service,
+              kubeconfig=kubeconfig,
+          )
+          output=crd_list + output
+        return output
