@@ -7,6 +7,7 @@ Library             RW.K8s
 Library             RW.Postgres
 Library             RW.Utils
 Library             RW.platform
+Library    String
 
 Suite Setup         Suite Initialization
 
@@ -68,11 +69,64 @@ Get Pod Resource Utilization
     RW.Core.Add Pre To Report    ${pod_resource_utilization}
     RW.Core.Add Pre To Report    Commands Used: ${history}
 
-# Get Running Configuration
+Get Running Configuration
+    ${templated_query}=    RW.Postgres.Template Command
+    ...    query=SHOW config_file
+    ...    hostname=${HOSTNAME}
+    ...    database=${psql_database}
+    ...    username=${psql_username}
+    ...    password=${psql_password}
+    ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
+    ${pod_name}=    RW.K8s.Fetch Pod Names By Label
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    namespace=${NAMESPACE}
+    ...    resource_labels=${WORKLOAD_LABELS}
+    ${workload}=    RW.K8s.Template Workload
+    ...    workload_name=pod/${pod_name[0]}
+    ...    workload_namespace=${NAMESPACE}
+    ...    workload_container=${WORKLOAD_CONTAINER}
+    ${active_db_config_query}=    RW.K8s.Shell
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    shell_secrets=${shell_secrets}
+    ${active_db_config_location}=     Split String    ${active_db_config_query} 
+    ${active_db_config_contents}=    RW.K8s.Shell
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "cat ${active_db_config_location[0]}" --context ${CONTEXT}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    shell_secrets=${shell_secrets}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    File Path:\n${active_db_config_location[0]}\n--------\nFile Contents:\n${active_db_config_contents}\n--------
+    RW.Core.Add Pre To Report    Commands Used: ${history}
 
-
-# Get DB Statistics
-
+Get DB Statistics
+    ${templated_query}=    RW.Postgres.Template Command
+    ...    query=${QUERY}
+    ...    hostname=${HOSTNAME}
+    ...    database=${psql_database}
+    ...    username=${psql_username}
+    ...    password=${psql_password}
+    ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
+    ${pod_name}=    RW.K8s.Fetch Pod Names By Label
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    namespace=${NAMESPACE}
+    ...    resource_labels=${WORKLOAD_LABELS}
+    ${workload}=    RW.K8s.Template Workload
+    ...    workload_name=pod/${pod_name[0]}
+    ...    workload_namespace=${NAMESPACE}
+    ...    workload_container=${WORKLOAD_CONTAINER}
+    ${rsp}=    RW.K8s.Shell
+    ...    cmd=${binary_name} exec ${workload} -- bash -c \"${templated_query}\" --context ${CONTEXT}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    shell_secrets=${shell_secrets}
+    RW.Core.Add Pre To Report    ${rsp}
 
 
 # Run Postgres Query And Results to Report
