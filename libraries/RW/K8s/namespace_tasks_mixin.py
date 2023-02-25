@@ -428,13 +428,14 @@ class NamespaceTasksMixin(
         # """
         ## TODO add filtering / search capability
         output: str = ""
-        cmd= f"{binary_name} get pods -l {resource_labels} -n {namespace} --context {context} -o json"
-        pod_details: str = self.shell(
-            cmd=cmd,
-            target_service=target_service,
-            kubeconfig=kubeconfig,
-          )
-        pod_names=search_json(data=json.loads(pod_details), pattern="items[].metadata.name")
+        # cmd= f"{binary_name} get pods -l {resource_labels} -n {namespace} --context {context} -o json"
+        # pod_details: str = self.shell(
+        #     cmd=cmd,
+        #     target_service=target_service,
+        #     kubeconfig=kubeconfig,
+        #   )
+        # pod_names=search_json(data=json.loads(pod_details), pattern="items[].metadata.name")
+        pod_names=self.fetch_pod_names_by_label(namespace, context, kubeconfig, target_service, binary_name, resource_labels)
         for pod_name in pod_names: 
           cmd = f"{binary_name} logs {pod_name} --tail={log_lines} --all-containers -n {namespace} --context {context}" 
           log_output: str = self.shell(
@@ -450,4 +451,55 @@ class NamespaceTasksMixin(
               kubeconfig=kubeconfig,
           )
           output=f"POD EVENTS: {pod_name}\n--------\n{event_output}\n--------\n{output}"
+        return output
+
+    def fetch_pod_names_by_label(self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        resource_labels: str = "",
+        )->str:
+        cmd= f"{binary_name} get pods -l {resource_labels} -n {namespace} --context {context} -o json"
+        pod_details: str = self.shell(
+            cmd=cmd,
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+          )
+        pod_names=search_json(data=json.loads(pod_details), pattern="items[].metadata.name")
+        return pod_names
+
+    def fetch_pod_resource_utilization_by_label (
+        self, 
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+        resource_labels: str = "",
+        log_lines: int=100
+    ) -> list:
+        # """Takes in a list of custom resources, a namespace, and a context and returns the output of kubectl describe for all matching objects. 
+
+        # Args: 
+        #     :namespace str: The namespace to query for results.  
+        #     :context str: The kubnerets context to use, as listed in the kubeconfig secret. 
+        #     :custom_resources list: A list of custom resources to search for. 
+        #     :kubeconfig paltform.Secret: A kubeconfig that provides access to the necessary resources. 
+        #     :target_service platform.Service: Which service to use (typically kubectl) 
+        #     :binary_name str:  The binary to use. Typically kubectl, but could also be oc, or another k8s distribution.
+        #     :return str: The string output of the query results.  
+
+        # """
+        output: str = ""
+        pod_names=self.fetch_pod_names_by_label(namespace, context, kubeconfig, target_service, binary_name, resource_labels)
+        for pod_name in pod_names: 
+          cmd = f"{binary_name} top pod {pod_name} --containers -n {namespace} --context {context}" 
+          top_output: str = self.shell(
+              cmd=cmd,
+              target_service=target_service,
+              kubeconfig=kubeconfig,
+          )
+          output=f"POD NAME: {pod_name}\n--------\n{top_output}\n--------\n${output}"
         return output

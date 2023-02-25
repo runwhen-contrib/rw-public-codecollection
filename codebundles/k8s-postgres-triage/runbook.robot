@@ -56,7 +56,19 @@ Get Pod Logs & Events
     RW.Core.Add Pre To Report    ${pod_logs}
     RW.Core.Add Pre To Report    Commands Used: ${history}
 
-# Get DB Logs
+Get Pod Resource Utilization
+    ${pod_resource_utilization}=     RW.K8s.Fetch Pod Resource Utilization By Label
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    namespace=${NAMESPACE}
+    ...    resource_labels=${RESOURCE_LABELS}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    ${pod_resource_utilization}
+    RW.Core.Add Pre To Report    Commands Used: ${history}
+
+# Get Running Configuration
 
 
 # Get DB Statistics
