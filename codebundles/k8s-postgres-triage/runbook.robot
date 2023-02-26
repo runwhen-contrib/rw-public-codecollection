@@ -110,6 +110,7 @@ Get DB Statistics
     ...    database=${psql_database}
     ...    username=${psql_username}
     ...    password=${psql_password}
+    ...    report=True
     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
     ${pod_name}=    RW.K8s.Fetch Pod Names By Label
     ...    target_service=${kubectl}
@@ -122,32 +123,11 @@ Get DB Statistics
     ...    workload_namespace=${NAMESPACE}
     ...    workload_container=${WORKLOAD_CONTAINER}
     ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${workload} -- bash -c \"${templated_query}\" --context ${CONTEXT}
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
     RW.Core.Add Pre To Report    ${rsp}
-
-
-# Run Postgres Query And Results to Report
-#     ${templated_query}=    RW.Postgres.Template Command
-#     ...    query=${QUERY}
-#     ...    hostname=${HOSTNAME}
-#     ...    database=${psql_database}
-#     ...    username=${psql_username}
-#     ...    password=${psql_password}
-#     ...    report=True
-#     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
-#     ${workload}=    RW.K8s.Template Workload
-#     ...    workload_name=${WORKLOAD_NAME}
-#     ...    workload_namespace=${WORKLOAD_NAMESPACE}
-#     ...    workload_container=${WORKLOAD_CONTAINER}
-#     ${rsp}=    RW.K8s.Shell
-#     ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
-#     ...    target_service=${kubectl}
-#     ...    kubeconfig=${KUBECONFIG}
-#     ...    shell_secrets=${shell_secrets}
-#     RW.Core.Add Pre To Report    ${rsp}
 
 
 *** Keywords ***
@@ -207,12 +187,6 @@ Suite Initialization
     ...    description=How many logs to fetch. -1 fetches all logs. 
     ...    example=100 
     ...    default=100    
-    ${WORKLOAD_NAME}=    RW.Core.Import User Variable
-    ...    WORKLOAD_NAME
-    ...    type=string
-    ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired.
-    ...    pattern=\w*
-    ...    example=deployment/myapp
     ${WORKLOAD_LABELS}=    RW.Core.Import User Variable
     ...    WORKLOAD_LABELS
     ...    type=string
@@ -232,10 +206,10 @@ Suite Initialization
     ${QUERY}=    RW.Core.Import User Variable
     ...    QUERY
     ...    type=string
-    ...    description=The postgres query to run on the workload. Ensure this query returns a single row with a numerical value.
+    ...    description=The postgres queries to run on the workload. These should return helpful details to triage your database. 
     ...    pattern=\w*
-    ...    default=SELECT 1;
-    ...    example=SELECT COUNT(id) FROM my_table;
+    ...    default=SELECT (total_exec_time / 1000 / 60) as total, (total_exec_time/calls) as avg, query FROM pg_stat_statements ORDER BY 1 DESC LIMIT 100;
+    ...    example=SELECT (total_exec_time / 1000 / 60) as total, (total_exec_time/calls) as avg, query FROM pg_stat_statements ORDER BY 1 DESC LIMIT 100;
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string
