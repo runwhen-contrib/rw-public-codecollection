@@ -178,3 +178,4 @@ roleRef:
 ## TODO
 - [ ] Consider adding additional troubleshooting queries 
 - [ ] Consider analysing the output to provide recommendations (e.g. # of replicas, resource configuraitons, etc)
+- [ ] Consider how to select more useful items of interest, or at least omit thinkgs like the ugly metadata that comes in with the CRD
