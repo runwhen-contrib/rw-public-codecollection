@@ -8,6 +8,7 @@ This codebundle provides a report of Kubernetes resource health along with Postg
 - Get Pod Logs & Events: Fetches Kubernetes events and logs that are related to the desired labels. 
 - Get Pod Resource Utilization: Fetchs the output of `kubectl top` for all pods and containers that are related to the desired labels. 
 - Get Running Configuration: Uses `kubectl exec` to fetch the running config of the psql instance and adds the contents of that file to the report. 
+- Get Patroni Output: Uses `kubectl exec` to fetch the output of `patronictl list`. 
 - Get DB Stastics: Uses `kubectl exec` to execute psql queries that can provide insights in to long running queries and other helpful database level statistics. PSQL queries are configurable.  
 
 
@@ -33,9 +34,9 @@ configProvided:
     value: [kubeconfig_context]
   - name: RESOURCE_LABELS
     value: postgres-operator.crunchydata.com/cluster=[cluster-name]
-  - name: WORKLOAD_LABELS
+  - name: WORKLOAD_NAME
     value: >-
-      postgres-operator.crunchydata.com/role=[primary-label],postgres-operator.crunchydata.com/cluster=[cluster-name]
+      -l postgres-operator.crunchydata.com/role=[primary-label],postgres-operator.crunchydata.com/cluster=[cluster-name]
   - name: NAMESPACE
     value: [kubernetes_namespace]
   - name: WORKLOAD_CONTAINER

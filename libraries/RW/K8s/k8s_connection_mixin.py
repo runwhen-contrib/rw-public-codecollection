@@ -118,22 +118,30 @@ class K8sConnectionMixin:
         self,
         workload_name: str,
         workload_namespace: str,
-        workload_container: str
+        workload_container: str,
+        target_service: platform.Service=None,
+        kubeconfig: platform.Secret=None,
+        context: str="",
     ) -> str:
         """Take in the workload variables and construct a valid string that specifies the namespace and container. 
 
         Args:
-            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset
+            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset. Also accepts labels if starting with `-l`
             workload_namespace (str): a kubernetes namespace or openshift project name
             workload_container (str): a specific container within a pod, as pods may not default to the desired container
 
         Returns:
             workload: a string containing the the expanded workload parameters.
         """
-        # Check if the namespace is provided in the workload name and return the vlaue verbatim
+        # Check if the namespace is provided in the workload name and return the value verbatim
         if " -n" in workload_name or " --namespace" in workload_name: 
             workload = f"{workload_name}"
             return workload
+        # Check if we are passing labels instead of a distinct resource, then fetch pod name by label
+        if "-l" in workload_name:
+            resource_labels=workload_name.lstrip("-l ")
+            pod=self.fetch_pod_names_by_label(target_service=target_service, kubeconfig=kubeconfig, namespace=workload_namespace, context=context, resource_labels=resource_labels)
+            workload_name=f"pod/{pod[0]}"
         if not workload_name:
             raise ValueError(f"Error: No workload is specified.")
         if not workload_namespace:

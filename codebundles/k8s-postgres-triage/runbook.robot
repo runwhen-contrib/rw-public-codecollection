@@ -11,7 +11,7 @@ Library    String
 
 Suite Setup         Suite Initialization
 
-Force Tags          k8s    kubernetes    postgres    sql    database    psql    triage
+Force Tags          k8s    kubernetes    postgres    sql    database    psql    triage    patroni
 
 
 *** Tasks ***
@@ -77,16 +77,13 @@ Get Running Configuration
     ...    username=${psql_username}
     ...    password=${psql_password}
     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
-    ${pod_name}=    RW.K8s.Fetch Pod Names By Label
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
-    ...    resource_labels=${WORKLOAD_LABELS}
     ${workload}=    RW.K8s.Template Workload
-    ...    workload_name=pod/${pod_name[0]}
+    ...    workload_name=${WORKLOAD_NAME}
     ...    workload_namespace=${NAMESPACE}
     ...    workload_container=${WORKLOAD_CONTAINER}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    target_service=${kubectl}
     ${active_db_config_query}=    RW.K8s.Shell
     ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
     ...    target_service=${kubectl}
@@ -103,30 +100,45 @@ Get Running Configuration
     RW.Core.Add Pre To Report    File Path:\n${active_db_config_location[0]}\n--------\nFile Contents:\n${active_db_config_contents}\n--------
     RW.Core.Add Pre To Report    Commands Used: ${history}
 
-Get DB Statistics
-    ${templated_query}=    RW.Postgres.Template Command
-    ...    query=${QUERY}
+Get Patroni Output
+    ${workload}=    RW.K8s.Template Workload
+    ...    workload_name=${WORKLOAD_NAME}
+    ...    workload_namespace=${NAMESPACE}
+    ...    workload_container=${WORKLOAD_CONTAINER}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    target_service=${kubectl}
+    ${rsp}=    RW.K8s.Shell
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "patronictl list" --context ${CONTEXT}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    ${rsp}
+
+Run DB Queries
+    ${templated_query}=    RW.Postgres.Template Command With File
+    ...    queryfilepath=${QUERY_FILE_PATH}
     ...    hostname=${HOSTNAME}
     ...    database=${psql_database}
     ...    username=${psql_username}
     ...    password=${psql_password}
     ...    report=True
     ${shell_secrets}=    RW.Utils.Create Secrets List    ${psql_database}    ${psql_username}    ${psql_password}
-    ${pod_name}=    RW.K8s.Fetch Pod Names By Label
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
-    ...    resource_labels=${WORKLOAD_LABELS}
     ${workload}=    RW.K8s.Template Workload
-    ...    workload_name=pod/${pod_name[0]}
+    ...    workload_name=${WORKLOAD_NAME}
     ...    workload_namespace=${NAMESPACE}
     ...    workload_container=${WORKLOAD_CONTAINER}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    target_service=${kubectl}
     ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "echo '${QUERY}' > ${QUERY_FILE_PATH} && ${templated_query}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${rsp}
 
 
@@ -187,12 +199,12 @@ Suite Initialization
     ...    description=How many logs to fetch. -1 fetches all logs. 
     ...    example=100 
     ...    default=100    
-    ${WORKLOAD_LABELS}=    RW.Core.Import User Variable
-    ...    WORKLOAD_LABELS
+    ${WORKLOAD_NAME}=    RW.Core.Import User Variable
+    ...    WORKLOAD_NAME
     ...    type=string
-    ...    description=Which labels identify workload to run the query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired.
+    ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired. Also accepts labels, such as `-l postgres-operator.crunchydata.com/role=primary`. If using labels, make sure NAMESPACE is set. 
     ...    pattern=\w*
-    ...    example=postgres-operator.crunchydata.com/role=primary,postgres-operator.crunchydata.com/cluster=main-db
+    ...    example=deployment/myapp
     ${NAMESPACE}=    RW.Core.Import User Variable
     ...    NAMESPACE
     ...    type=string
@@ -210,6 +222,13 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=SELECT (total_exec_time / 1000 / 60) as total, (total_exec_time/calls) as avg, query FROM pg_stat_statements ORDER BY 1 DESC LIMIT 100;SELECT pg_stat_activity.pid, pg_locks.relation::regclass, pg_locks.mode, pg_locks.granted FROM pg_stat_activity, pg_locks WHERE pg_stat_activity.pid = pg_locks.pid; SELECT pg_database.datname, pg_size_pretty(pg_database_size(pg_database.datname)) AS size FROM pg_database; SELECT query, count(*) as total_executions, avg(total_exec_time) as avg_execution_time FROM pg_stat_statements GROUP BY query ORDER BY total_executions DESC; SELECT schemaname, relname, last_autovacuum, last_autoanalyze FROM pg_stat_user_tables WHERE last_autovacuum IS NOT NULL OR last_autoanalyze IS NOT NULL;
     ...    example=SELECT (total_exec_time / 1000 / 60) as total, (total_exec_time/calls) as avg, query FROM pg_stat_statements ORDER BY 1 DESC LIMIT 100;
+    ${QUERY_FILE_PATH}=    RW.Core.Import User Variable
+    ...    QUERY_FILE_PATH
+    ...    type=string
+    ...    description=The full path to write the query file to. To support multiple queries, the TaskSet puts all queries into a single file and uses psql to execute that file. 
+    ...    pattern=\w*
+    ...    default=/tmp/rw-tmp-queries.sql
+    ...    example=/tmp/rw-tmp-queries.sql
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string

@@ -17,8 +17,8 @@ Force Tags          k8s    kubernetes    postgres    sql    database    psql
 
 *** Tasks ***
 Run Postgres Query And Results to Report
-    ${templated_query}=    RW.Postgres.Template Command
-    ...    query=${QUERY}
+    ${templated_query}=    RW.Postgres.Template Command With File
+    ...    queryfilepath=${QUERY_FILE_PATH}
     ...    hostname=${HOSTNAME}
     ...    database=${psql_database}
     ...    username=${psql_username}
@@ -29,8 +29,11 @@ Run Postgres Query And Results to Report
     ...    workload_name=${WORKLOAD_NAME}
     ...    workload_namespace=${WORKLOAD_NAMESPACE}
     ...    workload_container=${WORKLOAD_CONTAINER}
+    ...    kubeconfig=${KUBECONFIG}
+    ...    context=${CONTEXT}
+    ...    target_service=${kubectl}
     ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "echo '${QUERY}' > ${QUERY_FILE_PATH} && ${templated_query}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
@@ -72,7 +75,7 @@ Suite Initialization
     ${WORKLOAD_NAME}=    RW.Core.Import User Variable
     ...    WORKLOAD_NAME
     ...    type=string
-    ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired.
+    ...    description=Which workload to run the postgres query from. This workload should have the psql binary in its image and be able to access the database workload within its network constraints. Accepts namespace and container details if desired. Also accepts labels, such as `-l postgres-operator.crunchydata.com/role=primary`
     ...    pattern=\w*
     ...    example=deployment/myapp
     ${WORKLOAD_NAMESPACE}=    RW.Core.Import User Variable
@@ -92,6 +95,13 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=SELECT 1;
     ...    example=SELECT COUNT(id) FROM my_table;
+    ${QUERY_FILE_PATH}=    RW.Core.Import User Variable
+    ...    QUERY_FILE_PATH
+    ...    type=string
+    ...    description=The full path to write the query file to. To support multiple queries, the TaskSet puts all queries into a single file and uses psql to execute that file. 
+    ...    pattern=\w*
+    ...    default=/tmp/rw-tmp-queries.sql
+    ...    example=/tmp/rw-tmp-queries.sql
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string

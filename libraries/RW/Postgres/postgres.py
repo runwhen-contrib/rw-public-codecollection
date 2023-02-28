@@ -40,6 +40,31 @@ class Postgres:
             command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} {query_options} -c '\\timing on' -c '{query}'"
         return command
 
+
+    def template_command_with_file(
+        self,
+        queryfilepath: str,
+        database: platform.Secret,
+        username: platform.Secret,
+        password: platform.Secret,
+        hostname: str=None,
+        default_flags: str="-qAt",
+        report: bool=False
+    ) -> str:
+        if not database:
+                raise ValueError(f"Error: Database not specified.")
+        if len(password.value) == 0:
+                raise ValueError(f"Error: Password is empty.")
+        if report is True: 
+            query_options = "-c '\\t off' -c '\\a'"
+        else: 
+            query_options = ""
+        if not hostname: 
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} {query_options} -c '\\timing on' -f '{queryfilepath}'"
+        else:
+            command = f"PGPASSWORD='${password.key}' psql {default_flags} -U ${username.key} -d ${database.key} -h {hostname} {query_options} -c '\\timing on' -f '{queryfilepath}'"
+        return command
+
     def parse_metric_and_time(
         self,
         psql_result: str
