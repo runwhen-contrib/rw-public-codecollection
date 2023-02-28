@@ -25,24 +25,26 @@ Get Standard Resources
     RW.Core.Add Pre To Report    ${stdout}
     RW.Core.Add Pre To Report    Commands Used: ${history}
 
-Describe Custom Resources  
-    ${custom_resource_list}=    RW.K8s.Get Custom Resources
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
-    ...    crd_filter="${CRD_FILTER}"
-        
-    ${custom_resource_details}=     RW.K8s.Describe Custom Resources
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ...    context=${CONTEXT}
-    ...    namespace=${NAMESPACE}
-    ...    custom_resources=${custom_resource_list}
-    ${history}=    RW.K8s.Pop Shell History
-    ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    ${custom_resource_details}
-    RW.Core.Add Pre To Report    Commands Used: ${history} 
+Describe Custom Resources
+    IF    ${INCLUDE_CUSTOM_RESOURCES} == "Yes" 
+        ${custom_resource_list}=    RW.K8s.Get Custom Resources
+        ...    target_service=${kubectl}
+        ...    kubeconfig=${KUBECONFIG}
+        ...    context=${CONTEXT}
+        ...    namespace=${NAMESPACE}
+        ...    crd_filter="${CRD_FILTER}"
+            
+        ${custom_resource_details}=     RW.K8s.Describe Custom Resources
+        ...    target_service=${kubectl}
+        ...    kubeconfig=${KUBECONFIG}
+        ...    context=${CONTEXT}
+        ...    namespace=${NAMESPACE}
+        ...    custom_resources=${custom_resource_list}
+        ${history}=    RW.K8s.Pop Shell History
+        ${history}=    RW.Utils.List To String    data_list=${history}
+        RW.Core.Add Pre To Report    ${custom_resource_details}
+        RW.Core.Add Pre To Report    Commands Used: ${history} 
+    END
 
 Get Pod Logs & Events
     ${pod_logs}=     RW.K8s.Fetch Pod Logs and Events By Label
