@@ -44,13 +44,13 @@ Suite Initialization
     ...    pattern=\w*
     ...    example=series[0].pointlist[-1][1] this means get the newest data point from the first timeseries returned.
     ...    default=series[0].pointlist[-1][1]
-    RW.Core.Import User Variable    NO_RESULT_OVERWRITE
+    ${NO_RESULT_OVERWRITE}=    RW.Core.Import User Variable    NO_RESULT_OVERWRITE
     ...    type=string
     ...    description=Determine how to handle queries with no result data. Set to Yes to write a metric (specified below) or No to accept the null result. 
     ...    pattern=\w*
     ...    enum=[Yes,No]
     ...    default=No
-    RW.Core.Import User Variable    NO_RESULT_VALUE
+    ${NO_RESULT_VALUE}=    RW.Core.Import User Variable    NO_RESULT_VALUE
     ...    type=string
     ...    description=Set the metric value that should be stored when no data result is available.
     ...    pattern=\d*
