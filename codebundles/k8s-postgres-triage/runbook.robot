@@ -26,7 +26,7 @@ Get Standard Resources
     RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Describe Custom Resources
-    IF    ${INCLUDE_CUSTOM_RESOURCES} == "Yes" 
+    IF    ${INCLUDE_CUSTOM_RESOURCES} == Yes 
         ${custom_resource_list}=    RW.K8s.Get Custom Resources
         ...    target_service=${kubectl}
         ...    kubeconfig=${KUBECONFIG}
@@ -182,7 +182,8 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Yes,No]
     ...    description=Include details from custom resources. Requires SA to have access to list custom resources in the API group apiextensions.k8s.io Typically applies to operator based deployments. 
-    ...    default='No'
+    ...    default=No
+    ...    example=Yes
    ${CRD_FILTER}=    RW.Core.Import User Variable
     ...    CRD_FILTER
     ...    type=string
