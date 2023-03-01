@@ -26,7 +26,7 @@ Get Standard Resources
     RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Describe Custom Resources
-    IF    ${INCLUDE_CUSTOM_RESOURCES} == Yes 
+    IF    "${INCLUDE_CUSTOM_RESOURCES}" == "Yes"
         ${custom_resource_list}=    RW.K8s.Get Custom Resources
         ...    target_service=${kubectl}
         ...    kubeconfig=${KUBECONFIG}
