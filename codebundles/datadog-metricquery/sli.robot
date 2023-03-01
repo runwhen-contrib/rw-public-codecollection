@@ -44,12 +44,26 @@ Suite Initialization
     ...    pattern=\w*
     ...    example=series[0].pointlist[-1][1] this means get the newest data point from the first timeseries returned.
     ...    default=series[0].pointlist[-1][1]
+    RW.Core.Import User Variable    NO_RESULT_OVERWRITE
+    ...    type=string
+    ...    description=Determine how to handle queries with no result data. Set to Yes to write a metric (specified below) or No to accept the null result. 
+    ...    pattern=\w*
+    ...    enum=[Yes,No]
+    ...    default=No
+    RW.Core.Import User Variable    NO_RESULT_VALUE
+    ...    type=string
+    ...    description=Set the metric value that should be stored when no data result is available.
+    ...    pattern=\d*
+    ...    default=0
+    ...    example=0
     Set Suite Variable    ${DATADOG_API_KEY}    ${DATADOG_API_KEY}
     Set Suite Variable    ${DATADOG_APP_KEY}    ${DATADOG_APP_KEY}
     Set Suite Variable    ${DATADOG_SITE}    ${DATADOG_SITE}
     Set Suite Variable    ${METRIC_QUERY}    ${METRIC_QUERY}
     Set Suite Variable    ${JSON_PATH}    ${JSON_PATH}
     Set Suite Variable    ${HISTORY_RANGE}    ${HISTORY_RANGE}
+    Set Suite Variable    ${NO_RESULT_OVERWRITE}    ${NO_RESULT_OVERWRITE}
+    Set Suite Variable    ${NO_RESULT_VALUE}    ${NO_RESULT_VALUE}
 
 *** Tasks ***
 Query Datadog Metrics
@@ -59,6 +73,10 @@ Query Datadog Metrics
     ...    query_str=${METRIC_QUERY}
     ...    site=${DATADOG_SITE}
     ...    within_time=${HISTORY_RANGE}
-    ${metric}=    RW.Datadog.Handle Timeseries Data    json_path=${JSON_PATH}    rsp=${rsp}
+    ${metric}=    RW.Datadog.Handle Timeseries Data
+    ...    json_path=${JSON_PATH}
+    ...    rsp=${rsp}
+    ...    no_result_overwrite=${NO_RESULT_OVERWRITE}
+    ...    no_result_value=${NO_RESULT_VALUE}
     RW.Core.Push Metric    ${metric}
 
