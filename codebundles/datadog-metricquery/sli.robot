@@ -32,6 +32,12 @@ Suite Initialization
     ...    pattern=\w*
     ...    example=max:system.cpu.user{*}
     ...    default=max:system.cpu.user{*}
+    ${HISTORY_RANGE}=    RW.Core.Import User Variable    HISTORY_RANGE
+    ...    type=string
+    ...    pattern=((\d+?)d)?((\d+?)h)?((\d+?)m)?((\d+?)s)?
+    ...    description=How much history to fetch for the timeseries, in the format "1d7h10m", with possible unit values being 'd' representing days, 'h' representing hours, 'm' representing minutes, and 's' representing seconds.
+    ...    example=1h10m
+    ...    default=60s
     ${JSON_PATH}=    RW.Core.Import User Variable    JSON_PATH
     ...    type=string
     ...    description=A json path string that is used to extract data from the response.
@@ -43,6 +49,7 @@ Suite Initialization
     Set Suite Variable    ${DATADOG_SITE}    ${DATADOG_SITE}
     Set Suite Variable    ${METRIC_QUERY}    ${METRIC_QUERY}
     Set Suite Variable    ${JSON_PATH}    ${JSON_PATH}
+    Set Suite Variable    ${HISTORY_RANGE}    ${HISTORY_RANGE}
 
 *** Tasks ***
 Query Datadog Metrics
@@ -51,6 +58,7 @@ Query Datadog Metrics
     ...    app_key=${DATADOG_APP_KEY}
     ...    query_str=${METRIC_QUERY}
     ...    site=${DATADOG_SITE}
+    ...    within_time=${HISTORY_RANGE}
     ${metric}=    RW.Datadog.Handle Timeseries Data    json_path=${JSON_PATH}    rsp=${rsp}
     RW.Core.Push Metric    ${metric}
 

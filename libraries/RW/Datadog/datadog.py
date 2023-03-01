@@ -47,8 +47,8 @@ class Datadog:
         if rsp[STATUS_KEY] != "ok":
             raise Exception(f"status of response not ok: {rsp}")
         extracted_data = utils.search_json(rsp, json_path)
-        if not extracted_data:
-            raise Exception(f"No data could be extracted with json path: {json_path} on rsp: {rsp}")
+        if extracted_data == None:
+            raise Exception(f"No data could be extracted with json path: {json_path} on rsp: {rsp} got return: {extracted_data}")
         return extracted_data
 
     def metric_query(
