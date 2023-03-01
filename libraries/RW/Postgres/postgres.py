@@ -31,7 +31,7 @@ class Postgres:
         if len(password.value) == 0:
                 raise ValueError(f"Error: Password is empty.")
         if report is True: 
-            query_options = "-c '\\t off' -c '\\a'"
+            query_options = "-c '\\t off' -c '\\a' -e"
         else: 
             query_options = ""
         if not hostname: 
@@ -56,7 +56,7 @@ class Postgres:
         if len(password.value) == 0:
                 raise ValueError(f"Error: Password is empty.")
         if report is True: 
-            query_options = "-c '\\t off' -c '\\a'"
+            query_options = "-c '\\t off' -c '\\a' -e"
         else: 
             query_options = ""
         if not hostname: 
