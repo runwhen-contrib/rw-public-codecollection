@@ -1,5 +1,5 @@
 # Kubernetes Postgres Triage
-This codebundle leverages the Kubernetes API and a running database pod to triage a database cluster. It leverages standard `kubectl` commands to interrogate the deployed resources (such as returning the status of each element, custome resource, and so on) along with using `kubectl exec` to run `psql` commands that can provide additional information such as the running configuration, query statistics, and so on.   
+This codebundle leverages the Kubernetes API and a running database pod to triage a database cluster. It leverages standard `kubectl` commands to inspect the deployed resources (such as returning the status of each element, custome resource, and so on) along with using `kubectl exec` to run `psql` commands that can provide additional information such as the running configuration, query statistics, and so on.   
 
 ## TaskSet
 This codebundle provides a report of Kubernetes resource health along with Postgres health, with the following tasks:  
