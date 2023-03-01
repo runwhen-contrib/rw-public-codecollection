@@ -29,7 +29,12 @@ class Datadog:
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
 
-    def handle_timeseries_data(self, rsp: dict, json_path: str = "series[0].pointlist[-1][1]") -> any:
+    def handle_timeseries_data(
+        self, rsp: dict,
+        json_path: str = "series[0].pointlist[-1][1]",
+        no_result_overwrite="No",
+        no_result_value:float=0.0,
+    ) -> any:
         """
         Takes a datadog timeseries response and extracts data from it using a jmespath json path string.
         Verifies the status is OK.
@@ -44,11 +49,14 @@ class Datadog:
         Returns:
             any: varies depending on the extracted data.
         """
+        no_result_overwrite: bool = True if no_result_overwrite == "Yes" else False
         if rsp[STATUS_KEY] != "ok":
             raise Exception(f"status of response not ok: {rsp}")
         extracted_data = utils.search_json(rsp, json_path)
-        if not extracted_data:
-            raise Exception(f"No data could be extracted with json path: {json_path} on rsp: {rsp}")
+        if extracted_data == None and no_result_overwrite:
+            extracted_data = no_result_value
+        elif extracted_data == None:
+            raise Exception(f"No data could be extracted with json path: {json_path} on rsp: {rsp} got return: {extracted_data} - consider using the no_result_overwrite option")
         return extracted_data
 
     def metric_query(

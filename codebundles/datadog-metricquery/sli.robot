@@ -32,17 +32,38 @@ Suite Initialization
     ...    pattern=\w*
     ...    example=max:system.cpu.user{*}
     ...    default=max:system.cpu.user{*}
+    ${HISTORY_RANGE}=    RW.Core.Import User Variable    HISTORY_RANGE
+    ...    type=string
+    ...    pattern=((\d+?)d)?((\d+?)h)?((\d+?)m)?((\d+?)s)?
+    ...    description=How much history to fetch for the timeseries, in the format "1d7h10m", with possible unit values being 'd' representing days, 'h' representing hours, 'm' representing minutes, and 's' representing seconds.
+    ...    example=1h10m
+    ...    default=60s
     ${JSON_PATH}=    RW.Core.Import User Variable    JSON_PATH
     ...    type=string
     ...    description=A json path string that is used to extract data from the response.
     ...    pattern=\w*
     ...    example=series[0].pointlist[-1][1] this means get the newest data point from the first timeseries returned.
     ...    default=series[0].pointlist[-1][1]
+    ${NO_RESULT_OVERWRITE}=    RW.Core.Import User Variable    NO_RESULT_OVERWRITE
+    ...    type=string
+    ...    description=Determine how to handle queries with no result data. Set to Yes to write a metric (specified below) or No to accept the null result. 
+    ...    pattern=\w*
+    ...    enum=[Yes,No]
+    ...    default=No
+    ${NO_RESULT_VALUE}=    RW.Core.Import User Variable    NO_RESULT_VALUE
+    ...    type=string
+    ...    description=Set the metric value that should be stored when no data result is available.
+    ...    pattern=\d*
+    ...    default=0
+    ...    example=0
     Set Suite Variable    ${DATADOG_API_KEY}    ${DATADOG_API_KEY}
     Set Suite Variable    ${DATADOG_APP_KEY}    ${DATADOG_APP_KEY}
     Set Suite Variable    ${DATADOG_SITE}    ${DATADOG_SITE}
     Set Suite Variable    ${METRIC_QUERY}    ${METRIC_QUERY}
     Set Suite Variable    ${JSON_PATH}    ${JSON_PATH}
+    Set Suite Variable    ${HISTORY_RANGE}    ${HISTORY_RANGE}
+    Set Suite Variable    ${NO_RESULT_OVERWRITE}    ${NO_RESULT_OVERWRITE}
+    Set Suite Variable    ${NO_RESULT_VALUE}    ${NO_RESULT_VALUE}
 
 *** Tasks ***
 Query Datadog Metrics
@@ -51,6 +72,11 @@ Query Datadog Metrics
     ...    app_key=${DATADOG_APP_KEY}
     ...    query_str=${METRIC_QUERY}
     ...    site=${DATADOG_SITE}
-    ${metric}=    RW.Datadog.Handle Timeseries Data    json_path=${JSON_PATH}    rsp=${rsp}
+    ...    within_time=${HISTORY_RANGE}
+    ${metric}=    RW.Datadog.Handle Timeseries Data
+    ...    json_path=${JSON_PATH}
+    ...    rsp=${rsp}
+    ...    no_result_overwrite=${NO_RESULT_OVERWRITE}
+    ...    no_result_value=${NO_RESULT_VALUE}
     RW.Core.Push Metric    ${metric}
 
