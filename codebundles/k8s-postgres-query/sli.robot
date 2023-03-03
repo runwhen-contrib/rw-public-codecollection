@@ -28,6 +28,7 @@ Run Postgres Query And Return Result As Metric
     ...    workload_name=${WORKLOAD_NAME}
     ...    workload_namespace=${WORKLOAD_NAMESPACE}
     ...    workload_container=${WORKLOAD_CONTAINER}
+    ...    kubeconfig=${KUBECONFIG}
     ...    context=${CONTEXT}
     ...    target_service=${kubectl}
     ${rsp}=    RW.K8s.Shell
