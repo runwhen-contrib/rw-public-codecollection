@@ -35,8 +35,8 @@ Suite Initialization
     ...    type=string
     ...    description=Which Kubernetes kinds to inspect during troubleshooting as a CSV. Depending on kinds and your cluster workloads this can increase codebundle runtime.
     ...    pattern=\w*
-    ...    example=Deployment,DaemonSet,StatefulSet,Service,Ingress,HorizontalPodAutoscaler,CronJob
-    ...    default=Deployment,DaemonSet,StatefulSet,Service,Ingress,HorizontalPodAutoscaler,CronJob
+    ...    example=Deployment,DaemonSet,StatefulSet
+    ...    default=Deployment,DaemonSet,StatefulSet
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
     ...    type=string
     ...    description=Which distribution of Kubernetes to use for operations, such as: Kubernetes, OpenShift, etc.
@@ -70,7 +70,6 @@ Suite Initialization
     Set Suite Variable    ${EVENT_AGE}    ${EVENT_AGE}
 
 *** Tasks ***
-# fetch error events, order by most occuring
 Trace Namespace Errors
     ${error_results}=    RW.K8s.Trace Namespace Errors
     ...    context=${CONTEXT}
