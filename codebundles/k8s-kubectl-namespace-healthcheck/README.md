@@ -28,7 +28,43 @@ With the example above, a namespace would be be considerd a 0 (unhealthy) if the
 > This SLI supports one, multiple, or ALL namespaces. If creating a score from multiple namespaces, consider a larger interval, such as 60s or greater, between each run. This SLI directly accesses the Kube API and querying for pods & events across multiple or ALL namespaces can generate a lot of volume. 
 
 ## TaskSet
-This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries.
+This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries. Initially a trace will be done, where error events within a time window will be fetched, and involved pod objects will be queried for error logs using the `ERROR_PATTERN`, and if error logs are found those pod names are included in the report. A secondary report is fetched for a list of unready pods ordered by restart counts, and lastly the triage namespace task performed will query a list of namespace resources based on a csv of `Kinds` and produce a report of failing checks for those resources. Current the support checks are:
+- `deployment_replicas_healthy`
+- `statefulset_replicas_healthy`
+- `daemonset_replicas_healthy`
+
+commands are also generated for users to quickly fetch additional information about those individual resources.
+
+Example Configuration:
+```
+export DISTRIBUTION=Kubernetes
+export CONTEXT=default
+export NAMESPACE=flux-system
+export EVENT_AGE=30m
+export ERROR_PATTERN=(Error|Exception)
+export RESOURCE_KINDS=Deployment,DaemonSet,StatefulSet
+```
+
+### Use Case: TaskSet: Triage App workloads in a Namespace
+You can triage your app workloads with the following configuration, adjusted to your cluster & namespace:
+
+```
+configProvided:
+  - name: RESOURCE_KINDS
+    value: 'Deployment,DaemonSet,StatefulSet'
+  - name: ERROR_PATTERN
+    value: '(Error|Exception)'
+  - name: CONTEXT
+    value: [kubeconfig_context]
+  - name: NAMESPACE
+    value: [kubernetes_namespace]
+  - name: DISTRIBUTION
+    value: Kubernetes
+  - name: EVENT_AGE
+    value: '30m'
+```
+
+which will provide you with information on events, error logs, and resources with issues related to `Deployments`, `DaemonSets`, and `StatefulSets` in the given namespace.
 
 ## Requirements
 - kubeconfig with appropriate RBAC permissions to `get` `pods` and `events` on desired namespaces
@@ -36,4 +72,4 @@ This taskset runs general troubleshooting checks against all applicable objects 
 
 ## TODO
 - [ ] Optimize the multi-namespace configuration for SLI
-- [ ] Optimize the troubleshoot namespace to reduce call frequency & load
+- [ ] link to kubeconfig rbac doc

@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 # TODO: port RWUtils over to here / merge / deduplicate
 # TODO: add control structure keywords
 
+SYMBOL_GREEN_CHECKMARK: str = '\u2705'
+SYMBOL_RED_X: str = '\u274C'
 
 class Status(Enum):
     NOT_OK = 0
@@ -310,6 +312,11 @@ def list_to_string(data_list: list, join_with: str = "\n") -> str:
 def string_if_else(check_boolean: bool, if_str: str, else_str) -> str:
     return if_str if check_boolean else else_str
 
+def remove_spaces(initial_str: str, remove:list[str]=[" ", "\n", "\t"]) -> str:
+    result_str = initial_str
+    for symbol in remove:
+        result_str: str = result_str.replace(symbol, "")
+    return result_str
 
 def csv_to_list(csv_str: str, strip_entries: bool = True) -> list:
     csv_list: list = []
