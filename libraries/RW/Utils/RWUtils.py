@@ -74,6 +74,20 @@ class RWUtils:
         """
         return utils.search_json(*args, **kwargs) 
 
+   def json_to_metric(self, *args, **kwargs) -> dict:
+        """Takes in a json data result from kubectl and calculation parameters to return a single float metric. 
+        Assumes that the return is a "list" type and automatically searches through the "items" list, along with 
+        other search filters provided buy the user (using jmespath search).
+
+        Args: 
+            :data str: JSON data to search through. 
+            :search_filter str: A jmespah filter used to help filter search results. See https://jmespath.org/? to test search strings.
+            :calculation_field str: The field from the json output that calculation should be performed on/with. 
+            :calculation_type str:  The type of calculation to perform. count, sum, avg. 
+            :return: A float that represents the single calculated metric. 
+        """
+        return utils.json_to_metric(*args, **kwargs) 
+
     def from_json(self, *args, **kwargs) -> object:
         """
         Convert from JSON string to Python dictionary.
