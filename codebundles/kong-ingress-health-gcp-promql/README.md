@@ -81,3 +81,6 @@ The service account should have the following roles:
 > Note: It's likely that only the Monitoring Viewer role is required for promql queries, but both roles are helpful when using other gcp-opssuite* codebundles. 
 
 Please see the [documentation for creating service accounts](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
+
+## Helpful Resources
+- [https://docs.konghq.com/hub/kong-inc/prometheus/](https://docs.konghq.com/hub/kong-inc/prometheus/)
