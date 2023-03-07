@@ -74,7 +74,6 @@ Get Request Latency Rate
     ...    method=Raw
     ...    no_result_overwrite=Yes
     ...    no_result_value=0
-    # ${request_latency_99th_value}=    Set Variable    ${request_latency_99th_rsp["data"]["result"][0]["value"][1]}
     Log    The 99th percentile for Kong and the upstream to process requests is ${request_latency_99th_value}ms. 
     ${request_latency_score}=    Evaluate    1 if ${request_latency_99th_value} <= ${REQUEST_LATENCY_THRESHOLD} else 0
     Set Global Variable    ${request_latency_99th_value}
