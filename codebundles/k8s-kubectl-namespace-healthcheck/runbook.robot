@@ -71,33 +71,38 @@ Suite Initialization
 
 *** Tasks ***
 # fetch error events, order by most occuring
-Find Namespace Errors
-    ${error_results}=    RW.K8s.Find Namespace Errors
+Trace Namespace Errors
+    ${error_results}=    RW.K8s.Trace Namespace Errors
     ...    context=${CONTEXT}
     ...    namespace=${NAMESPACE}
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     ...    error_pattern=${ERROR_PATTERN}
     ...    event_age=${EVENT_AGE}
+    ...    binary_name=${binary_name}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Summary of errors traced in namespace: ${NAMESPACE}
     RW.Core.Add Pre To Report    ${error_results}
     RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 
 *** Tasks ***
-# get a list of unreadypods ordered by restart count
 Fetch Unready Pods
-    ${unreadypods_results}=    RW.K8s.Shell    cmd    target_service    kubeconfig
+    ${unreadypods_results}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get pods --context=${CONTEXT} -n ${NAMESPACE} --sort-by='status.containerStatuses[0].restartCount' --field-selector=status.phase!=Running,status.phase!=Succeeded
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${kubeconfig}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Summary of unhealthy pod restarts in namespace: ${NAMESPACE}
     RW.Core.Add Pre To Report    ${unreadypods_results}
     RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 
-Troubleshoot Namespace
+Triage Namespace
     #TODO: Paginated Shell
-    ${troubleshoot_report}=    RW.K8s.Troubleshoot Namespace
+    ${troubleshoot_report}=    RW.K8s.Triage Namespace
     ...    resource_kinds=${RESOURCE_KINDS}
     ...    namespace=${NAMESPACE}
     ...    context=${CONTEXT}

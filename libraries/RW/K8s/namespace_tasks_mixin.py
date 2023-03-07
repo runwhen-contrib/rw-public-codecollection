@@ -2,6 +2,8 @@ import re, kubernetes, yaml, logging, json
 from struct import unpack
 import dateutil.parser
 from benedict import benedict
+from datetime import datetime, timezone
+from dateutil.relativedelta import relativedelta
 from collections import defaultdict
 from typing import Optional, Union
 from RW import platform
@@ -24,6 +26,7 @@ from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
 from RW.Utils.Check import Check
 from RW.Utils.utils import SYMBOL_GREEN_CHECKMARK, SYMBOL_RED_X
+from RW.Utils.utils import parse_timedelta
 
 from robot.libraries.BuiltIn import BuiltIn
 
@@ -518,7 +521,7 @@ class NamespaceTasksMixin(
         return output
     
     @staticmethod
-    def troubleshoot_namespace(
+    def triage_namespace(
         resource_kinds: str,
         namespace:str,
         context:str,
@@ -605,7 +608,7 @@ class NamespaceTasksMixin(
                 logger.warning(f"Encountered {e} during troubleshooting on object {ns_obj}, continuing on")
         report_fragments["status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
         report: str = """
-Troubleshooting Namespace Report Summary: {status}
+Triage Namespace Summary: {status}
     Deployments have the expected number of replicas: {deployment_replicas_status}
         {deployment_replica_output}
     Daemonsets have the expected number of replicas: {daemonset_replicas_status}
@@ -614,4 +617,68 @@ Troubleshooting Namespace Report Summary: {status}
         {statefulsets_replica_output}
         """.format(**report_fragments)
         return report
-                    
+
+
+    @staticmethod
+    def trace_namespace_errors(
+        context:str,
+        namespace:str,
+        target_service: platform.Service,
+        kubeconfig: platform.Secret,
+        error_pattern: str = "(Error|Exception)",
+        event_age:str="30m",
+        binary_name: str = "kubectl",
+    ):
+        all_passed: bool = True
+        events_cmd: str = f"{binary_name} get Events --context={context} --namespace={namespace} --field-selector=type!=Normal --sort-by=lastTimestamp -o json"
+        events: str = K8sConnection.shell(
+            events_cmd, 
+            target_service,
+            kubeconfig
+        )
+        events: dict = from_json(events)
+        if "items" in events:
+            events = events["items"]
+        events_involved_pods : list = []
+        filtered_events : list = []
+        event_age_gap: datetime.timedelta = parse_timedelta(event_age)
+        start_time = datetime.now(timezone.utc) - event_age_gap
+        for ev in events:
+            last_ts = dateutil.parser.parse(ev["lastTimestamp"])
+            ns = search_json(ev, "involvedObject.namespace")
+            kind = search_json(ev, "involvedObject.kind")
+            if last_ts > start_time and ns == namespace and kind == "Pod":
+                name = search_json(ev, "involvedObject.name")
+                filtered_events.append(ev)
+                events_involved_pods.append(name)
+        traced_pod_logs: dict = {}
+        for podname in events_involved_pods:
+            cmd: str = f"{binary_name} logs --context={context} --namespace={namespace} pod/{podname} --tail=20 | grep -E -i \"{error_pattern}\""
+            try:
+                stdout = K8sConnection.shell(
+                    cmd,
+                    target_service,
+                    kubeconfig
+                )
+                if stdout:
+                    traced_pod_logs[podname] = stdout
+            except:
+                logger.warning(f"Unable to fetch logs from pod {podname} with command: {cmd}")
+        pods_with_errors: int = len(traced_pod_logs.keys())
+        error_events: int = len(filtered_events)
+        error_events_status: str = f"Passed {SYMBOL_GREEN_CHECKMARK}" if error_events == 0 else f"Failed {SYMBOL_RED_X}"
+        pod_errors_status: str = f"Passed {SYMBOL_GREEN_CHECKMARK}" if pods_with_errors == 0 else f"Failed {SYMBOL_RED_X}"
+        error_pod_names: str = "None" if pods_with_errors == 0 else str(list(traced_pod_logs.keys()))
+        if error_events > 0 or pods_with_errors > 0:
+            all_passed = False
+        status = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
+        report: str = f"""
+Trace Namespace Summary: {status}
+    Error events: {error_events_status}
+        recent event count: {error_events}
+    Pods with error logs: {pod_errors_status}
+        erroring pod count: {pods_with_errors}
+        Erroring pod names:
+            {error_pod_names}
+        """
+        return report
