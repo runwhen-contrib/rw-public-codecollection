@@ -9,18 +9,20 @@ from RW.Utils.utils import stdout_to_list
 
 logger = logging.getLogger(__name__)
 
+
 class K8sConnection:
     """
     Static class that is used to provide other classes in the K8s keyword library
     with a standardized mode of communicating with Kubernetes Clusters.
     """
+
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
 
     # stderr that is considered a success when received from a location service (regex)
     # eg: when a 'kubectl get pods' returns no resources, this has a returncode of 1, and stderr, even though it's generally considered 'ok'
     ALLOWED_STDERR = [
         # "", # Allow empty string because we may grep and filter values resulting in empty - leave commented
-        "Defaulted container", # Allow defaulting to a container in a pod
+        "Defaulted container",  # Allow defaulting to a container in a pod
         "Error from server (NotFound)",
         "No resources found in",
     ]
@@ -42,18 +44,21 @@ class K8sConnection:
         history = K8sConnection.get_shell_history()
         K8sConnection.clear_shell_history()
         return history
-    
+
     @staticmethod
     def get_shell_history():
         return K8sConnection.shell_history
-    
+
     @staticmethod
     def get_last_shell_command():
         return K8sConnection.last_shell_command
 
     @staticmethod
     def get_binary_name(distrib_option: str) -> str:
-        if distrib_option in [K8sConnection.DistributionOption.KUBERNETES.value, K8sConnection.DistributionOption.GKE.value]:
+        if distrib_option in [
+            K8sConnection.DistributionOption.KUBERNETES.value,
+            K8sConnection.DistributionOption.GKE.value,
+        ]:
             return "kubectl"
         if distrib_option == K8sConnection.DistributionOption.OPENSHIFT.value:
             return "oc"
@@ -91,9 +96,7 @@ class K8sConnection:
             RW.platform.ShellServiceResponse: a dataclass containing the response from the location service, including stdout.
         """
         if not target_service:
-            raise ValueError(
-                "A runwhen service was not provided for the kubectl command"
-            )
+            raise ValueError("A runwhen service was not provided for the kubectl command")
         K8sConnection.shell_history.append(cmd)
         K8sConnection.last_shell_command = cmd
         logger.info("requesting command: %s", cmd)
@@ -104,9 +107,7 @@ class K8sConnection:
         for shell_secret_file in shell_secret_files:
             request_secrets.append(platform.ShellServiceRequestSecret(shell_secret_file, as_file=True))
         env = {"KUBECONFIG": f"./{kubeconfig.key}"}
-        rsp = platform.execute_shell_command(
-            cmd=cmd, service=target_service, request_secrets=request_secrets, env=env
-        )
+        rsp = platform.execute_shell_command(cmd=cmd, service=target_service, request_secrets=request_secrets, env=env)
         if (
             (rsp.status != 200 or rsp.returncode > 0)
             and rsp.stderr != ""
@@ -122,27 +123,41 @@ class K8sConnection:
     def template_workload(
         workload_name: str,
         workload_namespace: str,
-        workload_container: str
+        workload_container: str,
+        target_service: platform.Service = None,
+        kubeconfig: platform.Secret = None,
+        context: str = "",
     ) -> str:
-        """Take in the workload variables and construct a valid string that specifies the namespace and container. 
+        """Take in the workload variables and construct a valid string that specifies the namespace and container.
 
         Args:
-            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset
+            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset. Also accepts labels if starting with `-l`
             workload_namespace (str): a kubernetes namespace or openshift project name
             workload_container (str): a specific container within a pod, as pods may not default to the desired container
 
         Returns:
             workload: a string containing the the expanded workload parameters.
         """
-        # Check if the namespace is provided in the workload name and return the vlaue verbatim
-        if " -n" in workload_name or " --namespace" in workload_name: 
+        # Check if the namespace is provided in the workload name and return the value verbatim
+        if " -n" in workload_name or " --namespace" in workload_name:
             workload = f"{workload_name}"
             return workload
+        # Check if we are passing labels instead of a distinct resource, then fetch pod name by label
+        if "-l" in workload_name:
+            resource_labels = workload_name.lstrip("-l ")
+            pod = self.fetch_pod_names_by_label(
+                target_service=target_service,
+                kubeconfig=kubeconfig,
+                namespace=workload_namespace,
+                context=context,
+                resource_labels=resource_labels,
+            )
+            workload_name = f"pod/{pod[0]}"
         if not workload_name:
             raise ValueError(f"Error: No workload is specified.")
         if not workload_namespace:
             raise ValueError(f"Error: Namespace is not specified.")
-        if not workload_container: 
+        if not workload_container:
             workload = f"{workload_name} -n {workload_namespace}"
         else:
             workload = f"{workload_name} -n {workload_namespace} -c {workload_container}"
@@ -178,11 +193,11 @@ class K8sConnection:
         cmd: str,
         target_service: platform.Service,
         kubeconfig: platform.Secret,
-        include_empty:bool=False,
-        newline_as_separate:bool=False,
-        fail_on_exception:bool=False,
+        include_empty: bool = False,
+        newline_as_separate: bool = False,
+        fail_on_exception: bool = False,
     ) -> list:
-        outputs : list = []
+        outputs: list = []
         for item in items:
             try:
                 output = K8sConnection.template_shell(
@@ -205,7 +220,7 @@ class K8sConnection:
                     raise Exception(f"Encountered exception: {e} on item {item}")
                 logger.warning(f"Encountered exception: {e} on item {item} - continuing to next item")
         return outputs
-    
+
     # @staticmethod
     # def paginated_shell(
     #     cmd: str,
