@@ -148,39 +148,41 @@ Troubleshoot Pods
     RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${pod_report}
 
-Troubleshoot PodDisruptionBudgets
-    ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get pdb --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ${pdbs}=    RW.Utils.Yaml To Dict    ${stdout}
-    ${rsp}=    RW.K8s.Check Pdb    pdbs=${pdbs}
-    ${pdb_report}=    RW.K8s.Format Pdb Report
-    ...    report_data=${rsp}
-    ...    mute_suggestions=${MUTE_SUGGESTIONS}
-    ${history}=    RW.K8s.Pop Shell History
-    ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
-    RW.Core.Add Pre To Report    ${pdb_report}
+# Troubleshoot PodDisruptionBudgets
+# TODO: implement stubs
+#     ${stdout}=    RW.K8s.Shell
+#     ...    cmd=${binary_name} get pdb --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
+#     ...    target_service=${kubectl}
+#     ...    kubeconfig=${KUBECONFIG}
+#     ${pdbs}=    RW.Utils.Yaml To Dict    ${stdout}
+#     ${rsp}=    RW.K8s.Check Pdb    pdbs=${pdbs}
+#     ${pdb_report}=    RW.K8s.Format Pdb Report
+#     ...    report_data=${rsp}
+#     ...    mute_suggestions=${MUTE_SUGGESTIONS}
+#     ${history}=    RW.K8s.Pop Shell History
+#     ${history}=    RW.Utils.List To String    data_list=${history}
+#     RW.Core.Add Pre To Report    Commands Used: ${history}
+#     RW.Core.Add Pre To Report    ${pdb_report}
 
-Troubleshoot Networking
-    ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get Pod --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ${pods}=    RW.Utils.Yaml To Dict    ${rsp}
-    ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get Service --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
-    ...    target_service=${kubectl}
-    ...    kubeconfig=${KUBECONFIG}
-    ${services}=    RW.Utils.Yaml To Dict    ${rsp}
-    ${rsp}=    RW.K8s.Check Networking
-    ...    services=${services}
-    ...    pods=${pods}
-    ${networking_report}=    RW.K8s.Format Networking Report
-    ...    report_data=${rsp}
-    ...    mute_suggestions=${MUTE_SUGGESTIONS}
-    ${history}=    RW.K8s.Pop Shell History
-    ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
-    RW.Core.Add Pre To Report    ${networking_report}
+# Troubleshoot Networking
+# TODO: implement stubs
+#     ${rsp}=    RW.K8s.Shell
+#     ...    cmd=${binary_name} get Pod --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
+#     ...    target_service=${kubectl}
+#     ...    kubeconfig=${KUBECONFIG}
+#     ${pods}=    RW.Utils.Yaml To Dict    ${rsp}
+#     ${rsp}=    RW.K8s.Shell
+#     ...    cmd=${binary_name} get Service --context=${CONTEXT} --namespace=${NAMESPACE} -o yaml
+#     ...    target_service=${kubectl}
+#     ...    kubeconfig=${KUBECONFIG}
+#     ${services}=    RW.Utils.Yaml To Dict    ${rsp}
+#     ${rsp}=    RW.K8s.Check Networking
+#     ...    services=${services}
+#     ...    pods=${pods}
+#     ${networking_report}=    RW.K8s.Format Networking Report
+#     ...    report_data=${rsp}
+#     ...    mute_suggestions=${MUTE_SUGGESTIONS}
+#     ${history}=    RW.K8s.Pop Shell History
+#     ${history}=    RW.Utils.List To String    data_list=${history}
+#     RW.Core.Add Pre To Report    Commands Used: ${history}
+#     RW.Core.Add Pre To Report    ${networking_report}
