@@ -37,10 +37,13 @@ Get Upstream Health
     ...    query=sum(kong_upstream_target_health{upstream="${INGRESS_UPSTREAM}",state="healthchecks_off"})
     ...    optional_headers=${access_token_header_secret}
     ...    target_service=${CURL_SERVICE}
-    ${healthcheck_metric_value}=    RW.Prometheus.Transform Data
-    ...    data=${healthcheck_rsp["data"]}
-    ...    method=Raw
-    IF    "${healthcheck_metric_value}" == "1"
+    ${healthcheck_metric_value}=        RW.Utils.Json To Metric
+    ...    data=${healthcheck_rsp}
+    ...    search_filter=data.result[]
+    ...    calculation_field=value[1].to_number(@)
+    ...    calculation=Sum
+    # ${healthcheck_metric_value}=    Set Variable   ${healthcheck_rsp["data"]["result"][0]["value"][1]}
+    IF    ${healthcheck_metric_value} >= 1
         Log    "Healthcheck is disabled for this target" 
     END
 
@@ -61,16 +64,17 @@ Get Upstream Health
     Set Global Variable    ${error_metrics_score}
     
 Get Request Latency Rate
-    ${request_latency_99th}=      RW.Prometheus.Query Instant
+    ${request_latency_99th_rsp}=      RW.Prometheus.Query Instant
     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
     ...    query=histogram_quantile(0.99, sum(rate(kong_request_latency_ms_bucket{service="${INGRESS_SERVICE}"}[1m])) by (le))
     ...    optional_headers=${access_token_header_secret}
     ...    target_service=${CURL_SERVICE}
     ${request_latency_99th_value}=    RW.Prometheus.Transform Data
-    ...    data=${request_latency_99th["data"]}
+    ...    data=${request_latency_99th_rsp["data"]}
     ...    method=Raw
     ...    no_result_overwrite=Yes
     ...    no_result_value=0
+    # ${request_latency_99th_value}=    Set Variable    ${request_latency_99th_rsp["data"]["result"][0]["value"][1]}
     Log    The 99th percentile for Kong and the upstream to process requests is ${request_latency_99th_value}ms. 
     ${request_latency_score}=    Evaluate    1 if ${request_latency_99th_value} <= ${REQUEST_LATENCY_THRESHOLD} else 0
     Set Global Variable    ${request_latency_99th_value}
@@ -135,6 +139,6 @@ Suite Initialization
     ...    type=string
     ...    description=The threshold in ms for request latency to be considered unhealthy. 
     ...    pattern=\w*
-    ...    example=50
+    ...    example=100
     Set Suite Variable    ${CURL_SERVICE}    ${CURL_SERVICE}
     Set Suite Variable    ${PROJECT_ID}    ${PROJECT_ID}
