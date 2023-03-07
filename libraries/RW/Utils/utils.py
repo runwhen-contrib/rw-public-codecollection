@@ -18,6 +18,8 @@ logger = logging.getLogger(__name__)
 # TODO: port RWUtils over to here / merge / deduplicate
 # TODO: add control structure keywords
 
+SYMBOL_GREEN_CHECKMARK: str = '\u2705'
+SYMBOL_RED_X: str = '\u274C'
 
 class Status(Enum):
     NOT_OK = 0

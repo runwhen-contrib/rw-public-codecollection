@@ -2,7 +2,7 @@ import re, kubernetes, yaml, logging
 from struct import unpack
 import dateutil.parser
 from benedict import benedict
-from typing import Optional, Union
+from typing import Optional, Union, Generator
 from RW import platform
 from enum import Enum
 from RW.Utils.utils import stdout_to_list
@@ -205,3 +205,18 @@ class K8sConnection:
                     raise Exception(f"Encountered exception: {e} on item {item}")
                 logger.warning(f"Encountered exception: {e} on item {item} - continuing to next item")
         return outputs
+    
+    # @staticmethod
+    # def paginated_shell(
+    #     cmd: str,
+    #     target_service: platform.Service,
+    #     kubeconfig: platform.Secret,
+    #     shell_secrets=[],
+    #     shell_secret_files=[],
+    #     page_size:int=100,
+    # ) -> Generator:
+    #     counter: int = 0
+    #     last_results: dict = {}
+    #     results = K8sConnection.shell(cmd=cmd, target_service=target_service, kubeconfig=kubeconfig)
+    #     counter += 1
+    #     pass

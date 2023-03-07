@@ -2,6 +2,7 @@ import re, kubernetes, yaml, logging, json
 from struct import unpack
 import dateutil.parser
 from benedict import benedict
+from collections import defaultdict
 from typing import Optional, Union
 from RW import platform
 from enum import Enum
@@ -18,9 +19,11 @@ from .daemonset_tasks_mixin import DaemonsetTasksMixin
 from .k8sutils import K8sUtils
 from RW.Utils.utils import search_json
 from RW.Utils.utils import dict_to_yaml
+from RW.Utils.utils import from_json
 from RW.Utils.utils import yaml_to_dict
 from RW.Utils.utils import stdout_to_list
 from RW.Utils.Check import Check
+from RW.Utils.utils import SYMBOL_GREEN_CHECKMARK, SYMBOL_RED_X
 
 from robot.libraries.BuiltIn import BuiltIn
 
@@ -90,6 +93,8 @@ class NamespaceTasksMixin(
         target_service : platform.Service,
         binary_name: str = "kubectl",
     ) -> dict:
+        """*DEPRECATED*
+        """
         troubleshoot_results = {}
         if object_name.startswith("event.events.k8s.io/") or object_name.startswith("event/"):
             pass #TODO: determine useful event troubleshoot data in this context
@@ -128,6 +133,8 @@ class NamespaceTasksMixin(
         target_service : platform.Service,
         binary_name: str = "kubectl",
     ) -> str:
+        """*DEPRECATED*
+        """
         checks: list(Checks) = []
         checks.append(Check(
             title=f"Found and applied troubleshooting for the following objects in namespace: {namespace}:\n",
@@ -228,6 +235,7 @@ class NamespaceTasksMixin(
         event_pattern:str = "*",
         binary_name: str = "kubectl",
         event_type: str = "Warning",
+        event_age: str = "30m",
     ) -> int:
 
 
@@ -508,3 +516,102 @@ class NamespaceTasksMixin(
           )
           output=f"POD NAME: {pod_name}\n--------\n{top_output}\n--------\n${output}"
         return output
+    
+    @staticmethod
+    def troubleshoot_namespace(
+        resource_kinds: str,
+        namespace:str,
+        context:str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        binary_name: str = "kubectl",
+    ) -> str:
+        namespace_objects: Union[dict, list, str] = K8sConnection.shell(
+              cmd=f"{binary_name} get {resource_kinds} --context={context} --namespace={namespace} -o json",
+              target_service=target_service,
+              kubeconfig=kubeconfig,
+        )
+        if isinstance(namespace_objects, str):
+            namespace_objects = from_json(namespace_objects)
+        if "items" in namespace_objects:
+            namespace_objects = namespace_objects["items"]
+        all_passed: bool = True
+        # stores various info to template into the report
+        report_fragments: dict  = {
+            "deployment_replicas_status":f"Passed {SYMBOL_GREEN_CHECKMARK}",
+            "deployment_replica_output":"",
+            "daemonset_replicas_status":f"Passed {SYMBOL_GREEN_CHECKMARK}",
+            "daemonsets_replicas_output":"",
+            "statefulset_replicas_status":f"Passed {SYMBOL_GREEN_CHECKMARK}",
+            "statefulsets_replica_output":"",
+        }
+        for ns_obj in namespace_objects:
+            try:
+                ns_obj_name = search_json(ns_obj, "metadata.name")
+                ns_obj_kind = ns_obj["kind"]
+                # surface level deployment check
+                if ns_obj_kind == "Deployment":
+                    if not report_fragments["deployment_replicas_status"]:
+                        report_fragments["deployment_replicas_status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}"
+                    ready_replicas = search_json(ns_obj, "status.readyReplicas")
+                    ready_replicas = 0 if not isinstance(ready_replicas, int) else ready_replicas
+                    replicas = search_json(ns_obj, "status.replicas")
+                    if ready_replicas < replicas:
+                        report_fragments["deployment_replicas_status"] = f"Failed {SYMBOL_RED_X}"
+                        if not report_fragments["deployment_replica_output"]:
+                            report_fragments["deployment_replica_output"] = "\tUnhealthy Deployment Names:\n"
+                        report_fragments["deployment_replica_output"] += f"\t\t\t{ns_obj_kind}/{ns_obj_name}"
+                        report_fragments["deployment_replica_output"] += f" - for more info run: {binary_name} describe {ns_obj_kind}/{ns_obj_name} --context={context} --namespace={namespace} \n"
+                        all_passed = False
+                # surface level daemonset check
+                elif ns_obj_kind == "Daemonset":
+                    if not report_fragments["daemonset_replicas_status"]:
+                        report_fragments["daemonset_replicas_status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}"
+                    curr_scheduled = search_json(ns_obj, "status.currentNumberScheduled")
+                    num_available = search_json(ns_obj, "status.number_available")
+                    mischeduled = search_json(ns_obj, "status.numberMisscheduled")
+                    curr_scheduled = 0 if not isinstance(curr_scheduled, int) else curr_scheduled
+                    num_available = 0 if not isinstance(num_available, int) else num_available
+                    mischeduled = 0 if not isinstance(mischeduled, int) else mischeduled
+                    if (
+                        mischeduled > 0
+                        or curr_scheduled != num_available
+                    ):
+                        report_fragments["daemonset_replicas_status"] = f"Failed {SYMBOL_RED_X}"
+                        if not report_fragments["daemonsets_replicas_output"]:
+                            report_fragments["daemonsets_replicas_output"] = "\tUnhealthy Daemonset Names:\n"
+                        report_fragments["daemonsets_replicas_output"] += f"\t\t\t{ns_obj_kind}/{ns_obj_name}"
+                        report_fragments["daemonsets_replicas_output"] += f" - for more info run: {binary_name} describe {ns_obj_kind}/{ns_obj_name} --context={context} --namespace={namespace} \n"
+                        all_passed = False
+                # Surface level statefulset check
+                elif ns_obj_kind == "StatefulSet":
+                    if not report_fragments["statefulset_replicas_status"]:
+                        report_fragments["statefulset_replicas_status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}"
+                    replicas = search_json(ns_obj, "status.replicas")
+                    ready_replicas = search_json(ns_obj, "status.readyReplicas")
+                    replicas = 0 if not isinstance(replicas, int) else replicas
+                    ready_replicas = 0 if not isinstance(ready_replicas, int) else ready_replicas
+                    if (
+                        ready_replicas < replicas
+                    ):
+                        report_fragments["statefulset_replicas_status"] = f"Failed {SYMBOL_RED_X}"
+                        if not report_fragments["statefulsets_replica_output"]:
+                            report_fragments["statefulsets_replica_output"] = "\tUnhealthy StatefulSet Names:\n"
+                        report_fragments["statefulsets_replica_output"] += f"\t\t\t{ns_obj_kind}/{ns_obj_name}"
+                        report_fragments["statefulsets_replica_output"] += f" - for more info run: {binary_name} describe {ns_obj_kind}/{ns_obj_name} --context={context} --namespace={namespace} \n"
+                        all_passed = False
+                # TODO: hpas, ingress, cj
+            except Exception as e:
+                logger.warning(f"Encountered {e} during troubleshooting on object {ns_obj}, continuing on")
+        report_fragments["status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
+        report: str = """
+Troubleshooting Namespace Report Summary: {status}
+    Deployments have the expected number of replicas: {deployment_replicas_status}
+        {deployment_replica_output}
+    Daemonsets have the expected number of replicas: {daemonset_replicas_status}
+        {daemonsets_replicas_output}
+    StatefulSet have the expected number of replicas: {statefulset_replicas_status}
+        {statefulsets_replica_output}
+        """.format(**report_fragments)
+        return report
+                    
