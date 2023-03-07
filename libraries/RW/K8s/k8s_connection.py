@@ -9,9 +9,9 @@ from RW.Utils.utils import stdout_to_list
 
 logger = logging.getLogger(__name__)
 
-class K8sConnectionMixin:
+class K8sConnection:
     """
-    A mixin class that is used to provide other classes in the K8s keyword library
+    Static class that is used to provide other classes in the K8s keyword library
     with a standardized mode of communicating with Kubernetes Clusters.
     """
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
@@ -19,44 +19,48 @@ class K8sConnectionMixin:
     # stderr that is considered a success when received from a location service (regex)
     # eg: when a 'kubectl get pods' returns no resources, this has a returncode of 1, and stderr, even though it's generally considered 'ok'
     ALLOWED_STDERR = [
-        # "", # Allow empty string because we may grep and filter values resulting in empty
+        # "", # Allow empty string because we may grep and filter values resulting in empty - leave commented
         "Defaulted container", # Allow defaulting to a container in a pod
         "Error from server (NotFound)",
         "No resources found in",
     ]
+
+    shell_history: list[str] = []
+    last_shell_command: str = None
 
     class DistributionOption(Enum):
         KUBERNETES = "Kubernetes"
         GKE = "GKE"
         OPENSHIFT = "OpenShift"
 
-    def __init__(self):
-        self.shell_history: list(str) = []
-        self.last_shell_command: str = None
-    
-    def clear_shell_history(self):
-        self.shell_history = []
+    @staticmethod
+    def clear_shell_history():
+        K8sConnection.shell_history = []
 
-    def pop_shell_history(self):
-        history = self.get_shell_history()
-        self.clear_shell_history()
+    @staticmethod
+    def pop_shell_history():
+        history = K8sConnection.get_shell_history()
+        K8sConnection.clear_shell_history()
         return history
     
-    def get_shell_history(self):
-        return self.shell_history
+    @staticmethod
+    def get_shell_history():
+        return K8sConnection.shell_history
     
-    def get_last_shell_command(self):
-        return self.last_shell_command
+    @staticmethod
+    def get_last_shell_command():
+        return K8sConnection.last_shell_command
 
-    def get_binary_name(self, distrib_option: str) -> str:
-        if distrib_option in [K8sConnectionMixin.DistributionOption.KUBERNETES.value, K8sConnectionMixin.DistributionOption.GKE.value]:
+    @staticmethod
+    def get_binary_name(distrib_option: str) -> str:
+        if distrib_option in [K8sConnection.DistributionOption.KUBERNETES.value, K8sConnection.DistributionOption.GKE.value]:
             return "kubectl"
-        if distrib_option == K8sConnectionMixin.DistributionOption.OPENSHIFT.value:
+        if distrib_option == K8sConnection.DistributionOption.OPENSHIFT.value:
             return "oc"
         raise ValueError(f"Could not select a valid distribution option using option: {distrib_option}")
 
+    @staticmethod
     def shell(
-        self,
         cmd: str,
         target_service: platform.Service,
         kubeconfig: platform.Secret,
@@ -90,8 +94,8 @@ class K8sConnectionMixin:
             raise ValueError(
                 "A runwhen service was not provided for the kubectl command"
             )
-        self.shell_history.append(cmd)
-        self.last_shell_command = cmd
+        K8sConnection.shell_history.append(cmd)
+        K8sConnection.last_shell_command = cmd
         logger.info("requesting command: %s", cmd)
         request_secrets: [platform.ShellServiceRequestSecret] = []
         request_secrets.append(platform.ShellServiceRequestSecret(kubeconfig, as_file=True))
@@ -106,7 +110,7 @@ class K8sConnectionMixin:
         if (
             (rsp.status != 200 or rsp.returncode > 0)
             and rsp.stderr != ""
-            and not any(partial_stderr in rsp.stderr for partial_stderr in K8sConnectionMixin.ALLOWED_STDERR)
+            and not any(partial_stderr in rsp.stderr for partial_stderr in K8sConnection.ALLOWED_STDERR)
         ):
             raise ValueError(
                 f"The shell service responded with HTTP: {rsp.status} RC: {rsp.returncode} and response: {rsp}"
@@ -114,34 +118,26 @@ class K8sConnectionMixin:
         logger.info("shell stdout: %s", rsp.stdout)
         return rsp.stdout
 
+    @staticmethod
     def template_workload(
-        self,
         workload_name: str,
         workload_namespace: str,
-        workload_container: str,
-        target_service: platform.Service=None,
-        kubeconfig: platform.Secret=None,
-        context: str="",
+        workload_container: str
     ) -> str:
         """Take in the workload variables and construct a valid string that specifies the namespace and container. 
 
         Args:
-            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset. Also accepts labels if starting with `-l`
+            workload_name (str): a workload type in which a pod can be found such as deployment/my-deployment or statefulset/my-statefulset
             workload_namespace (str): a kubernetes namespace or openshift project name
             workload_container (str): a specific container within a pod, as pods may not default to the desired container
 
         Returns:
             workload: a string containing the the expanded workload parameters.
         """
-        # Check if the namespace is provided in the workload name and return the value verbatim
+        # Check if the namespace is provided in the workload name and return the vlaue verbatim
         if " -n" in workload_name or " --namespace" in workload_name: 
             workload = f"{workload_name}"
             return workload
-        # Check if we are passing labels instead of a distinct resource, then fetch pod name by label
-        if "-l" in workload_name:
-            resource_labels=workload_name.lstrip("-l ")
-            pod=self.fetch_pod_names_by_label(target_service=target_service, kubeconfig=kubeconfig, namespace=workload_namespace, context=context, resource_labels=resource_labels)
-            workload_name=f"pod/{pod[0]}"
         if not workload_name:
             raise ValueError(f"Error: No workload is specified.")
         if not workload_namespace:
@@ -152,8 +148,8 @@ class K8sConnectionMixin:
             workload = f"{workload_name} -n {workload_namespace} -c {workload_container}"
         return workload
 
+    @staticmethod
     def template_shell(
-        self,
         cmd: str,
         target_service: platform.Service,
         kubeconfig: platform.Secret,
@@ -174,32 +170,38 @@ class K8sConnectionMixin:
         """
         logger.info("templating a shell command: %s with the kwargs: %s", cmd, kwargs)
         cmd = cmd.format(**kwargs)
-        return self.shell(cmd=cmd, target_service=target_service, kubeconfig=kubeconfig)
+        return K8sConnection.shell(cmd=cmd, target_service=target_service, kubeconfig=kubeconfig)
 
+    @staticmethod
     def loop_template_shell(
-        self,
         items: list,
         cmd: str,
         target_service: platform.Service,
         kubeconfig: platform.Secret,
         include_empty:bool=False,
         newline_as_separate:bool=False,
+        fail_on_exception:bool=False,
     ) -> list:
         outputs : list = []
         for item in items:
-            output = self.template_shell(
-                cmd,
-                target_service,
-                kubeconfig,
-                item=item,
-            )
-            if output or include_empty is True:
-                if newline_as_separate:
-                    output = stdout_to_list(output, delimiter="\n")
-                    if not include_empty:
-                        output = [output_val for output_val in output if output_val]
-                    if output:
-                        outputs += output
-                else:
-                    outputs.append(output)
+            try:
+                output = K8sConnection.template_shell(
+                    cmd,
+                    target_service,
+                    kubeconfig,
+                    item=item,
+                )
+                if output or include_empty is True:
+                    if newline_as_separate:
+                        output = stdout_to_list(output, delimiter="\n")
+                        if not include_empty:
+                            output = [output_val for output_val in output if output_val]
+                        if output:
+                            outputs += output
+                    else:
+                        outputs.append(output)
+            except Exception as e:
+                if fail_on_exception:
+                    raise Exception(f"Encountered exception: {e} on item {item}")
+                logger.warning(f"Encountered exception: {e} on item {item} - continuing to next item")
         return outputs

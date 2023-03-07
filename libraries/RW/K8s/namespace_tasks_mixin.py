@@ -5,7 +5,7 @@ from benedict import benedict
 from typing import Optional, Union
 from RW import platform
 from enum import Enum
-from .k8s_connection_mixin import K8sConnectionMixin
+from .k8s_connection import K8sConnection
 from .deployment_tasks_mixin import DeploymentTasksMixin
 from .event_tasks_mixin import EventTasksMixin
 from .pvc_tasks_mixin import PvcTasksMixin
@@ -27,7 +27,7 @@ from robot.libraries.BuiltIn import BuiltIn
 logger = logging.getLogger(__name__)
 
 class NamespaceTasksMixin(
-    K8sConnectionMixin,
+    K8sConnection,
     DeploymentTasksMixin,
     EventTasksMixin,
     PvcTasksMixin,
