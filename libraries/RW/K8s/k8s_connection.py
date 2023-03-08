@@ -145,7 +145,7 @@ class K8sConnection:
         # Check if we are passing labels instead of a distinct resource, then fetch pod name by label
         if "-l" in workload_name:
             resource_labels = workload_name.lstrip("-l ")
-            pod = self.fetch_pod_names_by_label(
+            pod = fetch_pod_names_by_label(
                 target_service=target_service,
                 kubeconfig=kubeconfig,
                 namespace=workload_namespace,
