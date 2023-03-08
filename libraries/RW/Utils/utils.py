@@ -5,7 +5,7 @@ Robot Keywords via RW.Utils.
 """
 from typing import Iterable, Any, Union, Optional
 import os, pprint, functools, time, json, datetime, yaml, logging, re, xml.dom.minidom, urllib.parse
-import jmespath
+import jmespath, ast
 from enum import Enum
 from benedict import benedict
 from robot.libraries.BuiltIn import BuiltIn
@@ -111,6 +111,46 @@ def search_json(data: dict, pattern: str) -> dict:
     result = jmespath.search(pattern, data)
     return result
 
+def json_to_metric(    
+    data: str="",
+    search_filter: str="",
+    calculation_field: str="",
+    calculation: str="Count"
+    ) -> float:
+    """Takes in a json data result from kubectl and calculation parameters to return a single float metric. 
+    Assumes that the return is a "list" type and automatically searches through the "items" list, along with 
+    other search filters provided buy the user (using jmespath search).
+
+    Args: 
+        :data str: JSON data to search through. 
+        :search_filter str: A jmespah filter used to help filter search results. See https://jmespath.org/? to test search strings.
+        :calculation_field str: The field from the json output that calculation should be performed on/with. 
+        :calculation_type str:  The type of calculation to perform. count, sum, avg. 
+        :return: A float that represents the single calculated metric. 
+    """
+    # Fix up single quoted json if necessary
+    data=json.dumps(ast.literal_eval(data))
+
+    # Validate json
+    if is_json(data) is False:    
+        raise ValueError(f"Error: Data does not appear to be valid json")
+    else: 
+        payload=json.loads(data)
+      
+    if not calculation_field: 
+        raise ValueError(f"Error: Calculation field must be set for calcluations that are sum or avg.")
+    # Perform calculations
+    search_pattern_prefix=search_filter
+
+    if calculation == "Count":
+        search_results=search_json(data=payload, pattern=search_pattern_prefix)
+        return len(search_results)
+    if calculation == "Sum":    
+        metric = search_json(data=payload, pattern="sum("+search_pattern_prefix+"."+calculation_field+")")
+        return float(metric)
+    if calculation == "Avg":
+        metric = utils.search_json(data=payload, pattern="avg("+search_pattern_prefix+"."+calculation_field+")")
+        return float(metric)
 
 def from_yaml(yaml_str) -> object:
     if is_yaml(yaml_str):

@@ -35,7 +35,6 @@ class K8sUtils:
 
         Args: 
             :data str: JSON data to search through. 
-            :command str: The command used to generate the output (might be useful in expanding this function)
             :search_filter str: A jmespah filter used to help filter search results. See https://jmespath.org/? to test search strings.
             :calculation_field str: The field from the json output that calculation should be performed on/with. 
             :calculation_type str:  The type of calculation to perform. count, sum, avg. 
