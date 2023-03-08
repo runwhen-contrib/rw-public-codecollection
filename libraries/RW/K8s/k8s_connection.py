@@ -147,14 +147,14 @@ class K8sConnection:
         # Check if we are passing labels instead of a distinct resource, then fetch pod name by label
         if "-l" in workload_name:
             resource_labels = workload_name.lstrip("-l ")
-            pod = K8sConnection.fetch_pod_names_by_label(
+            cmd = f"kubectl get pods -l {resource_labels} -n {workload_namespace} --context {context} -o json"
+            pod_details: str = K8sConnection.shell(
+                cmd=cmd,
                 target_service=target_service,
                 kubeconfig=kubeconfig,
-                namespace=workload_namespace,
-                context=context,
-                resource_labels=resource_labels,
             )
-            workload_name = f"pod/{pod[0]}"
+            pod_names = search_json(data=json.loads(pod_details), pattern="items[].metadata.name")
+            workload_name = f"pod/{pod_names[0]}"
         if not workload_name:
             raise ValueError(f"Error: No workload is specified.")
         if not workload_namespace:
@@ -164,27 +164,6 @@ class K8sConnection:
         else:
             workload = f"{workload_name} -n {workload_namespace} -c {workload_container}"
         return workload
-
-    @staticmethod
-    def fetch_pod_names_by_label(
-        namespace: str,
-        context: str,
-        kubeconfig: platform.Secret,
-        target_service: platform.Service,
-        binary_name: str = "kubectl",
-        resource_labels: str = "",
-    ) -> list():
-        """
-        Temp hack until circular dep is resolved
-        """
-        cmd = f"{binary_name} get pods -l {resource_labels} -n {namespace} --context {context} -o json"
-        pod_details: str = K8sConnection.shell(
-            cmd=cmd,
-            target_service=target_service,
-            kubeconfig=kubeconfig,
-        )
-        pod_names = search_json(data=json.loads(pod_details), pattern="items[].metadata.name")
-        return pod_names
 
     @staticmethod
     def template_shell(
