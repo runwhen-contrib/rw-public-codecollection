@@ -2,9 +2,9 @@
 This codebundle allows you to monitor another SLI and trigger a TaskSet when the expected rate of a SLI value falls below a specified threshold.
 
 ## SLI
-Depending on your observability needs, the Multi-Window Multi-Burn algorithm + SLO error budgets may not suit your needs and a more traditional incident threshold may be needed. In those cases you can use this codebundle to create an incident threshold based on another SLI. A query will be performed on the monitored SLI's metrics for a given time window and resolution, and then the presence of a success value will be checked. For example: fetch 1 hour of metric data at 5 minute intervals, for the monitored SLI; a 0 means failure and 1 means healthy. If we set the success value to `1` and a rate of `1.0` (100%) then when any failure occurs in the monitored SLI, this codebundle will immediately trigger the given TaskSet.
+Depending on your observability needs, the Multi-Window Multi-Burn algorithm + SLO error budgets approach may not apply to your use case. In those cases you can use this codebundle to create an incident threshold based on another SLI. A query will be performed on the monitored SLI's metrics for a given time window and resolution, and then the presence of a success value will be checked. For example: fetch 1 hour of metric data at 5 minute intervals, for the monitored SLI; a `0` means failure and `1` means healthy. If we set the success value to `1` and a rate of `1.0` (100%) then when any failure occurs in the monitored SLI, this codebundle will immediately trigger the given TaskSet.
 
-### Use Case: SLI: Trigger an slack message when my API health check fails
+### Use Case: SLI: Trigger a slack message when my API health check fails
 For our public API, it's uptime is critical, so we can monitor its health check and send a slack message to a team channel whenever the health check fails.
 
 ```
