@@ -94,7 +94,7 @@ Fetch Unready Pods
     ...    kubeconfig=${kubeconfig}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    IF    "${unreadypods_results}" == ""
+    IF    """${unreadypods_results}""" == ""
         ${unreadypods_results}=    Set Variable    No unready pods found
     END
     RW.Core.Add Pre To Report    Summary of unready pod restarts in namespace: ${NAMESPACE}

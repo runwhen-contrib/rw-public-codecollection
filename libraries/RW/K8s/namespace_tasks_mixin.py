@@ -690,11 +690,12 @@ Triage Namespace Summary: {status}
             kind = search_json(ev, "involvedObject.kind")
             if last_ts > start_time and ns == namespace and kind == "Pod":
                 name = search_json(ev, "involvedObject.name")
+                message = ev["message"]
                 filtered_events.append(ev)
                 events_involved_pods.append(name)
-                error_events_summary.append(ev["message"] + "\n")
+                error_events_summary.append(f"{kind}.{name}.{message}\n")
         if error_events_summary:
-            error_events_summary = "\t\t\t".join(
+            error_events_summary = "\t\t" + "\t\t".join(
                 error_events_summary[0 : max(max_events_displayed, len(error_events_summary)) - 1]
             )
         else:
