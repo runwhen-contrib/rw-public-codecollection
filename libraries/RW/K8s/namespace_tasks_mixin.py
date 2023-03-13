@@ -656,6 +656,7 @@ Triage Namespace Summary: {status}
         error_pattern: str = "(Error|Exception)",
         event_age: str = "30m",
         binary_name: str = "kubectl",
+        max_events_displayed: int = 5,
     ):
         """fetches events and filters them based on age, for valid events if they have an associated pod
         it will be checked for error entries in the last 20 lines of pod logs.
@@ -672,7 +673,7 @@ Triage Namespace Summary: {status}
 
         """
         all_passed: bool = True
-        max_events_displayed: int = 5
+        # get events and collect involved pods
         events_cmd: str = f"{binary_name} get Events --context={context} --namespace={namespace} --field-selector=type!=Normal --sort-by=lastTimestamp -o json"
         events: str = K8sConnection.shell(events_cmd, target_service, kubeconfig)
         events: dict = from_json(events)
@@ -697,7 +698,28 @@ Triage Namespace Summary: {status}
                 error_events_summary[0 : max(max_events_displayed, len(error_events_summary) - 1)]
             )
         else:
-            error_events_summary = "\tNo events captured for summary"
+            error_events_summary = "\t\tNo events captured for summary"
+        # get all pods in ns and if restarts > 0 add to involved pods name plus sum
+        total_restart_count: int = 0
+        pods_cmd: str = f"{binary_name} get Pods --context={context} --namespace={namespace} -o json"
+        ns_pods: str = K8sConnection.shell(pods_cmd, target_service, kubeconfig)
+        ns_pods: dict = from_json(ns_pods)
+        if "items" in ns_pods:
+            ns_pods = ns_pods["items"]
+        for pod in ns_pods:
+            try:
+                search_time = K8sUtils.convert_age_to_search_time(age=event_age)
+                search_filter = (
+                    f"status.containerStatuses[?restartCount>`0` && lastState.terminated.finishedAt >= `{search_time}`]"
+                )
+                container_details = search_json(pod, search_filter)
+                for container in container_details:
+                    total_restart_count += container["restartCount"]
+                    # append to log check name list so it gets checked there
+                    events_involved_pods.append(container["name"])
+            except Exception as e:
+                logger.warning(f"Encountered {e} while checking pod restart counts, skipping this pod {pod}")
+        # for each pod with events/restarts, get recent logs
         traced_pod_logs: dict = {}
         for podname in events_involved_pods:
             cmd: str = f'{binary_name} logs --context={context} --namespace={namespace} pod/{podname} --tail=20 | grep -E -i "{error_pattern}"'
@@ -707,9 +729,15 @@ Triage Namespace Summary: {status}
                     traced_pod_logs[podname] = stdout
             except:
                 logger.warning(f"Unable to fetch logs from pod {podname} with command: {cmd}")
+        # process results
         pods_with_errors: int = len(traced_pod_logs.keys())
+        traced_pod_logs = traced_pod_logs if traced_pod_logs else "None"
         error_events: int = len(filtered_events)
-        error_events_status: str = f"Passed {SYMBOL_GREEN_CHECKMARK}" if error_events == 0 else f"Failed {SYMBOL_RED_X}"
+        error_events_status: str = (
+            f"Passed {SYMBOL_GREEN_CHECKMARK}"
+            if error_events == 0 and total_restart_count == 0
+            else f"Failed {SYMBOL_RED_X}"
+        )
         pod_errors_status: str = (
             f"Passed {SYMBOL_GREEN_CHECKMARK}" if pods_with_errors == 0 else f"Failed {SYMBOL_RED_X}"
         )
@@ -723,9 +751,12 @@ Trace Namespace Summary: {status}
         Recent Event Count: {error_events}
         Error Event Messages: \n{error_events_summary}
     Pods with Error Logs: {pod_errors_status}
+        Total Pod Restart Count: {total_restart_count}
         Erroring Pod Count: {pods_with_errors}
         Erroring Pod Names:
             {error_pod_names}
+        Error Logs:
+            {traced_pod_logs}
         """
         return report
 
