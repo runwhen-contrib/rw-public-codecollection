@@ -554,10 +554,16 @@ class NamespaceTasksMixin(
         report_fragments: dict = {
             "deployment_replicas_status": f"Passed {SYMBOL_GREEN_CHECKMARK}",
             "deployment_replica_output": "",
+            "deployment_checked": 0,
+            "deployment_failed": 0,
             "daemonset_replicas_status": f"Passed {SYMBOL_GREEN_CHECKMARK}",
             "daemonsets_replicas_output": "",
+            "daemonsets_checked": 0,
+            "daemonsets_failed": 0,
             "statefulset_replicas_status": f"Passed {SYMBOL_GREEN_CHECKMARK}",
             "statefulsets_replica_output": "",
+            "statefulsets_checked": 0,
+            "statefulsets_failed": 0,
         }
         for ns_obj in namespace_objects:
             try:
@@ -565,6 +571,7 @@ class NamespaceTasksMixin(
                 ns_obj_kind = ns_obj["kind"]
                 # surface level deployment check
                 if ns_obj_kind == "Deployment":
+                    report_fragments["deployment_checked"] += 1
                     if not report_fragments["deployment_replicas_status"]:
                         report_fragments["deployment_replicas_status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}"
                     ready_replicas = search_json(ns_obj, "status.readyReplicas")
@@ -572,6 +579,7 @@ class NamespaceTasksMixin(
                     replicas = search_json(ns_obj, "status.replicas")
                     if ready_replicas < replicas:
                         report_fragments["deployment_replicas_status"] = f"Failed {SYMBOL_RED_X}"
+                        report_fragments["deployment_failed"] += 1
                         if not report_fragments["deployment_replica_output"]:
                             report_fragments["deployment_replica_output"] = "\tUnhealthy Deployment Names:\n"
                         report_fragments["deployment_replica_output"] += f"\t\t\t{ns_obj_kind}/{ns_obj_name}"
@@ -581,6 +589,7 @@ class NamespaceTasksMixin(
                         all_passed = False
                 # surface level daemonset check
                 elif ns_obj_kind == "Daemonset":
+                    report_fragments["daemonsets_checked"] += 1
                     if not report_fragments["daemonset_replicas_status"]:
                         report_fragments["daemonset_replicas_status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}"
                     curr_scheduled = search_json(ns_obj, "status.currentNumberScheduled")
@@ -591,6 +600,7 @@ class NamespaceTasksMixin(
                     mischeduled = 0 if not isinstance(mischeduled, int) else mischeduled
                     if mischeduled > 0 or curr_scheduled != num_available:
                         report_fragments["daemonset_replicas_status"] = f"Failed {SYMBOL_RED_X}"
+                        report_fragments["daemonsets_failed"] += 1
                         if not report_fragments["daemonsets_replicas_output"]:
                             report_fragments["daemonsets_replicas_output"] = "\tUnhealthy Daemonset Names:\n"
                         report_fragments["daemonsets_replicas_output"] += f"\t\t\t{ns_obj_kind}/{ns_obj_name}"
@@ -600,6 +610,7 @@ class NamespaceTasksMixin(
                         all_passed = False
                 # Surface level statefulset check
                 elif ns_obj_kind == "StatefulSet":
+                    report_fragments["statefulsets_checked"] += 1
                     if not report_fragments["statefulset_replicas_status"]:
                         report_fragments["statefulset_replicas_status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}"
                     replicas = search_json(ns_obj, "status.replicas")
@@ -608,6 +619,7 @@ class NamespaceTasksMixin(
                     ready_replicas = 0 if not isinstance(ready_replicas, int) else ready_replicas
                     if ready_replicas < replicas:
                         report_fragments["statefulset_replicas_status"] = f"Failed {SYMBOL_RED_X}"
+                        report_fragments["statefulsets_failed"] += 1
                         if not report_fragments["statefulsets_replica_output"]:
                             report_fragments["statefulsets_replica_output"] = "\tUnhealthy StatefulSet Names:\n"
                         report_fragments["statefulsets_replica_output"] += f"\t\t\t{ns_obj_kind}/{ns_obj_name}"
@@ -621,10 +633,13 @@ class NamespaceTasksMixin(
         report_fragments["status"] = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
         report: str = """
 Triage Namespace Summary: {status}
+    Deployments found with issues: {deployment_failed}/{deployment_checked}
     Deployments have the expected number of replicas: {deployment_replicas_status}
         {deployment_replica_output}
+    Daemonsets found with issues: {daemonsets_failed}/{daemonsets_checked}
     Daemonsets have the expected number of replicas: {daemonset_replicas_status}
         {daemonsets_replicas_output}
+    StatefulSet found with issues: {statefulsets_failed}/{statefulsets_checked}
     StatefulSet have the expected number of replicas: {statefulset_replicas_status}
         {statefulsets_replica_output}
         """.format(
@@ -657,9 +672,11 @@ Triage Namespace Summary: {status}
 
         """
         all_passed: bool = True
+        max_events_displayed: int = 5
         events_cmd: str = f"{binary_name} get Events --context={context} --namespace={namespace} --field-selector=type!=Normal --sort-by=lastTimestamp -o json"
         events: str = K8sConnection.shell(events_cmd, target_service, kubeconfig)
         events: dict = from_json(events)
+        error_events_summary: list = []
         if "items" in events:
             events = events["items"]
         events_involved_pods: list = []
@@ -674,6 +691,13 @@ Triage Namespace Summary: {status}
                 name = search_json(ev, "involvedObject.name")
                 filtered_events.append(ev)
                 events_involved_pods.append(name)
+                error_events_summary.append(ev["message"] + "\n")
+        if error_events_summary:
+            error_events_summary = "\t\t\t".join(
+                error_events_summary[0 : max(max_events_displayed, len(error_events_summary) - 1)]
+            )
+        else:
+            error_events_summary = "\tNo events captured for summary"
         traced_pod_logs: dict = {}
         for podname in events_involved_pods:
             cmd: str = f'{binary_name} logs --context={context} --namespace={namespace} pod/{podname} --tail=20 | grep -E -i "{error_pattern}"'
@@ -695,11 +719,64 @@ Triage Namespace Summary: {status}
         status = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
         report: str = f"""
 Trace Namespace Summary: {status}
-    Error events: {error_events_status}
-        recent event count: {error_events}
-    Pods with error logs: {pod_errors_status}
-        erroring pod count: {pods_with_errors}
-        Erroring pod names:
+    Error Events: {error_events_status}
+        Recent Event Count: {error_events}
+        Error Event Messages: \n{error_events_summary}
+    Pods with Error Logs: {pod_errors_status}
+        Erroring Pod Count: {pods_with_errors}
+        Erroring Pod Names:
             {error_pod_names}
+        """
+        return report
+
+    @staticmethod
+    def object_condition_check(
+        resource_kinds: str,
+        namespace: str,
+        context: str,
+        kubeconfig: platform.Secret,
+        target_service: platform.Service,
+        failed_status_age: str = "8h",
+        binary_name: str = "kubectl",
+    ) -> str:
+        namespace_objects: Union[dict, list, str] = K8sConnection.shell(
+            cmd=f"{binary_name} get {resource_kinds} --context={context} --namespace={namespace} -o json",
+            target_service=target_service,
+            kubeconfig=kubeconfig,
+        )
+        if isinstance(namespace_objects, str):
+            namespace_objects = from_json(namespace_objects)
+        if "items" in namespace_objects:
+            namespace_objects = namespace_objects["items"]
+        all_passed: bool = True
+        failed_statuses = []
+        failed_status_gap: datetime.timedelta = parse_timedelta(failed_status_age)
+        last_updated_time_allowed = datetime.now(timezone.utc) - failed_status_gap
+        for ns_obj in namespace_objects:
+            try:
+                obj_name = ns_obj["metadata"]["name"]
+                if "conditions" in ns_obj["status"]:
+                    conditions = ns_obj["status"]["conditions"]
+                    for condition in conditions:
+                        condition_status = condition["status"]
+                        last_updated = dateutil.parser.parse(condition["lastUpdateTime"])
+                        if condition_status == "False" and last_updated >= last_updated_time_allowed:
+                            reason = condition["reason"]
+                            condition_type = condition["type"]
+                            message = condition["message"]
+                            failed_statuses.append(
+                                f"{obj_name}.{reason}.{condition_type} is False with message: {message}\n"
+                            )
+            except Exception as e:
+                logger.warning(f"Encountered {e} while processing conditions")
+        all_passed = False if len(failed_statuses) > 0 else True
+        status = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
+        if len(failed_statuses) > 0:
+            failed_statuses = "\t".join(failed_statuses)
+        else:
+            failed_statuses = "\tNo objects found with concerning condition statuses"
+        report: str = f"""
+Object Condition Status Summary: {status}
+    {failed_statuses}
         """
         return report

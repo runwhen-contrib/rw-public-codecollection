@@ -94,7 +94,10 @@ Fetch Unready Pods
     ...    kubeconfig=${kubeconfig}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Summary of unhealthy pod restarts in namespace: ${NAMESPACE}
+    IF    "${unreadypods_results}" == ""
+        ${unreadypods_results}=    Set Variable    No unready pods found
+    END
+    RW.Core.Add Pre To Report    Summary of unready pod restarts in namespace: ${NAMESPACE}
     RW.Core.Add Pre To Report    ${unreadypods_results}
     RW.Core.Add Pre To Report    Commands Used:\n${history}
 
@@ -111,4 +114,18 @@ Triage Namespace
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${troubleshoot_report}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
+
+Object Condition Check
+    ${err_status_report}=    RW.K8s.Object Condition Check
+    ...    resource_kinds=${RESOURCE_KINDS}
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    ...    kubeconfig=${kubeconfig}
+    ...    target_service=${kubectl}
+    ...    binary_name=${binary_name}
+    ...    failed_status_age=${EVENT_AGE}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    ${err_status_report}
     RW.Core.Add Pre To Report    Commands Used:\n${history}
