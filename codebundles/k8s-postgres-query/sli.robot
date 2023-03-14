@@ -17,8 +17,8 @@ Force Tags          k8s    kubernetes    postgres    sql    database    psql
 
 *** Tasks ***
 Run Postgres Query And Return Result As Metric
-    ${templated_query}=    RW.Postgres.Template Command
-    ...    query=${QUERY}
+    ${templated_query}=    RW.Postgres.Template Command With File
+    ...    queryfilepath=${QUERY_FILE_PATH}
     ...    hostname=${HOSTNAME}
     ...    database=${psql_database}
     ...    username=${psql_username}
@@ -31,8 +31,9 @@ Run Postgres Query And Return Result As Metric
     ...    kubeconfig=${KUBECONFIG}
     ...    context=${CONTEXT}
     ...    target_service=${kubectl}
+    ${quoted_query}=    RW.Postgres.Quote Query    query=${QUERY}
     ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${workload} -- bash -c "${templated_query}" --context ${CONTEXT}
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "echo \\"${quoted_query}\\" > ${QUERY_FILE_PATH} && ${templated_query}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
@@ -98,6 +99,13 @@ Suite Initialization
     ...    pattern=\w*
     ...    default=SELECT 1;
     ...    example=SELECT COUNT(id) FROM my_table;
+    ${QUERY_FILE_PATH}=    RW.Core.Import User Variable
+    ...    QUERY_FILE_PATH
+    ...    type=string
+    ...    description=The full path to write the query file to. To support multiple queries, the TaskSet puts all queries into a single file and uses psql to execute that file. 
+    ...    pattern=\w*
+    ...    default=/tmp/rw-tmp-queries.sql
+    ...    example=/tmp/rw-tmp-queries.sql
     ${HOSTNAME}=    RW.Core.Import User Variable
     ...    HOSTNAME
     ...    type=string
