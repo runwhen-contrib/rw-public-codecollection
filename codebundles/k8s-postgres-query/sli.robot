@@ -110,6 +110,7 @@ Suite Initialization
     ...    pattern=\w*
     ...    enum=[Kubernetes,GKE,OpenShift]
     ...    example=Kubernetes
+    ...    default=Kubernetes
     ${binary_name}=    RW.K8s.Get Binary Name    ${DISTRIBUTION}
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
