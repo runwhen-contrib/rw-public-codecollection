@@ -330,7 +330,7 @@ class NamespaceTasksMixin(
             ## Combine csv into jmespath OR query
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
             namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
-            search_filter = f"({namespace_search_string}) && status.conditions[?type==`Ready` && status!=`True` reason!=`PodCompleted`]"
+            search_filter = f"({namespace_search_string}) && status.conditions[?type==`Ready` && status!=`True` && reason!=`PodCompleted`]"
         else:
             cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"
         events_json: str = self.shell(
