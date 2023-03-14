@@ -323,14 +323,14 @@ class NamespaceTasksMixin(
         target_service: platform.Service,
         binary_name: str = "kubectl",
     ) -> float:
-        search_filter = f"status.conditions[?type==`Ready` && status!=`True`]"
+        search_filter = f"status.conditions[?type==`Ready` && status!=`True` && reason!=`PodCompleted`]"
         if "ALL" in namespace:
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
         elif "," in namespace:
             ## Combine csv into jmespath OR query
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
             namespace_search_string = K8sUtils.jmespath_namespace_search_string(namespaces=namespace)
-            search_filter = f"({namespace_search_string}) && status.conditions[?type==`Ready` && status!=`True`]"
+            search_filter = f"({namespace_search_string}) && status.conditions[?type==`Ready` && status!=`True` && reason!=`PodCompleted`]"
         else:
             cmd = f"{binary_name} get pods -n {namespace} --context {context} -o json"
         events_json: str = self.shell(
