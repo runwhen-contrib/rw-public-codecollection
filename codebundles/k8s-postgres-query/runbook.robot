@@ -32,8 +32,9 @@ Run Postgres Query And Results to Report
     ...    kubeconfig=${KUBECONFIG}
     ...    context=${CONTEXT}
     ...    target_service=${kubectl}
+    ${quoted_query}=    RW.Postgres.Quote Query    query=${QUERY}
     ${rsp}=    RW.K8s.Shell
-    ...    cmd=${binary_name} exec ${workload} -- bash -c "echo \\"${QUERY}\\" > ${QUERY_FILE_PATH} && ${templated_query}" --context ${CONTEXT}
+    ...    cmd=${binary_name} exec ${workload} -- bash -c "echo \\"${quoted_query}\\" > ${QUERY_FILE_PATH} && ${templated_query}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ...    shell_secrets=${shell_secrets}
