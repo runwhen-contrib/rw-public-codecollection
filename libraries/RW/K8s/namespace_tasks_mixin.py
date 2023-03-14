@@ -323,7 +323,7 @@ class NamespaceTasksMixin(
         target_service: platform.Service,
         binary_name: str = "kubectl",
     ) -> float:
-        search_filter = f"status.conditions[?type==`Ready` && status!=`True`]"
+        search_filter = f"status.conditions[?type==`Ready` && status!=`True` && reason!=`PodCompleted`]"
         if "ALL" in namespace:
             cmd = f"{binary_name} get pods --all-namespaces --context {context} -o json"
         elif "," in namespace:
