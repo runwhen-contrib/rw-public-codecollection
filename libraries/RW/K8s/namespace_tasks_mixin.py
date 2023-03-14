@@ -688,12 +688,13 @@ Triage Namespace Summary: {status}
             last_ts = dateutil.parser.parse(ev["lastTimestamp"])
             ns = search_json(ev, "involvedObject.namespace")
             kind = search_json(ev, "involvedObject.kind")
-            if last_ts > start_time and ns == namespace and kind == "Pod":
+            if last_ts > start_time and ns == namespace:
                 name = search_json(ev, "involvedObject.name")
                 message = ev["message"]
                 filtered_events.append(ev)
-                events_involved_pods.append(name)
                 error_events_summary.append(f"{kind}.{name}.{message}\n")
+                if kind == "Pod":
+                    events_involved_pods.append(name)
         if error_events_summary:
             error_events_summary = "\t\t" + "\t\t".join(
                 error_events_summary[0 : max(max_events_displayed, len(error_events_summary)) - 1]
@@ -768,7 +769,8 @@ Trace Namespace Summary: {status}
         context: str,
         kubeconfig: platform.Secret,
         target_service: platform.Service,
-        failed_status_age: str = "8h",
+        check_status_age: bool = False,
+        failed_status_age: str = "12h",
         binary_name: str = "kubectl",
     ) -> str:
         namespace_objects: Union[dict, list, str] = K8sConnection.shell(
@@ -791,16 +793,19 @@ Trace Namespace Summary: {status}
                     conditions = ns_obj["status"]["conditions"]
                     for condition in conditions:
                         condition_status = condition["status"]
-                        last_updated = dateutil.parser.parse(condition["lastUpdateTime"])
-                        if condition_status == "False" and last_updated >= last_updated_time_allowed:
+                        ts_key: str = "lastUpdateTime" if "lastUpdateTime" in condition else "lastTransitionTime"
+                        last_updated = dateutil.parser.parse(condition[ts_key])
+                        if condition_status == "False" and (
+                            not check_status_age or last_updated >= last_updated_time_allowed
+                        ):
                             reason = condition["reason"]
                             condition_type = condition["type"]
-                            message = condition["message"]
+                            message = condition["message"] if "message" in condition else "None"
                             failed_statuses.append(
                                 f"{obj_name}.{reason}.{condition_type} is False with message: {message}\n"
                             )
             except Exception as e:
-                logger.warning(f"Encountered {e} while processing conditions")
+                logger.warning(f"Encountered {e} while processing conditions in {ns_obj}")
         all_passed = False if len(failed_statuses) > 0 else True
         status = f"Passed {SYMBOL_GREEN_CHECKMARK}" if all_passed else f"Failed {SYMBOL_RED_X}"
         if len(failed_statuses) > 0:
