@@ -129,3 +129,14 @@ Object Condition Check
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${err_status_report}
     RW.Core.Add Pre To Report    Commands Used:\n${history}
+
+Namespace Get All
+    ${all_results}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get all --context=${CONTEXT} -n ${NAMESPACE}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${kubeconfig}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Informational Get All for Namespace: ${NAMESPACE}
+    RW.Core.Add Pre To Report    ${all_results}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
