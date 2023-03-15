@@ -3,7 +3,10 @@ RunWhen PAPI keyword library
 
 Scope: Global
 """
-import requests, datetime, re, time, json, os, urllib, logging
+import requests, re, time, json, os, urllib, logging
+from datetime import datetime, timezone
+
+import dateutil.parser
 
 from dataclasses import dataclass
 from typing import Union, Optional
@@ -11,6 +14,8 @@ from typing import Union, Optional
 from RW import platform
 from RW.Core import Core
 from RW.Utils import search_json
+from RW.Utils import parse_timedelta
+from RW.Utils import csv_to_list
 
 logger = logging.getLogger(__name__)
 
@@ -439,6 +444,9 @@ class Papi:
         self,
         workspace: str,
         slx_name: str,
+        taskset_run_age: str = "8h",
+        task_titles: str = "*",
+        rs_name: str = None,
     ) -> any:
         """Runs a taskset attached to an SLX in a given workspace
 
@@ -450,10 +458,38 @@ class Papi:
             any: returns a varying json payload describing the runsession
         """
         session = self._get_session()
+        exists: bool = False
+        if task_titles == "*":
+            task_titles = ["*"]
+        else:
+            task_titles = csv_to_list(task_titles)
+        taskset_run_age = parse_timedelta(taskset_run_age)
+        taskset_run_age = datetime.now(timezone.utc) - taskset_run_age
+        if not rs_name:
+            rs_name = f"alert-{slx_name}"
+        runsessions = self.get_runsessions(workspace)
+        rs_created = None
+        for rs in runsessions:
+            checked_name = "-".join(rs["name"].split("-")[:-1])
+            logger.debug(f"checking {rs_name} vs {checked_name}")
+            if rs_name == checked_name:
+                rs_created = dateutil.parser.parse(rs["created"])
+                exists = True
+                break
         url = f"{self.base_url}{self.base_path}{workspace}/runsessions"
-        rs_json = {"runRequests": [{"slxName": f"{workspace}--{slx_name}"}]}
-        rsp = session.post(url, json=rs_json)
-        if not rsp.ok:
-            raise Exception(f"Received !ok response from papi: {rsp.json()}")
-        rsp = rsp.json()
+        rs_json = {
+            "runRequests": [{"slxName": f"{workspace}--{slx_name}", "titles": task_titles}],
+            "generateName": rs_name,
+            # "alias": {"alert_src": rs_name},
+        }
+        rsp = exists
+        logger.debug(f"Posting runsession: {rs_json}")
+        if not exists or (exists and rs_created < taskset_run_age):
+            logger.debug(f"Running taskset due to exists: {exists} and {rs_created} < {taskset_run_age}")
+            rsp = session.post(url, json=rs_json)
+            if not rsp.ok:
+                raise Exception(f"Received !ok response from papi: {rsp.json()}")
+            rsp = rsp.json()
+        else:
+            logger.info(f"Not running taskset due to exists: {exists} and {rs_created} < {taskset_run_age}")
         return rsp

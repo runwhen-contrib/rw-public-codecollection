@@ -44,14 +44,26 @@ Suite Initialization
     ${EXPECTED_THRESHOLD_RATE}=    RW.Core.Import User Variable    EXPECTED_THRESHOLD_RATE
     ...    type=string
     ...    description=The rate of successes within the data set inspected. If the actual rate is lower than this a TaskSet will be triggered.
-    ...    pattern=(\d+?)
+    ...    pattern=^-?\d+(?:\.\d+)?$
     ...    example=A rate 0.25 indicates that within a time range of X and success value of Y, we see Y in X's data set 25% of the time.
     ...    default=0.25
-    ${ALERT_TASKSET}=    RW.Core.Import User Variable    ALERT_TASKSET
+    ${SLX_TASKSET}=    RW.Core.Import User Variable    SLX_TASKSET
     ...    type=string
     ...    description=The name of the SLX containing the TaskSet to run when the monitored SLI is classified as an alert.
     ...    pattern=\w*
     ...    example=my-awesome-slx
+    ${TASKS_TO_RUN}=    RW.Core.Import User Variable    TASKS_TO_RUN
+    ...    type=string
+    ...    description=A CSV list of the task titles to run. Leaving this as '*' runs all tasks in the TaskSet.
+    ...    pattern=\w*
+    ...    example=*
+    ...    default=*
+    ${TASKSET_RUN_AGE}=    RW.Core.Import User Variable    TASKSET_RUN_AGE
+    ...    type=string
+    ...    pattern=((\d+?)d)?((\d+?)h)?((\d+?)m)?((\d+?)s)?
+    ...    description=The amount of time that must pass before an alert signal can re-trigger the given TaskSet.
+    ...    example=1d2h15m
+    ...    default=30s
     ${NO_RESULT_DEFAULT}=    RW.Core.Import User Variable    NO_RESULT_DEFAULT
     ...    type=string
     ...    description=The default value assumed when no results are returned by the monitored SLI.
@@ -64,7 +76,9 @@ Suite Initialization
     Set Suite Variable    ${RESOLUTION}    ${RESOLUTION}
     Set Suite Variable    ${THRESHOLD_VALUE}    ${THRESHOLD_VALUE}
     Set Suite Variable    ${EXPECTED_THRESHOLD_RATE}    ${EXPECTED_THRESHOLD_RATE}
-    Set Suite Variable    ${ALERT_TASKSET}    ${ALERT_TASKSET}
+    Set Suite Variable    ${SLX_TASKSET}    ${SLX_TASKSET}
+    Set Suite Variable    ${TASKS_TO_RUN}    ${TASKS_TO_RUN}
+    Set Suite Variable    ${TASKSET_RUN_AGE}    ${TASKSET_RUN_AGE}
     Set Suite Variable    ${NO_RESULT_DEFAULT}    ${NO_RESULT_DEFAULT}
 
 *** Tasks ***
@@ -80,10 +94,12 @@ Check If SLI Within Incident Threshold
     ...    default_value=${NO_RESULT_DEFAULT}
     ${signal}=    Evaluate    1 if ${success_rate} < ${EXPECTED_THRESHOLD_RATE} else 0
     IF    ${signal}
-        Log    Alert signal set - running TaskSet ${ALERT_TASKSET}
+        Log    Alert signal set - running TaskSet ${SLX_TASKSET}
         ${rsp}=    RW.RunWhen.Papi.Run Taskset
         ...    workspace=${WORKSPACE_NAME}
-        ...    slx_name=${ALERT_TASKSET}
+        ...    slx_name=${SLX_TASKSET}
+        ...    taskset_run_age=${TASKSET_RUN_AGE}
+        ...    task_titles=${TASKS_TO_RUN}
     END
     RW.Core.Push Metric    ${signal}
 
