@@ -452,5 +452,8 @@ class Papi:
         session = self._get_session()
         url = f"{self.base_url}{self.base_path}{workspace}/runsessions"
         rs_json = {"runRequests": [{"slxName": f"{workspace}--{slx_name}"}]}
-        rsp = session.post(url, json=rs_json).json()
+        rsp = session.post(url, json=rs_json)
+        if not rsp.ok:
+            raise Exception(f"Received !ok response from papi: {rsp.json()}")
+        rsp = rsp.json()
         return rsp
