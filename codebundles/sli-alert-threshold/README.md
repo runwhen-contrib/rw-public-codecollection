@@ -1,4 +1,4 @@
-# SLI Incident Threshold
+# SLI Alert Threshold
 This codebundle allows you to monitor another SLI and trigger a TaskSet when the expected rate of a SLI value falls below a specified threshold.
 
 ## SLI
