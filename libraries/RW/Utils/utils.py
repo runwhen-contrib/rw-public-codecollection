@@ -451,14 +451,20 @@ def rate_of_occurence(
     data: list,
     count_value: any,
     default_value: float = None,
+    operand: str = "Equals",
 ) -> float:
+    rate: float = default_value
     try:
-        # note that count is sensitive to the type, eg: 1000 != 1000.0
-        rate: float = data.count(count_value) / len(data)
+        if operand == "Greater Than":
+            rate = len([val for val in data if val > count_value]) / len(data)
+        elif operand == "Less Than":
+            rate = len([val for val in data if val < count_value]) / len(data)
+        else:  # assume Equals
+            # note that count is sensitive to the type, eg: 1000 != 1000.0
+            rate = data.count(count_value) / len(data)
     except Exception as e:
-        logger.warning(f"Encountered {e} while calculating rate of occurence")
+        logger.warning(f"Encountered {e} while calculating rate of occurence with {count_value} {operand} {data}")
         if default_value == None:
             logger.error(f"The default value: {default_value} is None raising exception up")
             raise e
-        rate = default_value
     return rate

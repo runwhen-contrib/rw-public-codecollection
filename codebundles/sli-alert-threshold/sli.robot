@@ -70,6 +70,12 @@ Suite Initialization
     ...    pattern=(\d+?)
     ...    default=1
     ...    example=1
+    ${OPERAND}=    RW.Core.Import User Variable    OPERAND
+    ...    type=string
+    ...    description=The operand used to determine the rate of the threshold value. 
+    ...    default=Equals
+    ...    example=Selecting Equals looks for an exact match in the monitored SLI's metric data.
+    ...    enum=[Equals,Greater Than, Less Than]
     Set Suite Variable    ${WORKSPACE_NAME}    ${WORKSPACE_NAME}
     Set Suite Variable    ${SLX_NAME}    ${SLX_NAME}
     Set Suite Variable    ${HISTORY_WINDOW}    ${HISTORY_WINDOW}
@@ -80,6 +86,7 @@ Suite Initialization
     Set Suite Variable    ${TASKS_TO_RUN}    ${TASKS_TO_RUN}
     Set Suite Variable    ${TASKSET_RUN_AGE}    ${TASKSET_RUN_AGE}
     Set Suite Variable    ${NO_RESULT_DEFAULT}    ${NO_RESULT_DEFAULT}
+    Set Suite Variable    ${OPERAND}    ${OPERAND}
 
 *** Tasks ***
 Check If SLI Within Incident Threshold
@@ -92,6 +99,7 @@ Check If SLI Within Incident Threshold
     ...    data=${metric_data}
     ...    count_value=${THRESHOLD_VALUE}
     ...    default_value=${NO_RESULT_DEFAULT}
+    ...    operand=${OPERAND}
     ${signal}=    Evaluate    1 if ${success_rate} < ${EXPECTED_THRESHOLD_RATE} else 0
     IF    ${signal}
         Log    Alert signal set - running TaskSet ${SLX_TASKSET}
