@@ -440,7 +440,7 @@ class Papi:
         output = f"{runsession_url}{runsession_stdout}"
         return output
 
-    def run_taskset(
+    def request_taskset(
         self,
         workspace: str,
         slx_name: str,

@@ -38,7 +38,7 @@ Suite Initialization
     ${THRESHOLD_VALUE}=    RW.Core.Import User Variable    THRESHOLD_VALUE
     ...    type=string
     ...    description=The value searched for in the SLI metrics that indicates a successful / healthy state.
-    ...    pattern=(\d+?)
+    ...    pattern=^-?\d+(?:\.\d+)?$
     ...    example=1
     ...    default=1
     ${EXPECTED_THRESHOLD_RATE}=    RW.Core.Import User Variable    EXPECTED_THRESHOLD_RATE
@@ -103,7 +103,7 @@ Check If SLI Within Incident Threshold
     ${signal}=    Evaluate    1 if ${success_rate} < ${EXPECTED_THRESHOLD_RATE} else 0
     IF    ${signal}
         Log    Alert signal set - running TaskSet ${SLX_TASKSET}
-        ${rsp}=    RW.RunWhen.Papi.Run Taskset
+        ${rsp}=    RW.RunWhen.Papi.Request Taskset
         ...    workspace=${WORKSPACE_NAME}
         ...    slx_name=${SLX_TASKSET}
         ...    taskset_run_age=${TASKSET_RUN_AGE}
