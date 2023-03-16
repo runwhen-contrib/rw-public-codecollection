@@ -45,7 +45,7 @@ Suite Initialization
     ...    type=string
     ...    description=The rate of successes within the data set inspected. If the actual rate is lower than this a TaskSet will be triggered.
     ...    pattern=^-?\d+(?:\.\d+)?$
-    ...    example=A rate 0.25 indicates that within a time range of X and success value of Y, we see Y in X's data set 25% of the time.
+    ...    example=If we have a rate of 0.25 (25%) and our data set from the monitored SLI is [0,0,0,0,1] while our threshold value is 1 then this will trigger an alert as the actual rate is 20%.
     ...    default=0.25
     ${SLX_TASKSET}=    RW.Core.Import User Variable    SLX_TASKSET
     ...    type=string
