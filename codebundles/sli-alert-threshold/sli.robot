@@ -38,13 +38,13 @@ Suite Initialization
     ${THRESHOLD_VALUE}=    RW.Core.Import User Variable    THRESHOLD_VALUE
     ...    type=string
     ...    description=The value searched for in the SLI metrics that indicates a successful / healthy state.
-    ...    pattern=^-?\d+(?:\.\d+)?$
+    ...    pattern=\w*
     ...    example=1
     ...    default=1
     ${EXPECTED_THRESHOLD_RATE}=    RW.Core.Import User Variable    EXPECTED_THRESHOLD_RATE
     ...    type=string
     ...    description=The rate of successes within the data set inspected. If the actual rate is lower than this a TaskSet will be triggered.
-    ...    pattern=^-?\d+(?:\.\d+)?$
+    ...    pattern=\w*
     ...    example=If we have a rate of 0.25 (25%) and our data set from the monitored SLI is [0,0,0,0,1] while our threshold value is 1 then this will trigger an alert as the actual rate is 20%.
     ...    default=0.25
     ${SLX_TASKSET}=    RW.Core.Import User Variable    SLX_TASKSET
