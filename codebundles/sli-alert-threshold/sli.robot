@@ -63,7 +63,7 @@ Suite Initialization
     ...    pattern=((\d+?)d)?((\d+?)h)?((\d+?)m)?((\d+?)s)?
     ...    description=The amount of time that must pass before an alert signal can re-trigger the given TaskSet.
     ...    example=1d2h15m
-    ...    default=30s
+    ...    default=8h
     ${NO_RESULT_DEFAULT}=    RW.Core.Import User Variable    NO_RESULT_DEFAULT
     ...    type=string
     ...    description=The default value assumed when no results are returned by the monitored SLI.
