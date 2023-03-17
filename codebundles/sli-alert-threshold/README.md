@@ -34,4 +34,3 @@ configProvided:
 ## TODO
 - [ ] Add additional notes for tweaking threshold models to get the desired behaviour
 - [ ] Add docs for connecting to another workspace
-- [ ] Add operand setting to handle other SLI styles
