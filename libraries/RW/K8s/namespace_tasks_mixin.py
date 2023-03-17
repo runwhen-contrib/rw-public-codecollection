@@ -773,6 +773,7 @@ Trace Namespace Summary: {status}
         failed_status_age: str = "12h",
         binary_name: str = "kubectl",
     ) -> str:
+        ignore_reasons: list = ["PodCompleted"]
         namespace_objects: Union[dict, list, str] = K8sConnection.shell(
             cmd=f"{binary_name} get {resource_kinds} --context={context} --namespace={namespace} -o json",
             target_service=target_service,
@@ -801,9 +802,10 @@ Trace Namespace Summary: {status}
                             reason = condition["reason"]
                             condition_type = condition["type"]
                             message = condition["message"] if "message" in condition else "None"
-                            failed_statuses.append(
-                                f"{obj_name}.{reason}.{condition_type} is False with message: {message}\n"
-                            )
+                            if reason not in ignore_reasons:
+                                failed_statuses.append(
+                                    f"{obj_name}.{reason}.{condition_type} is False with message: {message}\n"
+                                )
             except Exception as e:
                 logger.warning(f"Encountered {e} while processing conditions in {ns_obj}")
         all_passed = False if len(failed_statuses) > 0 else True
