@@ -2,7 +2,7 @@
 Metadata          Author    Shea Stewart            
 Documentation     Uses promql on the Ops Suite API to determine the health of a Kong managed ingress resource
 ...               and pushes the result as an SLI metric. Produces a 1 for a healthy resource, or 0 for an unhealthy resource. 
-Force Tags        GCP    OpsSuite    PromQL    Prometheus  Kubernetes
+Force Tags        GCP    OpsSuite    PromQL  Kubernetes    Kong    Ingress
 Library           RW.GCP.OpsSuite
 Library           RW.Core
 Library           RW.Utils
