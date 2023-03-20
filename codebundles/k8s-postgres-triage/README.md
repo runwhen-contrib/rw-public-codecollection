@@ -125,7 +125,7 @@ metadata:
   name: [service-account]-role
 rules:
 - apiGroups: [""] # "" indicates the core API group
-  resources: ["pods", "pods/log", "events", "configmaps", "services", "jobs", "replicationcontrollers"]
+  resources: ["pods", "pods/log", "events", "configmaps", "services", "replicationcontrollers"]
   verbs: ["get", "watch", "list"]
 - apiGroups: ["batch"]
   resources: ["*"]
