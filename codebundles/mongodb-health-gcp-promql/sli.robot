@@ -32,22 +32,22 @@ Get Instance Status
     Set Global Variable    ${up_value}
     Set Global Variable    ${up_score}
 
-# Get Upstream Health
-#     ${healthcheck_rsp}=      RW.Prometheus.Query Instant
-#     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
-#     ...    query=sum(kong_upstream_target_health{upstream="${INGRESS_UPSTREAM}",state="healthchecks_off"})
-#     ...    optional_headers=${access_token_header_secret}
-#     ...    target_service=${CURL_SERVICE}
-#     ${healthcheck_metric_value}=        RW.Utils.Json To Metric
-#     ...    data=${healthcheck_rsp}
-#     ...    search_filter=data.result[]
-#     ...    calculation_field=value[1].to_number(@)
-#     ...    calculation=Sum
-#     # ${healthcheck_metric_value}=    Set Variable   ${healthcheck_rsp["data"]["result"][0]["value"][1]}
-#     IF    ${healthcheck_metric_value} >= 1
-#         Log    "Healthcheck is disabled for this target" 
-#     END
-
+Get Connection Utilization Rate
+    [Documentation]    Get the connection utilization (current/available) for all instances and score against threshold (1 = below threshold, 0 = above)
+    ${connection_utilization_rsp}=      RW.Prometheus.Query Instant
+    ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
+    ...    query=sum(mongodb_ss_connections{conn_type="current",rs_state="1",${PROMQL_FILTER}}) by (instance)/sum(mongodb_ss_connections{conn_type=~"current|available",rs_state="1",${PROMQL_FILTER}}) by (instance) *100
+    ...    optional_headers=${access_token_header_secret}
+    ...    target_service=${CURL_SERVICE}
+    ${max_connection_utilization_value}=        RW.Utils.Json To Metric
+    ...    data=${connection_utilization_rsp}
+    ...    search_filter=data.result[]
+    ...    calculation_field=value[1].to_number(@)
+    ...    calculation=Max
+    Log    The max connection utilization (current / available) is ${max_connection_utilization_value}
+    ${connection_score}=    Evaluate    1 if ${max_connection_utilization_value} < ${CONNECTION_UTILIZATION_THRESHOLD} else 0
+    Set Global Variable    ${max_connection_utilization_value}
+    Set Global Variable    ${connection_score}
 
 #     ${error_rsp}=      RW.Prometheus.Query Instant
 #     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
@@ -116,6 +116,13 @@ Suite Initialization
     ...    type=string
     ...    description=The prometheus labels used to filter results. 
     ...    pattern=\w*
+    ...    default=instance=~".+"
     ...    example=namespace="mongodb-test"
+    RW.Core.Import User Variable    CONNECTION_UTILIZATION_THRESHOLD
+    ...    type=string
+    ...    description=The percentage of used vs available connections which is deemed acceptable. Utilization above this number will negatively affect the service health score. 
+    ...    pattern=\w*
+    ...    default=80
+    ...    example=80
     Set Suite Variable    ${CURL_SERVICE}    ${CURL_SERVICE}
     Set Suite Variable    ${PROJECT_ID}    ${PROJECT_ID}

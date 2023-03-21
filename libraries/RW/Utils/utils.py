@@ -149,7 +149,13 @@ def json_to_metric(
         metric = search_json(data=payload, pattern="sum("+search_pattern_prefix+"."+calculation_field+")")
         return float(metric)
     if calculation == "Avg":
-        metric = utils.search_json(data=payload, pattern="avg("+search_pattern_prefix+"."+calculation_field+")")
+        metric = search_json(data=payload, pattern="avg("+search_pattern_prefix+"."+calculation_field+")")
+        return float(metric)
+    if calculation == "Max":
+        metric = search_json(data=payload, pattern="max("+search_pattern_prefix+"."+calculation_field+")")
+        return float(metric)
+    if calculation == "Min":
+        metric = search_json(data=payload, pattern="min("+search_pattern_prefix+"."+calculation_field+")")
         return float(metric)
 
 def from_yaml(yaml_str) -> object:
