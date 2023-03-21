@@ -26,3 +26,4 @@ The service account should have the following roles:
 Please see the [documentation for creating service accounts](https://cloud.google.com/iam/docs/creating-managing-service-accounts)
 
 ## Helpful Resources
+- https://www.mongodb.com/docs/v4.2/reference/replica-states/

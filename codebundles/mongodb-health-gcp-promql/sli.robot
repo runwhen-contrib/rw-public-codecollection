@@ -49,6 +49,24 @@ Get Connection Utilization Rate
     Set Global Variable    ${max_connection_utilization_value}
     Set Global Variable    ${connection_score}
 
+Get MongoDB Member State Health
+    [Documentation]    Fetch the replication state of each member and ensure they are within acceptable parameters. https://www.mongodb.com/docs/manual/reference/replica-states/
+    ${acceptable_member_states}=  Set Variable  PRIMARY|SECONDARY|ARBITER
+    ${member_state_rsp}=      RW.Prometheus.Query Instant
+    ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
+    ...    query=mongodb_members_id{member_state!~"${acceptable_member_states}",${PROMQL_FILTER}}
+    ...    optional_headers=${access_token_header_secret}
+    ...    target_service=${CURL_SERVICE}
+    ${member_state_value}=        RW.Utils.Json To Metric
+    ...    data=${member_state_rsp}
+    ...    search_filter=data.result[]
+    ...    calculation_field=value[1].to_number(@)
+    ...    calculation=Count
+    Log    The count of members that are NOT ${acceptable_member_states} is: ${member_state_value}
+    ${member_state_score}=    Evaluate    1 if ${member_state_value} == 0 else 0
+    Set Global Variable    ${member_state_value}
+    Set Global Variable    ${member_state_score}
+
 #     ${error_rsp}=      RW.Prometheus.Query Instant
 #     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
 #     ...    query=kong_upstream_target_health{upstream="${INGRESS_UPSTREAM}",state=~"dns_error|unhealthy"}
@@ -82,10 +100,13 @@ Get Connection Utilization Rate
 
 
 Generate MongoDB Score
-    ${mongodb_score}=      Evaluate  (${up_score}) / 3
+    ${mongodb_score}=      Evaluate  (${up_score}+${connection_score}+${member_state_value}) / 3
     ${health_score}=      Convert to Number    ${mongodb_score}  2
     RW.Core.Push Metric    ${health_score}    
     RW.Core.Push Metric    ${up_value}    sub_name=up
+    RW.Core.Push Metric    ${connection_score}    sub_name=connection
+    RW.Core.Push Metric    ${member_state_score}    sub_name=member_state
+
     # RW.Core.Push Metric    ${error_metric_value}    sub_name=error_metric_value
     # RW.Core.Push Metric    ${request_latency_99th_value}    sub_name=request_latency_99th_value
 
