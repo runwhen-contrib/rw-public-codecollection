@@ -52,6 +52,8 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | [gitlab-get-repos-latency](./codebundles/gitlab-get-repos-latency/) | SLI | [sli.robot](./codebundles/gitlab-get-repos-latency/sli.robot) |      Check GitLab latency by getting a list of repo names.<br> |
 | [googlechat-sendmessage](./codebundles/googlechat-sendmessage/) | TaskSet | [runbook.robot](./codebundles/googlechat-sendmessage/runbook.robot) |      Sends a static Google Chat message via webhook. Contains optional configuration for including runsession info.<br> | 
 | [grafana-health](./codebundles/grafana-health/) | SLI | [sli.robot](./codebundles/grafana-health/sli.robot) |      Check Grafana server health.<br> |
+| [grpc-grpcurl-unary](./codebundles/grpc-grpcurl-unary/) | TaskSet | [runbook.robot](./codebundles/grpc-grpcurl-unary/runbook.robot) |      A gRPC curl taskset for querying data from a generic grpcurl call and presenting the output.<br> | 
+| [grpc-grpcurl-unary](./codebundles/grpc-grpcurl-unary/) | SLI | [sli.robot](./codebundles/grpc-grpcurl-unary/sli.robot) |      A gRPC curl SLI for querying and extracting data from a generic grpcurl call.<br> |
 | [hello-world](./codebundles/hello-world/) | TaskSet | [runbook.robot](./codebundles/hello-world/runbook.robot) |      Basic Hello-World TaskSet<br> | 
 | [http-latency](./codebundles/http-latency/) | SLI | [sli.robot](./codebundles/http-latency/sli.robot) |      Measure HTTP latency against a given URL.<br> |
 | [http-ok](./codebundles/http-ok/) | SLI | [sli.robot](./codebundles/http-ok/sli.robot) |      Check if an HTTP request against a URL fails or times out of a given latency window.<br> |
