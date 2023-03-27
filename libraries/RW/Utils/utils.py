@@ -417,33 +417,54 @@ def merge_json_secrets(*args) -> platform.Secret:
     return merged_secret
 
 
-def secret_to_curl_headers(optional_headers: platform.Secret) -> platform.Secret:
+def secret_to_curl_headers(
+    optional_headers: platform.Secret,
+    default_headers: str = '{"content-type": "application/json"}',
+) -> platform.Secret:
     header_list = []
-    headers = {
-        "content-type": "application/json",
-    }
+    headers = json.loads(default_headers)
     headers.update(json.loads(optional_headers.value))
     for k, v in headers.items():
         header_list.append(f'-H "{k}: {v}"')
-    optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=" ".join(header_list))
+    sec_val = " ".join(header_list)
+    if not sec_val:
+        sec_val = ""
+    optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=sec_val)
     return optional_headers
 
 
-def create_curl(cmd, optional_headers: platform.Secret) -> str:
+def create_curl(cmd, optional_headers: platform.Secret = None) -> str:
     """
     Helper method to generate a curl string equivalent to a Requests object (roughly)
     Note that headers are inserted as a $variable to be substituted in the location service by an environment variable.
     This is identified by the secret.key
     """
+    secret_headers: str = f"${optional_headers.key}" if optional_headers and optional_headers.value else ""
     # Check for pipes in command
     if "|" in cmd:
         # split command at first pipe
-        cmd_prefix, cmd_suffix = cmd.split("|")
+        cmd_segments = cmd.split("|")
+        cmd_prefix = cmd_segments[0]
+        # handle subsequent pipes
+        cmd_suffix = "|".join(cmd_segments[1:])
         # we use eval so that the location service evaluates the secret headers as multiple tokens
-        curl = f'eval $(echo "{cmd_prefix} ${optional_headers.key} | {cmd_suffix} ")'
+        curl = f'eval $(echo "{cmd_prefix} {secret_headers} | {cmd_suffix} ")'
     else:
         # we use eval so that the location service evaluates the secret headers as multiple tokens
-        curl = f'eval $(echo "{cmd} ${optional_headers.key} ")'
+        curl = f'eval $(echo "{cmd} {secret_headers} ")'
+    return curl
+
+
+def quote_curl(curl: str) -> str:
+    """Simple helper method to escape specific characters in complex curl commands
+
+    Args:
+        query (str): the curl string to execute
+
+    Returns:
+        str: a curl string with inner " characters escaped to prevent shell eval issues
+    """
+    curl = curl.replace('"', '\\"')
     return curl
 
 
