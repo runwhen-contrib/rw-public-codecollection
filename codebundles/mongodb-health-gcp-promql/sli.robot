@@ -67,6 +67,23 @@ Get MongoDB Member State Health
     Set Global Variable    ${member_state_value}
     Set Global Variable    ${member_state_score}
 
+Get MongoDB Replication Lag
+    [Documentation]    Fetch the replication lag (in seconds) of all instances and determine if they are within acceptable parameters. https://www.mongodb.com/docs/manual/reference/replica-states/
+    ${replication_lag_rsp}=      RW.Prometheus.Query Instant
+    ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
+    ...    query=(max by (instance) (mongodb_rs_members_optimeDate{member_state="PRIMARY",${PROMQL_FILTER}}) - min by (instance) (mongodb_rs_members_optimeDate{member_state="SECONDARY",${PROMQL_FILTER}})) / 1000
+    ...    optional_headers=${access_token_header_secret}
+    ...    target_service=${CURL_SERVICE}
+    ${replication_lag_value}=        RW.Utils.Json To Metric
+    ...    data=${replication_lag_rsp}
+    ...    search_filter=data.result[]
+    ...    calculation_field=value[1].to_number(@)
+    ...    calculation=Max
+    Log    Max lag of any instance is ${replication_lag_value} seconds. 
+    ${replication_lag_score}=    Evaluate    1 if ${replication_lag_value} < 0 else 0
+    Set Global Variable    ${replication_lag_value}
+    Set Global Variable    ${replication_lag_score}
+
 #     ${error_rsp}=      RW.Prometheus.Query Instant
 #     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
 #     ...    query=kong_upstream_target_health{upstream="${INGRESS_UPSTREAM}",state=~"dns_error|unhealthy"}
@@ -142,8 +159,14 @@ Suite Initialization
     RW.Core.Import User Variable    CONNECTION_UTILIZATION_THRESHOLD
     ...    type=string
     ...    description=The percentage of used vs available connections which is deemed acceptable. Utilization above this number will negatively affect the service health score. 
-    ...    pattern=\w*
+    ...    pattern=\d*
     ...    default=80
     ...    example=80
+    RW.Core.Import User Variable    MAX_LAG
+    ...    type=string
+    ...    description=The maximum lag (in seconds) between members that is deemed acceptable. Lag above this number will negatively affect the service health score. 
+    ...    pattern=\d*
+    ...    default=10
+    ...    example=10
     Set Suite Variable    ${CURL_SERVICE}    ${CURL_SERVICE}
     Set Suite Variable    ${PROJECT_ID}    ${PROJECT_ID}
