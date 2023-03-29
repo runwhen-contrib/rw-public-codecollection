@@ -16,7 +16,7 @@ Evaluations performed in this healthcheck:
 
 This SLI does support measing health across multiple instances and often reports the Max value obtained across instances. The PROMQL_FILTER can be used to add specific labels for query filtering as necessary. 
 
-> For those not looking for composite scores, the (gcp-opssuite-promql)[https://docs.runwhen.com/public/v/codebundles/gcp-opssuite-promql] codebundle can be used to create specific SLIs for any specific metric. 
+> For those not looking for composite scores, the [gcp-opssuite-promql](https://docs.runwhen.com/public/v/codebundles/gcp-opssuite-promql) codebundle can be used to create specific SLIs for any specific metric. 
 
 ## Use Cases
 ### Use Case: SLI: MongoDB Community Edition Health for All Instances in a Kubernetes Namespace
