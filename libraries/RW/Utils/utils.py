@@ -124,7 +124,7 @@ def json_to_metric(
         :data str: JSON data to search through.
         :search_filter str: A jmespah filter used to help filter search results. See https://jmespath.org/? to test search strings.
         :calculation_field str: The field from the json output that calculation should be performed on/with.
-        :calculation_type str:  The type of calculation to perform. count, sum, avg.
+        :calculation_type str:  The type of calculation to perform. count, sum, avg, max, min.
         :return: A float that represents the single calculated metric.
     """
     # Fix up single quoted json if necessary
@@ -149,6 +149,12 @@ def json_to_metric(
         return float(metric)
     if calculation == "Avg":
         metric = utils.search_json(data=payload, pattern="avg(" + search_pattern_prefix + "." + calculation_field + ")")
+        return float(metric)
+    if calculation == "Max":
+        metric = search_json(data=payload, pattern="max("+search_pattern_prefix+"."+calculation_field+")")
+        return float(metric)
+    if calculation == "Min":
+        metric = search_json(data=payload, pattern="min("+search_pattern_prefix+"."+calculation_field+")")
         return float(metric)
 
 
