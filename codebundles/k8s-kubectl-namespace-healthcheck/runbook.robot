@@ -35,8 +35,8 @@ Suite Initialization
     ...    type=string
     ...    description=Which Kubernetes kinds to inspect during troubleshooting as a CSV. Depending on kinds and your cluster workloads this can increase codebundle runtime.
     ...    pattern=\w*
-    ...    example=Deployment,DaemonSet,StatefulSet
-    ...    default=Deployment,DaemonSet,StatefulSet
+    ...    example=Deployment,DaemonSet,StatefulSet,Pod
+    ...    default=Deployment,DaemonSet,StatefulSet,Pod
     ${DISTRIBUTION}=    RW.Core.Import User Variable    DISTRIBUTION
     ...    type=string
     ...    description=Which distribution of Kubernetes to use for operations, such as: Kubernetes, OpenShift, etc.
@@ -89,12 +89,15 @@ Trace Namespace Errors
 *** Tasks ***
 Fetch Unready Pods
     ${unreadypods_results}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get pods --context=${CONTEXT} -n ${NAMESPACE} --sort-by='status.containerStatuses[0].restartCount' --field-selector=status.phase!=Running,status.phase!=Succeeded
+    ...    cmd=${binary_name} get pods --context=${CONTEXT} -n ${NAMESPACE} --sort-by='status.containerStatuses[0].restartCount' --field-selector=status.phase!=Running
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Summary of unhealthy pod restarts in namespace: ${NAMESPACE}
+    IF    """${unreadypods_results}""" == ""
+        ${unreadypods_results}=    Set Variable    No unready pods found
+    END
+    RW.Core.Add Pre To Report    Summary of unready pod restarts in namespace: ${NAMESPACE}
     RW.Core.Add Pre To Report    ${unreadypods_results}
     RW.Core.Add Pre To Report    Commands Used:\n${history}
 
@@ -111,4 +114,29 @@ Triage Namespace
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${troubleshoot_report}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
+
+Object Condition Check
+    ${err_status_report}=    RW.K8s.Object Condition Check
+    ...    resource_kinds=${RESOURCE_KINDS}
+    ...    namespace=${NAMESPACE}
+    ...    context=${CONTEXT}
+    ...    kubeconfig=${kubeconfig}
+    ...    target_service=${kubectl}
+    ...    binary_name=${binary_name}
+    ...    check_status_age=NO
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    ${err_status_report}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
+
+Namespace Get All
+    ${all_results}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get all --context=${CONTEXT} -n ${NAMESPACE}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${kubeconfig}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Informational Get All for Namespace: ${NAMESPACE}
+    RW.Core.Add Pre To Report    ${all_results}
     RW.Core.Add Pre To Report    Commands Used:\n${history}

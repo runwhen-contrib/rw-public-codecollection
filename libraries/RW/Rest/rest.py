@@ -123,7 +123,8 @@ class Rest:
         except Exception as e:
             logger.info(f"Failed to parse json response due to: {e} - falling back to text")
             rsp_data = rsp.text
-        if json_path and is_json(rsp_data):
+        # logger.info(f"rsp_data: {rsp_data}")
+        if json_path:
             rsp_data = jmespath.search(json_path, rsp_data)
             if rsp_data == None:
                 raise ValueError(

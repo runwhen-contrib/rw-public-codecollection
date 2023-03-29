@@ -18,8 +18,9 @@ logger = logging.getLogger(__name__)
 # TODO: port RWUtils over to here / merge / deduplicate
 # TODO: add control structure keywords
 
-SYMBOL_GREEN_CHECKMARK: str = '\u2705'
-SYMBOL_RED_X: str = '\u274C'
+SYMBOL_GREEN_CHECKMARK: str = "\u2705"
+SYMBOL_RED_X: str = "\u274C"
+
 
 class Status(Enum):
     NOT_OK = 0
@@ -111,52 +112,45 @@ def search_json(data: dict, pattern: str) -> dict:
     result = jmespath.search(pattern, data)
     return result
 
-def json_to_metric(    
-    data: str="",
-    search_filter: str="",
-    calculation_field: str="",
-    calculation: str="Count"
-    ) -> float:
-    """Takes in a json data result from kubectl and calculation parameters to return a single float metric. 
-    Assumes that the return is a "list" type and automatically searches through the "items" list, along with 
+
+def json_to_metric(
+    data: str = "", search_filter: str = "", calculation_field: str = "", calculation: str = "Count"
+) -> float:
+    """Takes in a json data result from kubectl and calculation parameters to return a single float metric.
+    Assumes that the return is a "list" type and automatically searches through the "items" list, along with
     other search filters provided buy the user (using jmespath search).
 
-    Args: 
-        :data str: JSON data to search through. 
+    Args:
+        :data str: JSON data to search through.
         :search_filter str: A jmespah filter used to help filter search results. See https://jmespath.org/? to test search strings.
-        :calculation_field str: The field from the json output that calculation should be performed on/with. 
-        :calculation_type str:  The type of calculation to perform. count, sum, avg. 
-        :return: A float that represents the single calculated metric. 
+        :calculation_field str: The field from the json output that calculation should be performed on/with.
+        :calculation_type str:  The type of calculation to perform. count, sum, avg.
+        :return: A float that represents the single calculated metric.
     """
     # Fix up single quoted json if necessary
-    data=json.dumps(ast.literal_eval(data))
+    data = json.dumps(ast.literal_eval(data))
 
     # Validate json
-    if is_json(data) is False:    
+    if is_json(data) is False:
         raise ValueError(f"Error: Data does not appear to be valid json")
-    else: 
-        payload=json.loads(data)
-      
-    if not calculation_field: 
+    else:
+        payload = json.loads(data)
+
+    if not calculation_field:
         raise ValueError(f"Error: Calculation field must be set for calcluations that are sum or avg.")
     # Perform calculations
-    search_pattern_prefix=search_filter
+    search_pattern_prefix = search_filter
 
     if calculation == "Count":
-        search_results=search_json(data=payload, pattern=search_pattern_prefix)
+        search_results = search_json(data=payload, pattern=search_pattern_prefix)
         return len(search_results)
-    if calculation == "Sum":    
-        metric = search_json(data=payload, pattern="sum("+search_pattern_prefix+"."+calculation_field+")")
+    if calculation == "Sum":
+        metric = search_json(data=payload, pattern="sum(" + search_pattern_prefix + "." + calculation_field + ")")
         return float(metric)
     if calculation == "Avg":
-        metric = search_json(data=payload, pattern="avg("+search_pattern_prefix+"."+calculation_field+")")
+        metric = utils.search_json(data=payload, pattern="avg(" + search_pattern_prefix + "." + calculation_field + ")")
         return float(metric)
-    if calculation == "Max":
-        metric = search_json(data=payload, pattern="max("+search_pattern_prefix+"."+calculation_field+")")
-        return float(metric)
-    if calculation == "Min":
-        metric = search_json(data=payload, pattern="min("+search_pattern_prefix+"."+calculation_field+")")
-        return float(metric)
+
 
 def from_yaml(yaml_str) -> object:
     if is_yaml(yaml_str):
@@ -358,11 +352,13 @@ def list_to_string(data_list: list, join_with: str = "\n") -> str:
 def string_if_else(check_boolean: bool, if_str: str, else_str) -> str:
     return if_str if check_boolean else else_str
 
-def remove_spaces(initial_str: str, remove:list[str]=[" ", "\n", "\t"]) -> str:
+
+def remove_spaces(initial_str: str, remove: list[str] = [" ", "\n", "\t"]) -> str:
     result_str = initial_str
     for symbol in remove:
         result_str: str = result_str.replace(symbol, "")
     return result_str
+
 
 def csv_to_list(csv_str: str, strip_entries: bool = True) -> list:
     csv_list: list = []
@@ -421,30 +417,75 @@ def merge_json_secrets(*args) -> platform.Secret:
     return merged_secret
 
 
-def secret_to_curl_headers(optional_headers: platform.Secret) -> platform.Secret:
+def secret_to_curl_headers(
+    optional_headers: platform.Secret,
+    default_headers: str = '{"content-type": "application/json"}',
+) -> platform.Secret:
     header_list = []
-    headers = {
-        "content-type":"application/json",
-    }
+    headers = json.loads(default_headers)
     headers.update(json.loads(optional_headers.value))
-    for k,v in headers.items():
-        header_list.append(f"-H \"{k}: {v}\"")
-    optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=" ".join(header_list))
+    for k, v in headers.items():
+        header_list.append(f'-H "{k}: {v}"')
+    sec_val = " ".join(header_list)
+    if not sec_val:
+        sec_val = ""
+    optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=sec_val)
     return optional_headers
 
-def create_curl(cmd, optional_headers: platform.Secret) -> str:
+
+def create_curl(cmd, optional_headers: platform.Secret = None) -> str:
     """
     Helper method to generate a curl string equivalent to a Requests object (roughly)
     Note that headers are inserted as a $variable to be substituted in the location service by an environment variable.
     This is identified by the secret.key
     """
+    secret_headers: str = f"${optional_headers.key}" if optional_headers and optional_headers.value else ""
     # Check for pipes in command
-    if '|' in cmd:
+    if "|" in cmd:
         # split command at first pipe
-        cmd_prefix,cmd_suffix = cmd.split('|')
+        cmd_segments = cmd.split("|")
+        cmd_prefix = cmd_segments[0]
+        # handle subsequent pipes
+        cmd_suffix = "|".join(cmd_segments[1:])
         # we use eval so that the location service evaluates the secret headers as multiple tokens
-        curl = f"eval $(echo \"{cmd_prefix} ${optional_headers.key} | {cmd_suffix} \")"
-    else: 
+        curl = f'eval $(echo "{cmd_prefix} {secret_headers} | {cmd_suffix} ")'
+    else:
         # we use eval so that the location service evaluates the secret headers as multiple tokens
-        curl = f"eval $(echo \"{cmd} ${optional_headers.key} \")"
+        curl = f'eval $(echo "{cmd} {secret_headers} ")'
     return curl
+
+
+def quote_curl(curl: str) -> str:
+    """Simple helper method to escape specific characters in complex curl commands
+
+    Args:
+        query (str): the curl string to execute
+
+    Returns:
+        str: a curl string with inner " characters escaped to prevent shell eval issues
+    """
+    curl = curl.replace('"', '\\"')
+    return curl
+
+
+def rate_of_occurence(
+    data: list,
+    count_value: any,
+    default_value: float = None,
+    operand: str = "Equals",
+) -> float:
+    rate: float = default_value
+    try:
+        if operand == "Greater Than":
+            rate = len([val for val in data if val > count_value]) / len(data)
+        elif operand == "Less Than":
+            rate = len([val for val in data if val < count_value]) / len(data)
+        else:  # assume Equals
+            # note that count is sensitive to the type, eg: 1000 != 1000.0
+            rate = data.count(count_value) / len(data)
+    except Exception as e:
+        logger.warning(f"Encountered {e} while calculating rate of occurence with {count_value} {operand} {data}")
+        if default_value == None:
+            logger.error(f"The default value: {default_value} is None raising exception up")
+            raise e
+    return rate

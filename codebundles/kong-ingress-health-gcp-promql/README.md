@@ -30,7 +30,7 @@ metadata:
 spec:
   ingressClassName: kong
   rules:
-  - host: ob.sandbox.runwhen.com
+  - host: b.demo.here.com
     http:
       paths:
       - backend:

@@ -1,4 +1,4 @@
-import re, kubernetes, yaml, logging
+import re, kubernetes, yaml, logging, json
 from struct import unpack
 import dateutil.parser
 from benedict import benedict
@@ -6,6 +6,8 @@ from typing import Optional, Union, Generator
 from RW import platform
 from enum import Enum
 from RW.Utils.utils import stdout_to_list
+from RW.Utils.utils import search_json
+
 
 logger = logging.getLogger(__name__)
 
@@ -145,14 +147,14 @@ class K8sConnection:
         # Check if we are passing labels instead of a distinct resource, then fetch pod name by label
         if "-l" in workload_name:
             resource_labels = workload_name.lstrip("-l ")
-            pod = fetch_pod_names_by_label(
+            cmd = f"kubectl get pods -l {resource_labels} -n {workload_namespace} --context {context} -o json"
+            pod_details: str = K8sConnection.shell(
+                cmd=cmd,
                 target_service=target_service,
                 kubeconfig=kubeconfig,
-                namespace=workload_namespace,
-                context=context,
-                resource_labels=resource_labels,
             )
-            workload_name = f"pod/{pod[0]}"
+            pod_names = search_json(data=json.loads(pod_details), pattern="items[].metadata.name")
+            workload_name = f"pod/{pod_names[0]}"
         if not workload_name:
             raise ValueError(f"Error: No workload is specified.")
         if not workload_namespace:
