@@ -34,7 +34,7 @@ Get Instance Status
     Append To List     ${SCORES}       ${up_score} 
 
 Get Connection Utilization Rate
-    [Documentation]    Get the connection utilization (current/available) for all instances and score against threshold (1 = below threshold, 0 = above)
+    [Documentation]    Get the connection utilization (current/max) for all instances and score against threshold (1 = below threshold, 0 = above)
     ${connection_utilization_rsp}=      RW.Prometheus.Query Instant
     ...    api_url=https://monitoring.googleapis.com/v1/projects/${PROJECT_ID}/location/global/prometheus/api/v1
     ...    query=sum(mongodb_ss_connections{conn_type="current",rs_state="1",${PROMQL_FILTER}}) by (instance)/sum(mongodb_ss_connections{conn_type=~"current|available",rs_state="1",${PROMQL_FILTER}}) by (instance) *100
