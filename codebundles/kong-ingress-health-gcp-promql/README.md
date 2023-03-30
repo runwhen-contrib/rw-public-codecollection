@@ -1,5 +1,5 @@
 # Kong Ingress Health Google Managed Prometheus (promql)
-This codebundle provides an opinionated healthcheck on ingress objects that are managed by the Kong ingress controller. It requires that the Prometheus plugin is configured appropriatel such that metrics are being sent to Google Managed Prometheus. 
+This codebundle provides an opinionated healthcheck on ingress objects that are managed by the Kong ingress controller. It requires that the Prometheus plugin is configured appropriately and that metrics are being sent to Google Managed Prometheus. 
 
 
 ## Service Level Indicator
