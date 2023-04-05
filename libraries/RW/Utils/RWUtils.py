@@ -15,9 +15,8 @@ from RW import platform
 from RW.Utils import utils
 
 
-
 class RWUtils:
-    #TODO: merge with utils
+    # TODO: merge with utils
     """Utility keyword library for useful bits and bobs."""
 
     ROBOT_LIBRARY_SCOPE = "GLOBAL"
@@ -62,31 +61,31 @@ class RWUtils:
         :return: JSON serializable object of the string
 
         """
-        return utils.string_to_json(*args, **kwargs) 
+        return utils.string_to_json(*args, **kwargs)
 
     def search_json(self, *args, **kwargs) -> dict:
         """Search JSON dictionary using jmespath.
 
-        :data dict: JSON dictionary to search through. 
+        :data dict: JSON dictionary to search through.
         :pattern str: Pattern to search. See https://jmespath.org/? to test search strings.
-        :return: JSON Dict of search results. 
+        :return: JSON Dict of search results.
 
         """
-        return utils.search_json(*args, **kwargs) 
+        return utils.search_json(*args, **kwargs)
 
-   def json_to_metric(self, *args, **kwargs) -> dict:
-        """Takes in a json data result from kubectl and calculation parameters to return a single float metric. 
-        Assumes that the return is a "list" type and automatically searches through the "items" list, along with 
+    def json_to_metric(self, *args, **kwargs) -> dict:
+        """Takes in a json data result from kubectl and calculation parameters to return a single float metric.
+        Assumes that the return is a "list" type and automatically searches through the "items" list, along with
         other search filters provided buy the user (using jmespath search).
 
-        Args: 
-            :data str: JSON data to search through. 
+        Args:
+            :data str: JSON data to search through.
             :search_filter str: A jmespah filter used to help filter search results. See https://jmespath.org/? to test search strings.
-            :calculation_field str: The field from the json output that calculation should be performed on/with. 
-            :calculation_type str:  The type of calculation to perform. count, sum, avg. 
-            :return: A float that represents the single calculated metric. 
+            :calculation_field str: The field from the json output that calculation should be performed on/with.
+            :calculation_type str:  The type of calculation to perform. count, sum, avg.
+            :return: A float that represents the single calculated metric.
         """
-        return utils.json_to_metric(*args, **kwargs) 
+        return utils.json_to_metric(*args, **kwargs)
 
     def from_json(self, *args, **kwargs) -> object:
         """
@@ -144,17 +143,13 @@ class RWUtils:
         """
         return utils.parse_url(url, verbose).params
 
-    def get_query_string_from_url(
-        self, url: str, verbose: bool = False
-    ) -> str:
+    def get_query_string_from_url(self, url: str, verbose: bool = False) -> str:
         """
         Get the query string from the specified URL.
         """
         return utils.parse_url(url, verbose).query
 
-    def generate_random_integer(
-        self, minimum: int, maximum: int, seed: Optional[int] = None
-    ) -> int:
+    def generate_random_integer(self, minimum: int, maximum: int, seed: Optional[int] = None) -> int:
         """
         Generate a random integer N such that min <= N <= max.
 
@@ -166,9 +161,7 @@ class RWUtils:
         random.seed(seed)
         return random.randint(minimum, maximum)
 
-    def encode_url(
-        self, hostname: str, params: dict, verbose: bool = False
-    ) -> str:
+    def encode_url(self, hostname: str, params: dict, verbose: bool = False) -> str:
         """
         Encodes the URL and separates the URL parameters with specified separator
         set verbose to ${true} to show produced URL
