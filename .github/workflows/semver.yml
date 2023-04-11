@@ -53,6 +53,7 @@ jobs:
           PR_OUTPUT=$(curl -X POST -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" -d '{"title":"automatic-changelog-update","head":"automatic-changelog-update","base":"main","body":"automatic-changelog-update" }' https://api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/pulls)
           PR_LINK=$(echo $PR_OUTPUT| jq '._links.html.href' )
           PR_LINK=$(echo $PR_LINK | tr -d '"')
-          gh pr merge --auto --squash $PR_LINK
+          # attempt auto merge but accept fail
+          gh pr merge --auto --squash $PR_LINK || 0
         env:
           GH_TOKEN: ${{ github.token }}
