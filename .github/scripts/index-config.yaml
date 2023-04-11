@@ -1,0 +1,5 @@
+# in the repos, the key specifies the name of the temp directory name
+repos:
+  rw-public-codecollection: https://github.com/runwhen-contrib/rw-public-codecollection.git
+robot_file_pattern:
+  codebundles: .robot

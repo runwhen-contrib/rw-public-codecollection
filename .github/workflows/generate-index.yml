@@ -25,7 +25,7 @@ jobs:
           git checkout -b "automatic-index-update"
 
           # Run the index update script
-          ./.github/scripts/index.sh
+          python3 .github/scripts/index.py .github/scripts/index-config.yaml
           git add README.md
 
 
