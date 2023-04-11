@@ -70,8 +70,9 @@ def organize_results(repo_mapping: dict, codebundle_paths: list[str], parse_resu
         repo_url = repo_mapping[repo_name]
         cb_path = "/".join(path_parts[-3:])
         cb_docs = cb_data["doc"].replace("\n"," ")
+        base_name = path_parts[-2]
         name = path_parts[-2] + "-" + path_parts[-1].replace(".robot","").replace("runbook","taskset")
-        runwhen_docs_url = f"{runwhen_docs_url_base}/{name}"
+        runwhen_docs_url = f"{runwhen_docs_url_base}/{base_name}"
         supports = ", ".join([f"`{name.split('-')[0]}`"]) # eg: gets ['k8s'] for k8s codebundles
         metadata = cb_data["metadata"]
         if "Canonical Name" in metadata:
