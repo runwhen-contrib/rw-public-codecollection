@@ -2,6 +2,8 @@
 Metadata          Author    Jonathan Funk
 Documentation     This taskset runs general troubleshooting checks against all applicable objects in a namespace, checks error events, and searches pod logs for error entries.
 Force Tags        K8s    Kubernetes    Kube    K8
+Metadata          Canonical Name    Kubernetes Namespace Troubleshoot
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Suite Setup       Suite Initialization
 Library           BuiltIn
 Library           RW.Core
