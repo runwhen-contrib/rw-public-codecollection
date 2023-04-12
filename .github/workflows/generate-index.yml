@@ -46,6 +46,7 @@ jobs:
           PR_LINK=$(echo $PR_OUTPUT| jq '._links.html.href' )
           PR_LINK=$(echo $PR_LINK | tr -d '"')
           # attempt auto merge but accept fail
-          gh pr merge --auto --squash $PR_LINK || 0
+          # disabling for now
+          # gh pr merge --auto --squash $PR_LINK
         env:
           GH_TOKEN: ${{ github.token }}

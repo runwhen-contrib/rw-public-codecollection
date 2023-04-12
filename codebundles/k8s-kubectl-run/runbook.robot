@@ -3,6 +3,8 @@ Metadata          Author    Jonathan Funk
 Documentation     This codebundle runs an arbitrary kubectl command and writes the stdout to a report.
 ...               Typically used in conjunction with other codebundles.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl    Stdout    Command    Run
+Metadata          Canonical Name    Kubernetes Run Shell Command
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Suite Setup       Suite Initialization
 Library           RW.Core
 Library           RW.K8s
