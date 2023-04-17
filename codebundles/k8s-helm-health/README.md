@@ -1,0 +1,16 @@
+# Kubernetes Helm Health
+The `k8s-helm-health` codebundles checks for helm related resources within the Kubernetes cluster to surface up potential issues. 
+
+## TaskSet
+This TaskSet looks for any helmreleases across all available namespaces within the configured context and: 
+- prints a list of every helmrelease and it's status
+- prints all helmreleases that are not healthy along with the associated error messages
+
+## Requirements
+- A kubeconfig with `get` permissions to on the objects/namespaces that are involved in the query.
+
+
+## TODO
+- Add additional rbac and kubectl resources and use cases
+- Add an SLI for measuing helmrelease health
+- Add additional troubleshooting tasks as use cases evolve
