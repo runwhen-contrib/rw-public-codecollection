@@ -24,9 +24,18 @@ List all available Helmreleases
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    Helmreleases available: \n ${stdout}
 
-Fetch HelmRelease Versions  
+Fetch All HelmRelease Versions  
     ${stdout}=    RW.K8s.Shell
     ...    cmd=${binary_name} get helmreleases --all-namespaces -o=jsonpath="{range .items[*]}{'\\nName: '}{@.metadata.name}{'\\nlastAppliedRevision:'}{@.status.lastAppliedRevision}{'\\nlastAttemptedRevision:'}{@.status.lastAttemptedRevision}{'\\n---'}" --context ${context}
+    ...    target_service=${kubectl}
+    ...    kubeconfig=${KUBECONFIG}
+    ${history}=    RW.K8s.Pop Shell History
+    ${history}=    RW.Utils.List To String    data_list=${history}
+    RW.Core.Add Pre To Report    Helmreleases status errors: \n ${stdout}
+
+Fetch Mismatched HelmRelease Version
+    ${stdout}=    RW.K8s.Shell
+    ...    cmd=${binary_name} get helmreleases --all-namespaces -o json --context ${context} | jq -r '.items[] | select(.status.lastAppliedRevision!=.status.lastAttemptedRevision) | "Name: " + .metadata.name + " Last Attempted Version: " + .status.lastAttemptedRevision + " Last Applied Revision: " + .status.lastAppliedRevision'
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History
