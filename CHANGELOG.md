@@ -1,3 +1,6 @@
+## 0.0.12 2023-04-18
+- Add new index v2 generation (#112) 4e537e9
+
 ## 0.0.11 2023-04-11
 - Add semver & changelog automation (#105) 822fcf3
 - Feature/k8s mongodb health (#103) 49f9575
