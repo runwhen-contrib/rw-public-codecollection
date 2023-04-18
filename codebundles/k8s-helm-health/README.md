@@ -8,6 +8,8 @@ This TaskSet looks for any helmreleases in the specified namespace within the co
 - prints a list of helm releases that have mismatched versions (e.g. last attempted version doesn't match the running version)
 - prints all helmreleases that are not healthy along with the associated error messages
 
+
+
 ## Requirements
 - A kubeconfig with `get` permissions to on the objects/namespaces that are involved in the query.
 

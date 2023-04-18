@@ -24,6 +24,7 @@ List all available Helmreleases
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    Helmreleases available: \n ${stdout}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 Fetch All HelmRelease Versions  
     [Documentation]    List helmreleases and  the last attempted software version and the current running version.  
@@ -34,6 +35,7 @@ Fetch All HelmRelease Versions
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    Helmreleases status errors: \n ${stdout}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 Fetch Mismatched HelmRelease Version
     [Documentation]    List helmreleases and use jq to display any releases where the last attempted software revision doesn't match the current running revision. Requires jq.  
@@ -43,7 +45,8 @@ Fetch Mismatched HelmRelease Version
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Helmreleases status errors: \n ${stdout}
+    RW.Core.Add Pre To Report    Helmreleases version mismatches: \n ${stdout}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 Fetch HelmRelease Error Conditions    
     [Documentation]    List helmreleases and display the status conditions message for any helmreleases that are not in a Ready state. 
@@ -54,6 +57,7 @@ Fetch HelmRelease Error Conditions
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    Helmreleases status errors: \n ${stdout}
+    RW.Core.Add Pre To Report    Commands Used:\n${history}
 
 
 *** Keywords ***
