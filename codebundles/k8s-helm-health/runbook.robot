@@ -96,3 +96,5 @@ Suite Initialization
     ...    example=my-main-cluster
     Set Suite Variable    ${binary_name}    ${binary_name}
     Set Suite Variable    ${kubeconfig}    ${kubeconfig}
+    Set Suite Variable    ${RESOURCE_NAME}    ${RESOURCE_NAME}
+    Set Suite Variable    ${NAMESPACE}    ${NAMESPACE}
