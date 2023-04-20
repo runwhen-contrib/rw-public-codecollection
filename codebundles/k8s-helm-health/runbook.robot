@@ -18,7 +18,7 @@ Force Tags          k8s    kubernetes    kube    k8    kubectl    stdout    comm
 List all available Helmreleases    
     [Documentation]    List all helmreleases that are visible to the kubeconfig.    
     ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} --context ${context}
+    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History
@@ -29,7 +29,7 @@ List all available Helmreleases
 Fetch All HelmRelease Versions  
     [Documentation]    List helmreleases and  the last attempted software version and the current running version.  
     ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} -o=jsonpath="{range .items[*]}{'\\nName: '}{@.metadata.name}{'\\nlastAppliedRevision:'}{@.status.lastAppliedRevision}{'\\nlastAttemptedRevision:'}{@.status.lastAttemptedRevision}{'\\n---'}" --context ${context}
+    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} -o=jsonpath="{range .items[*]}{'\\nName: '}{@.metadata.name}{'\\nlastAppliedRevision:'}{@.status.lastAppliedRevision}{'\\nlastAttemptedRevision:'}{@.status.lastAttemptedRevision}{'\\n---'}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History
@@ -40,7 +40,7 @@ Fetch All HelmRelease Versions
 Fetch Mismatched HelmRelease Version
     [Documentation]    List helmreleases and use jq to display any releases where the last attempted software revision doesn't match the current running revision. Requires jq.  
     ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} -o json --context ${context} | jq -r '.items[] | select(.status.lastAppliedRevision!=.status.lastAttemptedRevision) | "Name: " + .metadata.name + " Last Attempted Version: " + .status.lastAttemptedRevision + " Last Applied Revision: " + .status.lastAppliedRevision'
+    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} -o json --context ${CONTEXT} | jq -r '.items[] | select(.status.lastAppliedRevision!=.status.lastAttemptedRevision) | "Name: " + .metadata.name + " Last Attempted Version: " + .status.lastAttemptedRevision + " Last Applied Revision: " + .status.lastAppliedRevision'
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History
@@ -51,7 +51,7 @@ Fetch Mismatched HelmRelease Version
 Fetch HelmRelease Error Conditions    
     [Documentation]    List helmreleases and display the status conditions message for any helmreleases that are not in a Ready state. 
     ${stdout}=    RW.K8s.Shell
-    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} -o=jsonpath="{range .items[?(@.status.conditions[].status=='False')]}{'-----\\nName: '}{@.metadata.name}{'\\n'}{@.status.conditions[*].message}{'\\n'}" --context ${context}
+    ...    cmd=${binary_name} get ${RESOURCE_NAME} ${NAMESPACE} -o=jsonpath="{range .items[?(@.status.conditions[].status=='False')]}{'-----\\nName: '}{@.metadata.name}{'\\n'}{@.status.conditions[*].message}{'\\n'}" --context ${CONTEXT}
     ...    target_service=${kubectl}
     ...    kubeconfig=${KUBECONFIG}
     ${history}=    RW.K8s.Pop Shell History
