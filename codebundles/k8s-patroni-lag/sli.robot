@@ -57,6 +57,7 @@ Measure Patroni Member Lag
     ...    cmd=${binary_name} exec ${PATRONI_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- patronictl list -e -f yaml
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
+    ...    render_in_commandlist=true
     ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
     ${max_lag}=    RW.Patroni.K8s Patroni Get Max Lag    state=${state_yaml}
     ${metric}=    Set Variable     ${max_lag}
