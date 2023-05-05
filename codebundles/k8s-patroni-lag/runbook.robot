@@ -71,6 +71,7 @@ Determine Patroni Health
     ...    cmd=${binary_name} exec ${PATRONI_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- patronictl list -e -f yaml
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
+    ...    render_in_commandlist=true
     ${state_yaml}=    RW.Utils.Yaml To Dict    yaml_str=${stdout}
     ${cluster_name}=    RW.Patroni.K8s Patroni Get Cluster Name    state=${state_yaml}
     ${laggy_members}=    RW.Patroni.K8s Patroni Get Laggy Members    state=${state_yaml}    lag_tolerance=${LAG_TOLERANCE}

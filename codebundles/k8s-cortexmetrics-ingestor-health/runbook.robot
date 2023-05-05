@@ -20,7 +20,7 @@ Fetch Ingestor Ring Member List and Status
     ...    cmd=${binary_name} exec ${CORTEX_RESOURCE_NAME} -n ${NAMESPACE} --context ${CONTEXT} -it -- wget -O - --header 'Accept: application/json' ${CORTEX_INGESTER_RING_URL}
     ...    target_service=${kubectl}
     ...    kubeconfig=${kubeconfig}
-
+    ...    render_in_commandlist=true
     ${filter_active_ingesters}=    RW.Utils.Search Json
     ...    data=${stdout}
     ...    pattern=shards[*].[id, state, timestamp]
