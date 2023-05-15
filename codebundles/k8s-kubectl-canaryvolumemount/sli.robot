@@ -1,7 +1,7 @@
 *** Settings ***
 Documentation       Creates an adhoc one-shot job which mounts a PVC as a canary test, which is polled for success before being torn down.
 Metadata            Author    Jonathan Funk
-Metadata            Canonical Name    Kubernetes Synthetic PVC Test
+Metadata            Display Name    Kubernetes Synthetic PVC Test
 Metadata            Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Library             BuiltIn
 Library             RW.Core

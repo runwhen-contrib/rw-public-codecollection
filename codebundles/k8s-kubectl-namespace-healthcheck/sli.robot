@@ -2,7 +2,7 @@
 Metadata          Author    Shea Stewart
 Documentation     This SLI uses kubectl to score namespace health. Produces a value between 0 (completely failing thet test) and 1 (fully passing the test). Looks for container restarts, events, and pods not ready.
 Force Tags        K8s    Kubernetes    Kube    K8    Namespace    Health
-Metadata          Canonical Name    Kubernetes Namespace Healthcheck
+Metadata          Display Name    Kubernetes Namespace Healthcheck
 Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Suite Setup       Suite Initialization
 Library           BuiltIn

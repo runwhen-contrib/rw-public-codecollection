@@ -1,9 +1,11 @@
 import argparse, yaml, subprocess, os, logging
 from collections import OrderedDict
 from robot.api import TestSuite
+
 # pip install robotframework
 
 logger = logging.getLogger(__name__)
+
 
 def clone_repos(repo_urls: list[str]) -> list[str]:
     tmp_dir_list: list[str] = []
@@ -13,15 +15,16 @@ def clone_repos(repo_urls: list[str]) -> list[str]:
         if os.path.exists(clone_directory):
             print(f"Directory {clone_directory} already exists, skipping and assuming it's been cloned already!")
             continue
-        git_command = ['git', 'clone', repo_url, clone_directory]
+        git_command = ["git", "clone", repo_url, clone_directory]
         return_code = subprocess.call(git_command)
         if return_code == 0:
-            print('Git clone succeeded!')
+            print("Git clone succeeded!")
         else:
-            print('Git clone failed with exit code:', return_code)
+            print("Git clone failed with exit code:", return_code)
     return tmp_dir_list
 
-def get_codebundle_paths(root_repo_filepaths: list[str], search_patterns: dict) -> dict[str,str]:
+
+def get_codebundle_paths(root_repo_filepaths: list[str], search_patterns: dict) -> dict[str, str]:
     matching_filepaths = {}
     for search_dir, filename_pattern in search_patterns.items():
         for repo_path in root_repo_filepaths:
@@ -33,6 +36,7 @@ def get_codebundle_paths(root_repo_filepaths: list[str], search_patterns: dict) 
                         filepath = os.path.join(root, filename)
                         matching_filepaths[repo_path].append(os.path.abspath(filepath))
     return matching_filepaths
+
 
 def parse_codebundle(codebundle_path: str) -> dict:
     parse_result = {}
@@ -48,6 +52,7 @@ def parse_codebundle(codebundle_path: str) -> dict:
     parse_result["doc"] = test_suite.doc
     return parse_result
 
+
 def parse_codebundles(codebundle_filepaths: list[str]) -> dict:
     parse_data = {}
     for cb_path in codebundle_filepaths:
@@ -56,6 +61,7 @@ def parse_codebundles(codebundle_filepaths: list[str]) -> dict:
         except Exception as e:
             logger.warning(f"Unable to parse codebundle at {cb_path} due to: {e}")
     return parse_data
+
 
 def organize_results(repo_mapping: dict, codebundle_paths: list[str], parse_results: dict) -> list:
     organized_results = []
@@ -69,14 +75,14 @@ def organize_results(repo_mapping: dict, codebundle_paths: list[str], parse_resu
         repo_name = path_parts[2]
         repo_url = repo_mapping[repo_name]
         cb_path = "/".join(path_parts[-3:])
-        cb_docs = cb_data["doc"].replace("\n"," ")
+        cb_docs = cb_data["doc"].replace("\n", " ")
         base_name = path_parts[-2]
-        name = path_parts[-2] + "-" + path_parts[-1].replace(".robot","").replace("runbook","taskset")
+        name = path_parts[-2] + "-" + path_parts[-1].replace(".robot", "").replace("runbook", "taskset")
         runwhen_docs_url = f"{runwhen_docs_url_base}/{base_name}"
-        supports = ", ".join([f"`{name.split('-')[0]}`"]) # eg: gets ['k8s'] for k8s codebundles
+        supports = ", ".join([f"`{name.split('-')[0]}`"])  # eg: gets ['k8s'] for k8s codebundles
         metadata = cb_data["metadata"]
-        if "Canonical Name" in metadata:
-            name = metadata["Canonical Name"]
+        if "Display Name" in metadata:
+            name = metadata["Display Name"]
         if "Supports" in metadata:
             supports = ", ".join([f"`{support_val.strip()}`" for support_val in metadata["Supports"].split(",")])
         tasks = [task["name"] for task in cb_data["tasks"]]
@@ -92,11 +98,12 @@ def organize_results(repo_mapping: dict, codebundle_paths: list[str], parse_resu
         organized_results.append(row_data)
     return organized_results
 
+
 def create_codebundle_table(codebundle_data: list) -> str:
     table_data: str = ""
     for codebundle_row in codebundle_data:
         codebundle_text = " | ".join(codebundle_row)
-        table_data += (f"| {codebundle_text} |\n")
+        table_data += f"| {codebundle_text} |\n"
     table: str = f"""## Codebundle Index
 | Name | Supported Integrations | Tasks | Documentation |
 |---|---|---|---|
@@ -104,20 +111,27 @@ def create_codebundle_table(codebundle_data: list) -> str:
 """
     return table
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     # Create the parser
-    parser = argparse.ArgumentParser(description='Takes a yaml file configuration and produces a table of codebundle details.')
+    parser = argparse.ArgumentParser(
+        description="Takes a yaml file configuration and produces a table of codebundle details."
+    )
 
     # Add arguments to the parser
-    parser.add_argument('config', help='The yaml config file containing the list of git URLs to clone and parse')
-    parser.add_argument('--readme_header', default="readme_header.md", help='The filepath to the header content file to be placed at the top of the readme',)
-    parser.add_argument('--readme', default="README.md", help='The readme filepath to write the resulting content to')
+    parser.add_argument("config", help="The yaml config file containing the list of git URLs to clone and parse")
+    parser.add_argument(
+        "--readme_header",
+        default="readme_header.md",
+        help="The filepath to the header content file to be placed at the top of the readme",
+    )
+    parser.add_argument("--readme", default="README.md", help="The readme filepath to write the resulting content to")
 
     # Parse the arguments
     args = parser.parse_args()
 
     # Open the YAML file
-    with open(args.config, 'r') as config_file:
+    with open(args.config, "r") as config_file:
         # Load the file contents as a dictionary
         index_config = yaml.safe_load(config_file)
 
@@ -136,7 +150,7 @@ if __name__ == '__main__':
     # print(f"Parse results: {parse_results}")
 
     readme_header_content: str = ""
-    with open(args.readme_header, 'r') as header_file:
+    with open(args.readme_header, "r") as header_file:
         readme_header_content = header_file.read()
 
     organized_results: dict = organize_results(index_config["repos"], codebundle_path_list, parse_results)
@@ -144,5 +158,5 @@ if __name__ == '__main__':
     table_content: str = create_codebundle_table(organized_results)
 
     readme_content: str = f"{readme_header_content}\n{table_content}"
-    with open(args.readme, 'w') as readme_file:
+    with open(args.readme, "w") as readme_file:
         readme_file.write(readme_content)
