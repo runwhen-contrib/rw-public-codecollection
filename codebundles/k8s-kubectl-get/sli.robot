@@ -2,7 +2,7 @@
 Documentation       This codebundle runs a kubectl get command that produces a value and pushes the metric.
 ...                 Uses jmespath for filtering and allows calculations such as count, sum, avg on specified fields.
 Metadata            Author    Shea Stewart
-Metadata            Canonical Name    Kubernetes Workload Metric
+Metadata            Display Name    Kubernetes Workload Metric
 Metadata            Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Library             RW.Core
 Library             RW.K8s
