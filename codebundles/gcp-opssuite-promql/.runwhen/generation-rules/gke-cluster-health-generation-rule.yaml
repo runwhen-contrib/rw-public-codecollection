@@ -5,17 +5,10 @@ spec:
     - resourceTypes:
         - cluster
       matchRules:
-        - type: and
-          matches: 
-            - type: pattern
-              pattern: "."
-              properties: [name]
-                mode: substring
-            - resourceType: variables
-              type: pattern
-              pattern: "gcp"
-              properties: [custom/cloud_provider]
-              mode: substring
+        - type: pattern
+          pattern: "."
+          properties: [name]
+          mode: substring
       slxs:
         - baseName: cpu
           qualifiers: [cluster]

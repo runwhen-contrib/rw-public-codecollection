@@ -1,26 +1,13 @@
-apiVersion: runwhen.com/v1
 kind: GenerationRules
 spec:
   generationRules:
-    - resourceTypes:
-      - namespace
-      matchRules:
-        - type: and
-          matches: 
-          - type: pattern
-            pattern: "flux-system"
-            properties: [name]
-            mode: substring
-          - resourceType: variables
-            type: pattern
-            pattern: "gcp"
-            properties: [custom/cloud_provider]
-            mode: substring
-          - resourceType: variables
-            type: pattern
-            pattern: "gmp"
-            properties: [custom/prometheus_provider]
-            mode: substring
+  - resourceTypes:
+    - namespace
+    matchRules:
+    - type: pattern
+      pattern: "flux-system"
+      properties: [name]
+      mode: substring
     slxs:
     - baseName: flux-reconcile
       levelOfDetail: detailed
