@@ -8,7 +8,7 @@ metadata:
     {% include "common-annotations.yaml" %}
 spec:
   imageURL: https://storage.googleapis.com/runwhen-nonprod-shared-images/icons/flux-icon-color.svg
-  alias: Flux Reconciliations Health
+  alias: BOOOP Flux Reconciliations Health
   asMeasuredBy: Failing Reconciliations as reported by Flux through GMP
   configProvided:
   - name: OBJECT_NAME
