@@ -1,17 +1,24 @@
 kind: GenerationRules
 spec:
   generationRules:
-  - resourceTypes:
-    - namespace
-    matchRules:
-    - type: pattern
-      pattern: "flux-system"
-      properties: [name]
-      mode: substring
-    slxs:
-    - baseName: flux-reconcile
-      levelOfDetail: detailed
-      baseTemplateName: flux-reconciler-gcp-promql
-      outputItems:
-        - type: slx
-        - type: sli
+    - resourceTypes:
+        - namespace
+      matchRules:
+        - type: and
+          matches:
+            - type: pattern
+              pattern: "flux-system"
+              properties: [name]
+              mode: substring
+            - resourceType: variables
+              type: pattern
+              pattern: "gcp"
+              properties: [custom/cloud_provider]
+              mode: substring
+      slxs:
+      - baseName: flux-reconcile
+        levelOfDetail: detailed
+        baseTemplateName: flux-reconciler-gcp-promql
+        outputItems:
+          - type: slx
+          - type: sli
