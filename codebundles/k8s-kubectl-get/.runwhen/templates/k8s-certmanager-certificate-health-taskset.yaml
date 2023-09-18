@@ -9,16 +9,8 @@ metadata:
 spec:
   location: {{default_location}}
   codeBundle:
-    {% if repo_url %}
-    repoUrl: {{repo_url}}
-    {% else %}
-    repoUrl: https://github.com/runwhen-contrib/rw-public-codecollection.git
-    {% endif %}
-    {% if ref %}
-    ref: {{ref}}
-    {% else %}
+    repoUrl: https://github.com/runwhen-contrib/rw-cli-codecollection
     ref: main
-    {% endif %}
     pathToRobot: codebundles/k8s-certmanager-healthcheck/runbook.robot
   configProvided:
     - name: DISTRIBUTION
