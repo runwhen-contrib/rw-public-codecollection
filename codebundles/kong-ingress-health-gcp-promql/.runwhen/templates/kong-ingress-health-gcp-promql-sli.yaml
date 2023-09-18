@@ -13,8 +13,16 @@ spec:
     - {{default_location}}
   description: Measures the overall health of an Kong managed ingress object. 
   codeBundle:
+    {% if repo_url %}
+    repoUrl: {{repo_url}}
+    {% else %}
     repoUrl: https://github.com/runwhen-contrib/rw-public-codecollection.git
+    {% endif %}
+    {% if ref %}
+    ref: {{ref}}
+    {% else %}
     ref: main
+    {% endif %}
     pathToRobot: codebundles/kong-ingress-health-gcp-promql/sli.robot
   intervalStrategy: intermezzo
   intervalSeconds: 30

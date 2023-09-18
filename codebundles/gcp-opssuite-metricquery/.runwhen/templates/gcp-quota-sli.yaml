@@ -13,8 +13,16 @@ spec:
     - {{default_location}}
   description: Measures services that have quota alerts firing in GCP
   codeBundle:
+    {% if repo_url %}
+    repoUrl: {{repo_url}}
+    {% else %}
     repoUrl: https://github.com/runwhen-contrib/rw-public-codecollection.git
+    {% endif %}
+    {% if ref %}
+    ref: {{ref}}
+    {% else %}
     ref: main
+    {% endif %}
     pathToRobot: codebundles/gcp-opssuite-metricquery/sli.robot
   intervalStrategy: intermezzo
   intervalSeconds: 30
