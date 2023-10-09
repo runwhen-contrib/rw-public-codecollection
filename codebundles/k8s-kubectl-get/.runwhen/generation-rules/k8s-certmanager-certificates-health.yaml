@@ -14,7 +14,7 @@ spec:
               mode: substring
       slxs:
         - baseName: cert-health
-          qualifiers: [resource]
+          qualifiers: ["resource", "namespace", "cluster"]
           baseTemplateName: k8s-certmanager-certificate-health
           levelOfDetail: basic
           outputItems:

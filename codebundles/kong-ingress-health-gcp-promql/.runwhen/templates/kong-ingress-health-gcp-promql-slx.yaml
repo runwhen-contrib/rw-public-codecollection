@@ -18,4 +18,6 @@ spec:
   statement: Kong Ingress objects should available and performant 99.5% of the time.  
   additionalContext:  
     namespace: "{{match_resource.resource.metadata.namespace}}"
-    labelMap: "{{match_resource.resource.metadata.labels}}" 
+    labelMap: "{{match_resource.resource.metadata.labels}}"
+    cluster: "{{ cluster.name }}"
+    context: "{{ cluster.context }}"

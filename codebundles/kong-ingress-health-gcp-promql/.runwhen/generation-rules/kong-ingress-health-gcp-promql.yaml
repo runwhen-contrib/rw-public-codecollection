@@ -22,7 +22,7 @@ spec:
         mode: substring
     slxs:
     - baseName: kong-ing-health
-      qualifiers: [resource]
+      qualifiers: ["resource", "namespace", "cluster"]
       baseTemplateName: kong-ingress-health-gcp-promql
       levelOfDetail: detailed
       outputItems:

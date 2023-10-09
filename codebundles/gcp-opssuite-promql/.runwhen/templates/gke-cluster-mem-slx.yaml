@@ -16,3 +16,6 @@ spec:
   configProvided:
   - name: CLUSTER_NAME
     value: {{cluster.name}}
+  additionalContext:  
+    cluster: "{{ cluster.name }}"
+    context: "{{ cluster.context }}"

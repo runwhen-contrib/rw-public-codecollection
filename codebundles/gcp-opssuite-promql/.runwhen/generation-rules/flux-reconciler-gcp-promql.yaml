@@ -19,6 +19,7 @@ spec:
       - baseName: flux-reconcile
         levelOfDetail: detailed
         baseTemplateName: flux-reconciler-gcp-promql
+        qualifiers: ["namespace", "cluster"]
         outputItems:
           - type: slx
           - type: sli

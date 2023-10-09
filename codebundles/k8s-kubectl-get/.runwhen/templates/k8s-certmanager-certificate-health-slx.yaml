@@ -18,4 +18,6 @@ spec:
   statement: All certificates should be in a Ready state 99.5%. 
   additionalContext:  
     namespace: "{{match_resource.resource.metadata.namespace}}"
-    labelMap: "{{match_resource.resource.metadata.labels}}"  
+    labelMap: "{{match_resource.resource.metadata.labels}}"
+    cluster: "{{ cluster.name }}"
+    context: "{{ cluster.context }}"
