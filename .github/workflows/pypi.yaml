@@ -1,0 +1,24 @@
+name: Publish Pypi Package
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - VERSION
+  workflow_dispatch:
+
+jobs:
+  publish-pypi:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Build Package
+        run: |-
+          pip install setuptools wheel twine
+          ln -s libraries/RW RW
+          python setup.py sdist bdist_wheel
+      - name: Publish
+        run: |-
+          twine upload dist/* -u __token__ -p ${{ secrets.PYPI_TOKEN }}
