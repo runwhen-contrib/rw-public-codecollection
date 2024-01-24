@@ -241,26 +241,24 @@ class Prometheus:
 
         if "value" in data["result"][metric_index]:
             metric_data = data["result"][metric_index]["value"]
+            if method == "Raw":
+                return metric_data[column_index]
         elif "values" in data["result"][metric_index]:
             metric_data = data["result"][metric_index]["values"]
-        if method == "Raw":
-            if "value" in data["result"][metric_index]:
-                return metric_data[column_index]
-            elif "values" in data["result"][metric_index]:
+            if method == "Raw":
                 return metric_data[first_data_point][column_index]
-
-        column = [float(row[column_index]) for row in metric_data]
-        if method == "Max":
-            return max(column)
-        elif method == "Average":
-            return sum(column) / len(column)
-        elif method == "Minimum":
-            return min(column)
-        elif method == "Sum":
-            return sum(column)
-        elif method == "First":
-            return column[0]
-        elif method == "Last":
-            return column[-1]
-        else:
-            raise ValueError(f"Invalid transform method {method} provided for aggregation on list")
+            column = [float(row[column_index]) for row in metric_data]
+            if method == "Max":
+                return max(column)
+            elif method == "Average":
+                return sum(column) / len(column)
+            elif method == "Minimum":
+                return min(column)
+            elif method == "Sum":
+                return sum(column)
+            elif method == "First":
+                return column[0]
+            elif method == "Last":
+                return column[-1]
+            else:
+                raise ValueError(f"Invalid transform method {method} provided for aggregation on list")
