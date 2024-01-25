@@ -22,12 +22,13 @@ class Prometheus:
         """
         if target_service:
             # if a runwhen service is provided, pass an equivalent curl to it instead
+            # If optional_headers are provided
             rsp = self._query_with_service(
                 url=url,
                 params=params,
                 optional_headers=optional_headers,
                 target_service=target_service
-            )
+            )          
         else:
             # else we assume the prometheus instance is public
             headers = {
@@ -36,7 +37,10 @@ class Prometheus:
             if optional_headers:
                 optional_headers = json.loads(optional_headers.value)
                 headers.update(optional_headers)
-            rsp = requests.get(url, headers=headers, params=params, timeout=timeout)
+                rsp = requests.get(url, headers=headers, params=params, timeout=timeout)
+            else:
+                rsp = requests.get(url, params=params, timeout=timeout)
+                
             if rsp.status_code != 200:
                 raise ValueError(f"Received HTTP code {rsp.status_code} in response {rsp} against url {url} and params {params}")
             rsp = rsp.json()
@@ -57,7 +61,7 @@ class Prometheus:
         optional_headers: platform.Secret = platform.Secret(key=optional_headers.key, val=" ".join(header_list))
         return optional_headers
 
-    def _create_curl(self, url, optional_headers: platform.Secret, params=None) -> str:
+    def _create_curl(self, url, optional_headers: platform.Secret=None, params=None) -> str:
         """
         Helper method to generate a curl string equivalent to a Requests object (roughly)
         Note that headers are inserted as a $variable to be substituted in the location service by an environment variable.
@@ -68,26 +72,36 @@ class Prometheus:
         else:
             params = ""
         # we use eval so that the location service evaluates the secret headers as multiple tokens
-        curl = f"eval $(echo \"curl -X GET ${optional_headers.key} '{url}{params}'\")"
+        if optional_headers:
+            curl = f"eval $(echo \"curl -X GET ${optional_headers.key} '{url}{params}'\")"
+        else:
+            curl = f"eval $(echo \"curl -X GET '{url}{params}'\")"
         return curl
 
     def _query_with_service(
         self, url: str,
-        optional_headers: platform.Secret,
         target_service: platform.Service,
+        optional_headers: platform.Secret=None,
         params=None,
     ) -> dict:
         """
         Passes a curl string over to a RunWhen location service which handles the request and returns the stdout.
         """
-        optional_headers = self._secret_to_curl_headers(optional_headers=optional_headers)
         curl_str: str = self._create_curl(url, optional_headers, params=params)
-        request_optional_headers = platform.ShellServiceRequestSecret(optional_headers)
-        rsp = platform.execute_shell_command(
-            cmd=curl_str,
-            service=target_service,
-            request_secrets=[request_optional_headers]
-        )
+        if optional_headers:
+            optional_headers = self._secret_to_curl_headers(optional_headers=optional_headers)
+            request_optional_headers = platform.ShellServiceRequestSecret(optional_headers)
+            rsp = platform.execute_shell_command(
+                cmd=curl_str,
+                service=target_service,
+                request_secrets=[request_optional_headers]
+            )
+        else:
+            rsp = platform.execute_shell_command(
+                cmd=curl_str,
+                service=target_service,
+            )
+        
         if rsp.status != 200:
             raise ValueError(f"Received HTTP status of {rsp.status} from response {rsp}")
         if rsp.returncode > 0:
