@@ -1,5 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Supports    aws,cloudwatch
 Documentation     Retrieve number of results from an AWS CloudWatch Insights query.
 Force Tags        AWS    CloudWatch    Logs    Query    Log Group    Boto3    Errors    Failures    Files
 Library           RW.Core

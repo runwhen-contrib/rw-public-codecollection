@@ -1,5 +1,6 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Supports    aws,cloudwatch
 Documentation     Retrieve the result of an AWS CloudWatch Metrics Insights query.
 Force Tags        AWS    CloudWatch    Metrics    Metric    Query    Boto3    Errors    Failures
 Library           RW.Core

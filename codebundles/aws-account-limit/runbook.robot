@@ -3,6 +3,7 @@ Documentation     Retrieve all recently created AWS accounts.
 Metadata          Name    aws-account-limit
 Metadata          Type    Runbook
 Metadata          Author    Vui Le
+Metadata          Supports    aws,iam
 Force Tags        aws    accounts
 Suite Setup       Runbook Setup
 Suite Teardown    Runbook Teardown
