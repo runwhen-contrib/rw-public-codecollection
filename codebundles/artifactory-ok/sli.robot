@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Artifactory OK
+Metadata          Supports    Artifactory
 Documentation     Checks an Artifactory instance health endpoint to determine its operational status.
 ...               The response is parsed to determine if the service is healthy, resulting in a metric of 1 if it is, or 0 if not.
 Force Tags        Arty    Artifactory    health    HTTP

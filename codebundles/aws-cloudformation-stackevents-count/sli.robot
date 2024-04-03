@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Metadata          Supports    aws,cloudformation
+Metadata          Display Name    AWS CloudFormation Event Rate
 Documentation     Retrieve the number of detected AWS CloudFormation stack events over a given history
 Force Tags        AWS    CloudFormation    Boto3    Stack Events    Stacks    Errors    Failures
 Library           RW.Core
