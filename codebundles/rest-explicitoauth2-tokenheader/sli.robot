@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    REST Metric (Explicit OAuth2 with Bearer Token)
+Metadata          Supports    REST 
 Documentation     A REST SLI for querying and extracting data from a REST endpoint that needs an explicit oauth2 flow.
 ...               Where an access token must be acquired with a bearer token.
 Force Tags        HTTP    REST    OUATH2    DATA    GET    POST    VERBS    REQUEST

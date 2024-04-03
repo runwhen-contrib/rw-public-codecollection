@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation     Check status of the GitHub platform (https://www.githubstatus.com/) for a specified set of GitHub service components.
 ...               The metric supplied is a aggregated percentage indicating the availability of the components with 1 = 100% available. 
-Metadata          Name    github-status-component-availability
+Metadata          Display Name    GitHub Service Status
+Metadata          Supports    GitHub,Status 
 Metadata          Type    SLI
 Metadata          Author    Paul Dittaro
 Force Tags        github    availability statuspage status

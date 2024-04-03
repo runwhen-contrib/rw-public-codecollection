@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check Grafana server health.
-Metadata          Name    grafana-health
+Metadata          Display Name    Grafana Health 
+Metadata          Supports    Grafana
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        Grafana    health

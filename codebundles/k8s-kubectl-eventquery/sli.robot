@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation       Returns the number of events with matching messages as an SLI metric.
 Metadata            Author    Jonathan Funk
-
+Metadata          Display Name    Kubernetes Event Query 
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Library             BuiltIn
 Library             RW.Core
 Library             RW.Utils

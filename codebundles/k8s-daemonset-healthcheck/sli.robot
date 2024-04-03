@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation       Checks that the current state of a daemonset is healthy and returns a score of either 1 (healthy) or 0 (unhealthy).
 Metadata            Author    Jonathan Funk
-
+Metadata          Display Name    Kubernetes Daemonset Health Check 
+Metadata          Supports    Kubernetes,K8s,AKS,EKS,GKE,OpenShift
 Library             BuiltIn
 Library             RW.Core
 Library             RW.Utils

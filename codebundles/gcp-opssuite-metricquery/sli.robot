@@ -1,6 +1,8 @@
 *** Settings ***
 Documentation     Performs a metric query using a Google MQL statement on the Ops Suite API
 ...               and pushes the result as an SLI metric.
+Metadata          Display Name    GCP Operations Suite Metric Query
+Metadata          Supports    GCP,Cloud-Monitoring,Operations-Suite,stackdriver
 Force Tags        GCP    OpsSuite    MQL
 Library           RW.GCP.OpsSuite
 Library           RW.Core

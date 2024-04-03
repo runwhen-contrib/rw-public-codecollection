@@ -1,4 +1,8 @@
 *** Settings ***
+Metadata          Display Name    Jira Search Issue Latency
+Metadata          Supports    Jira
+Metadata          Display Name    gRPC cURL Unary 
+Metadata          Author    Vui Lee
 Documentation     Create an issue in Jira.
 Suite Setup       Runbook Setup
 Library           RW.Core

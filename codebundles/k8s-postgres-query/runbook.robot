@@ -3,7 +3,8 @@ Documentation       Runs a postgres SQL query and pushes the returned result int
 ...                 During execution, the SQL query should be passed to a Kubernetes workload that has access to the psql binary.
 ...                 The workload will run the query and return the results from stdout.
 Metadata            Author    Shea Stewart
-
+Metadata          Display Name    Kubernetes PostgreSQL Query
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift,Patroni,PostgreSQL
 Library             RW.Core
 Library             RW.K8s
 Library             RW.Postgres

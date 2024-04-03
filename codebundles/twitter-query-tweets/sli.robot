@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Shea Stewart
+Metadata          Display Name    Twitter Query Handle
+Metadata          Supports    twitter
 Documentation     Queries Twitter to count amount of tweets within a specified time range for a specific user handle.
 Force Tags        Twitter    Social  tweet
 Suite Setup       Suite Initialization

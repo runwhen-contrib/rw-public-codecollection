@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Triage StatefulSet
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Documentation     A taskset for troubleshooting issues for StatefulSets and their related resources.
 Force Tags        K8s    Kubernetes    Kube    K8    Triage    Troubleshoot    Statefulset    Set    Pods
 Suite Setup       Suite Initialization

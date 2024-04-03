@@ -1,6 +1,6 @@
 *** Settings ***
 Documentation     Retrieve all recently created AWS accounts.
-Metadata          Name    aws-account-limit
+Metadata          Display Name    AWS Account Creation Notification
 Metadata          Type    Runbook
 Metadata          Author    Vui Le
 Metadata          Supports    aws,iam

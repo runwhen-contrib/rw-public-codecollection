@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check GitHub latency by getting a list of repo names.
-Metadata          Name    github-get-repos-latency
+Metadata          Display Name    GitHub API Latency 
+Metadata          Supports    GitHub  
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        github    latency

@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check DNS latency for Google Resolver.
-Metadata          Name    dns-latency
+Metadata          Display Name    DNS Latency
+Metadata          Supports    dns
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        dns    latency

@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Uptime.com Component Health
+Metadata          Supports    uptime 
 Documentation     Check the status of an Uptime.com component for a given site.
 ...               It compares the operational state of the component with the list of allowed states, resulting in a 1 when acceptable, and 0 when not.
 Force Tags        Uptime.Com    Uptime    Component    Statuspage    Operational    Up

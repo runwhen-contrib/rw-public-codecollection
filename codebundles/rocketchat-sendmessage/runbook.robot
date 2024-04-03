@@ -1,6 +1,8 @@
 
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    RocketChat Send Message
+Metadata          Supports    Rocket-Chat 
 Documentation     Sends a static Rocketchat message via webhook. Contains optional configuration for including runsession info.
 Force Tags        Rocketchat    Message    Messaging    Send    Alert    Notify
 Library           RW.Core

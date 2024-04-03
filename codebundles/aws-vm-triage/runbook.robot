@@ -1,5 +1,6 @@
 *** Settings ***
 Documentation     Triage and troubleshoot performance and usage of an AWS EC2 instance
+Metadata          Display Name    AWS VM Triage
 Metadata          Type    TaskSet
 Metadata          Supports    aws,ec2,cloudwatch
 Library           RW.Core

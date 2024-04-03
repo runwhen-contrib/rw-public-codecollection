@@ -1,5 +1,8 @@
 *** Settings ***
 Documentation     Create an alert in Opsgenie.
+Metadata          Display Name    OpsGenie Create Alert
+Metadata          Supports     opsgenie
+Metadata          Author        Vui Lee
 Suite Setup       Runbook Setup
 Library           RW.Core
 Library           RW.Opsgenie

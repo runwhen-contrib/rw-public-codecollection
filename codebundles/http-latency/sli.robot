@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    HTTP Latency 
+Metadata          Supports    HTTP
 Documentation     Measure HTTP latency against a given URL.
 ...               The returned metric is the number of seconds the request took as a float value.
 Force Tags        Url    HTTP    Latency    Metric

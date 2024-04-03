@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Create a new issue in GitHub Issues.
-Metadata          Name    github-get-repos-latency
+Metadata          Display Name    GitHub API Latency 
+Metadata          Supports    GitHub     
 Metadata          Type    Runbook
 Metadata          Author    Vui Le
 Force Tags        github    latency    troubleshooting

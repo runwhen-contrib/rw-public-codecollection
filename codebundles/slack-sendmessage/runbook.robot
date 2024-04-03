@@ -1,6 +1,8 @@
 
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Slack Send Message
+Metadata          Supports    Slack 
 Documentation     Sends a static Slack message via webhook. Contains optional configuration for including runsession info.
 Force Tags        Slack    Chat    Message    Messaging    Send    Alert    Notify
 Library           RW.Core

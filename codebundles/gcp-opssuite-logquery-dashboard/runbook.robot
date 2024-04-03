@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    GCP Operations Suite Log Query Dashboard URL
+Metadata          Supports    GCP,Cloud-Logging,Operations-Suite,stackdriver
 Documentation     Generate a link to the GCP Log Explorer.
 Force Tags        GCP    Logs    Query    Links
 Library           DateTime

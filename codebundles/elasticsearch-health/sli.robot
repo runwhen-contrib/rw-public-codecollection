@@ -1,6 +1,7 @@
 ** Settings **
 Documentation   Check Elasticsearch cluster health
-Metadata        Name        elasticsearch-health
+Metadata          Display Name    ElasticSearch Health
+Metadata          Supports    elasticsearch
 Metadata        Type        SLI
 Metadata        Author      Vui Le
 Force Tags      Elasticsearch   cluster   health

@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Discord Send Message
+Metadata          Supports    Discord
 Documentation     Sends a static Discord message via webhook. Contains optional configuration for including runsession info.
 Force Tags        Discord    Message    Messaging    Send    Alert    Notify
 Library           RW.Core

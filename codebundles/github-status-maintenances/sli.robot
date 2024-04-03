@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Retrieve number of upcoming Github platform maintenances over a given window.
-Metadata          Name    github-status-maintenances
+Metadata          Display Name    GitHub Status Maintenance
+Metadata          Supports    GitHub,Status 
 Metadata          Type    SLI
 Metadata          Author    Paul Dittaro
 Force Tags        github    availability

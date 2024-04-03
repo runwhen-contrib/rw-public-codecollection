@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    SLI Alert Threshold
+Metadata          Supports    RunWhen 
 Documentation     An SLI which monitors another SLI that's submitting a 0-1 health score and when that health score falls below a threshold, will immediately trigger a taskset.
 ...               When this SLI detects a rate below the threshold rate it submits a 1 to denote a signal was sent before returning to 0 when the monitored SLI is healthy.
 Force Tags        SLI    Alert    Threshold

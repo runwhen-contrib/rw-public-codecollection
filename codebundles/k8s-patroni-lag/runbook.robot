@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Patroni Lag Health
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift,Patroni,PostgreSQL
 Documentation     Detects and reinitializes laggy Patroni cluster members which are unable to catchup in replication using kubectl and patronictl.
 Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health    Reinitialize    Lag    patronictl
 Suite Setup       Suite Initialization

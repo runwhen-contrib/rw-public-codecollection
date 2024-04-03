@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check GitLab latency by getting a list of repo names.
-Metadata          Name    gitlab-get-repos-latency
+Metadata          Display Name    GitLab Get Repo Latency 
+Metadata          Supports    GitLab
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        gitlab    latency

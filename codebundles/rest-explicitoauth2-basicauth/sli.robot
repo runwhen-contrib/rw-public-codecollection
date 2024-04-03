@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    REST Metric (Explicit OAuth2 with BasicAuth)
+Metadata          Supports    REST 
 Documentation     A REST SLI for querying and extracting data from a REST endpoint that needs an explicit oauth2 flow.
 ...               Where the token acquisition is handled using basic auth.
 Force Tags        HTTP    REST    BASIC    DATA    GET    POST    VERBS    REQUEST

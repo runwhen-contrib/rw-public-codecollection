@@ -1,6 +1,8 @@
 
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    GCP Service Status
+Metadata          Supports    GCP,Status     
 Documentation     This codebundle sets up a monitor for a specific region and GCP Product, which is then periodically checked for
 ...               ongoing incidents based on the history available at https://status.cloud.google.com/incidents.json filtered based on severity level.
 Force Tags        GCP    Status    Health    services    Up    Available    Platform    Google    Cloud    Incidents

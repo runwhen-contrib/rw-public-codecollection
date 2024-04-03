@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation     Monitors the average timing of a github actions workflow file within a repo
 ...               and returns the average runtime in minutes.
-Metadata          Name    github-actions-timings
+Metadata          Display Name    GitHub Actions Workflow Timing 
+Metadata          Supports    GitHub,Actions,Workflows     
 Metadata          Type    SLI
 Metadata          Author    Jonathan Funk
 Force Tags        github    actions    timing    monitor

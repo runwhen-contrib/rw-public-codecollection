@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Shea Stewart
+Metadata          Display Name    Twitter Query Handle
+Metadata          Supports    twitter 
 Documentation     Queries Twitter to fetch tweets within a specified time range for a specific user handle add them to a report.
 Force Tags        Twitter    Social   tweet
 Suite Setup       Suite Initialization

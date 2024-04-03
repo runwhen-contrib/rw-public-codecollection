@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check availability of a GitLab server.
-Metadata          Name    gitlab-availability
+Metadata          Display Name    GitLab Availability 
+Metadata          Supports    GitLab
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        gitlab    availability

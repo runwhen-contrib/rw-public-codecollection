@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    GCP Operations Suite Log Query
+Metadata          Supports    GCP,Cloud-Logging,Operations-Suite,stackdriver
 Documentation     Retrieve the number of results of a GCP Log Explorer query.
 Force Tags        GCP    OpsSuite    Query    Logs
 Library           OperatingSystem

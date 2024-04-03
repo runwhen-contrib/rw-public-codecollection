@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Metadata          Supports    aws,billing,costexplorer
+Metadata          Display Name    AWS Costs by Tag
 Documentation     Creates a report of AWS line item costs filtered to a list of tagged resources
 Force Tags        AWS    Cost    Billing    CostExplorer    Usage    Report
 Library           RW.Core

@@ -1,6 +1,8 @@
 
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Google Chat Send Message 
+Metadata          Supports    Google-Chat
 Documentation     Sends a static Google Chat message via webhook. Contains optional configuration for including runsession info.
 Force Tags        GoogleChat    Google    Chat    Message    Messaging    Send    Alert    Notify
 Library           RW.Core

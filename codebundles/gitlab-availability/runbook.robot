@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Troubleshoot issues with GitLab server availability.
-Metadata          Name    gitlab-availability
+Metadata          Display Name    GitLab Availability 
+Metadata          Supports    GitLab
 Metadata          Type    Runbook
 Metadata          Author    Vui Le
 Force Tags        gitlab    availability    troubleshooting
