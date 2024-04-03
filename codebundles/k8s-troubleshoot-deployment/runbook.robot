@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Troubleshoot Deployment
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Documentation     A taskset for troubleshooting general issues associated with typical kubernetes deployment resources.
 ...               Supports API interactions via both the API client and Kubectl binary through RunWhen Shell Services.
 Force Tags        K8s    Kubernetes    Kube    K8

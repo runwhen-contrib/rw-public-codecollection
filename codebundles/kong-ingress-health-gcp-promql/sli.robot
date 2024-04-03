@@ -1,5 +1,7 @@
 *** Settings ***
-Metadata          Author    Shea Stewart            
+Metadata          Author    Shea Stewart       
+Metadata          Display Name    Kong Ingress Health (GCP PromQL)
+Metadata          Supports    GKE,Kong,GMP,GCP   
 Documentation     Uses promql on the Ops Suite API to determine the health of a Kong managed ingress resource
 ...               and pushes the result as an SLI metric. Produces a 1 for a healthy resource, or 0 for an unhealthy resource. 
 Force Tags        GCP    OpsSuite    PromQL  Kubernetes    Kong    Ingress

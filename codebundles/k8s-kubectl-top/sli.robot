@@ -1,6 +1,9 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Top
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Documentation     Retreieve aggregate data via kubectl top command.
+
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl
 Suite Setup       Suite Initialization
 Library           BuiltIn

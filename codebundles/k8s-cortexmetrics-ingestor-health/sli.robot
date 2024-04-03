@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation       Uses kubectl to query the state of a ingestor ring and determine if it's healthy. Returns 1 if healthy, 0 if unhealthy.
 Metadata            Author    Shea Stewart
-
+Metadata          Display Name    Cortex Metrics Ingester Health 
+Metadata          Supports    Kubernetes,cortex
 Library             BuiltIn
 Library             RW.Core
 Library             RW.Utils

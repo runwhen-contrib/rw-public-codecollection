@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Cert-Manager Health Check
+Metadata          Supports    K8s,cert-manager
 Documentation     Check the health of pods deployed by cert-manager.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl    cert-manager
 Suite Setup       Suite Initialization

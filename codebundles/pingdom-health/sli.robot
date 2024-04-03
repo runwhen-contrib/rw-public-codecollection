@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check health of Pingdom platform.
-Metadata          Name    pingdom-health
+Metadata          Display Name    Pingdom Health
+Metadata          Supports    Pingdom 
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        Pingdom    health

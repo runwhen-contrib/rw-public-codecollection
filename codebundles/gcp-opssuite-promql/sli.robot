@@ -1,5 +1,7 @@
 *** Settings ***
-Metadata          Author    Shea Stewart            
+Metadata          Author    Shea Stewart       
+Metadata          Display Name    GCP Operations Suite Prometheus Query 
+Metadata          Supports    GCP,Operations-Suite,GMP,Prometheus     
 Documentation     Performs a metric query using a PromQL statement on the Ops Suite API
 ...               and pushes the result as an SLI metric.
 Force Tags        GCP    OpsSuite    PromQL    Prometheus  Kubernetes

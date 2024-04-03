@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    gRPC cURL Unary 
+Metadata          Supports    gRPC,cURL
 Documentation     A gRPC curl taskset for querying data from a generic grpcurl call and presenting the output.
 Force Tags        GRPC    CURL
 Suite Setup       Suite Initialization

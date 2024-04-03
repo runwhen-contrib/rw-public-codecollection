@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    HTTP OK
+Metadata          Supports    HTTP
 Documentation     Check if an HTTP request against a URL fails or times out of a given latency window.
 ...               A return of 1 is considered a success, while a 0 is failure.
 Force Tags        Url    Errors    HTTP    Status    Latency    Metric

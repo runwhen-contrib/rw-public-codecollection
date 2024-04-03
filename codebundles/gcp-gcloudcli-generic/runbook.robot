@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    GCP GCloud Generic Report
+Metadata          Supports    GCP,gcloud
 Documentation     Run arbitrary gcloud commands and capture the stdout in a report.
 Force Tags        GCLOUD    CLI    JSON    DATA
 Suite Setup       Suite Initialization

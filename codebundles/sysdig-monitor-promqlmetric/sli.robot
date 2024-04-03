@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Sysdig Monitor PromQL Metric
+Metadata          Supports    sysdig,sysdig-monitor 
 Documentation     Queries the Sysdig data API with a PromQL query to fetch metric data.
 Force Tags        sysdig    Prom    PromQL    Query    Metric    Aggregate
 Suite Setup       Suite Initialization

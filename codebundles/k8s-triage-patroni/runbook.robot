@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Triage Patroni
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift,Patroni,PostgreSQL
 Documentation     Taskset to triage issues related to patroni.
 Force Tags        K8s    Kubernetes    Kube    K8    Triage    Troubleshoot    Patroni
 Suite Setup       Suite Initialization

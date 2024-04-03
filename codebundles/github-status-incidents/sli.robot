@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check for unresolved incidents related to GitHub services, and provides a count of ongoing incidents as a metric.
-Metadata          Name    github-status-incidents
+Metadata          Display Name    GitHub Status Incidents 
+Metadata          Supports    GitHub,Status
 Metadata          Type    SLI
 Metadata          Author    Paul Dittaro
 Force Tags        github    availability

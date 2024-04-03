@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Check Jira latency when searching issues by current user.
-Metadata          Name    jira-search-issues-latency
+Metadata          Display Name    Jira Search Issue Latency
+Metadata          Supports    Jira
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        jira    latency

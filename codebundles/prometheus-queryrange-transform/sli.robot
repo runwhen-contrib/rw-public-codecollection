@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Prometheus Query (Range) Metric
+Metadata          Supports    prometheus 
 Documentation     Run a PromQL query against Prometheus range query API, perform a provided transform, and return the result.
 Force Tags        Prometheus    Prom    PromQL    Query    Metric    Aggregate
 Suite Setup       Suite Initialization

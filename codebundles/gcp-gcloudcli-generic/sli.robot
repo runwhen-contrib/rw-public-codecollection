@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    GCP GCloud Generic Metric
+Metadata          Supports    GCP,gcloud
 Documentation     Run arbitrary gcloud commands and parse their output for arbitrary values such as json to be submitted as a metric.
 Force Tags        GCLOUD    CLI    JSON    DATA
 Suite Setup       Suite Initialization

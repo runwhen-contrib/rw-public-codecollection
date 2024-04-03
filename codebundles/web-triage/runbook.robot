@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Web Triage
+Metadata          Supports    HTTP 
 Documentation     Troubleshoot and triage a URL to inspect it for common issues such as an expired certification, missing DNS records, etc.
 Force Tags        Url    Errors    HTTP    Status    Latency    Triage    DNS    SSL    Certificate
 Library           RW.Core

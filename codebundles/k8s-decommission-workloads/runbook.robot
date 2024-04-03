@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Decomission Workload
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Documentation     Searches a namespace for matching objects and provides the commands to decommission them.
 Force Tags        K8s    Workloads    Decommission    Delete    Cleanup
 Suite Setup       Suite Initialization

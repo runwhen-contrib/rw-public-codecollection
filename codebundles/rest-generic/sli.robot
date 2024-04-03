@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    REST Metric
+Metadata          Supports    REST 
 Documentation     A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a implicit oauth2 flow.
 Force Tags        HTTP    REST    OAUTH2    DATA    GET    POST    VERBS    REQUEST
 Suite Setup       Suite Initialization

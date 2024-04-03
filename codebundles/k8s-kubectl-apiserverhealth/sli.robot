@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes API Server Health 
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Documentation     Check the health of a Kubernetes API server using kubectl.
 ...               Returns 1 when OK, or a 0 in the case of an unhealthy API server.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl

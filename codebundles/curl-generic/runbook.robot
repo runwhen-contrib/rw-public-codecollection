@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Shea Stewart
+Metadata          Display Name    cURL Generic Report
+Metadata          Supports    cURL,HTTP,Generic,API
 Documentation     A curl TaskSet for querying and extracting data from a generic curl call. Supports jq. Adds results to the report.
 Force Tags        HTTP    CURL    NOAUTH    DATA    GET   REQUEST
 Suite Setup       Suite Initialization

@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Metadata          Supports    aws,ec2,cloudwatch
+Metadata          Display Name    AWS EC2 Security Check
 Documentation     Performs a suite of security checks against a set of AWS EC2 instances.
 ...               Checks include untagged instances, dangling volumes, open routes.
 Force Tags        AWS    CloudWatch    Metrics    Metric    Query    Boto3    Errors    Failures

@@ -1,6 +1,7 @@
 *** Settings ***
 Documentation     Ping a host and retrieve packet loss percentage.
-Metadata          Name    ping-host-availability
+Metadata          Display Name    Ping Host Availability
+Metadata          Supports    ping 
 Metadata          Type    SLI
 Metadata          Author    Vui Le
 Force Tags        ping    availability

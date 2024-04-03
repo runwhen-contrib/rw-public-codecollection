@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Metadata          Supports    aws,cloudwatch
+Metadata          Display Name    AWS CloudWatch Metric Query Dashboard
 Documentation     Creates a URL to a AWS CloudWatch metrics dashboard with a running query.
 Force Tags        AWS    CloudWatch    Metrics    Metric    Query    Boto3    Errors    Failures    Link    Dashboard
 Library           RW.Core

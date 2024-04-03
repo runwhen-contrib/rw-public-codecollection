@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    REST Metric (Basic Auth)
+Metadata          Supports    REST 
 Documentation     A general purpose REST SLI for querying and extracting data from a REST endpoint that uses a basic auth flow.
 Force Tags        HTTP    REST    BASIC    DATA    GET    POST    VERBS    REQUEST
 Suite Setup       Suite Initialization

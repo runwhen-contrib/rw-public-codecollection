@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation       Uses kubectl to query the state of a ingestor ring. Returns the json of injester id, status and timestamp.
 Metadata            Author    Shea Stewart
-
+Metadata          Display Name    Cortex Metrics Ingester Health 
+Metadata          Supports    Kubernetes,cortex
 Library             BuiltIn
 Library             RW.Core
 Library             RW.Utils

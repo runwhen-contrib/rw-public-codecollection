@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Triage Deployment Replicas
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift
 Documentation     Triages issues related to a deployment's replicas.
 Force Tags        K8s    Kubernetes    Kube    K8    Triage    Troubleshoot    Deployment    Set    Pods    Replicas
 Suite Setup       Suite Initialization

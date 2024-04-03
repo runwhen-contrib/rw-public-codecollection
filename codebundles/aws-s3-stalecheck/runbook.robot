@@ -2,6 +2,7 @@
 Metadata          Author    Jonathan Funk
 Metadata          Type    TaskSet
 Metadata          Supports    aws,s3,bucket
+Metadata          Display Name    AWS S3 Stale Check
 Documentation     Identify stale AWS S3 buckets, based on last modified object timestamp.
 Force Tags        AWS    Storage    S3    Bucket    Metrics    Metric    Query    Boto3    Objects    Stale
 Library           RW.Core

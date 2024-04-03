@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Patroni Lag Metric
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift,Patroni,PostgreSQL
 Documentation     Measures the maximum replica lag across a Patroni cluster.
 Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health    Lag    Replicas    Members
 Suite Setup       Suite Initialization

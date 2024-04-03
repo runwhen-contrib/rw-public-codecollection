@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Kubernetes Patroni Health Check
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift,Patroni,PostgreSQL
 Documentation     Uses kubectl (or equivalent) to query the state of a patroni cluster and determine if it's healthy.
 Force Tags        K8s    Kubernetes    Kube    K8    Patroni    Health
 Suite Setup       Suite Initialization

@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    HahiCorp Vault Health
+Metadata          Supports    vault 
 Documentation     Check the health of a Vault server.
 ...               The response code is used to determine if the service is healthy, resulting in a metric of 1 if it is, or 0 if not.
 Force Tags        HashiCorp    Vault    health    HTTP

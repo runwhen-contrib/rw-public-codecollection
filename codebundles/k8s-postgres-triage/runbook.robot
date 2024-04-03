@@ -1,7 +1,8 @@
 *** Settings ***
 Documentation       Runs multiple Kubernetes and psql commands to report on the health of a postgres cluster. 
 Metadata            Author    Shea Stewart
-
+Metadata          Display Name    Kubernetes PostgreSQL Triage
+Metadata          Supports    Kubernetes,AKS,EKS,GKE,OpenShift,Patroni,PostgreSQL
 Library             RW.Core
 Library             RW.K8s
 Library             RW.Postgres

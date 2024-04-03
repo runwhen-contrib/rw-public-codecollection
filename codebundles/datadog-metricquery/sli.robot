@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Datadog Metric
+Metadata          Supports    datadog
 Documentation     Fetch the results of a datadog metric timeseries and push the extracted value as an SLI metric.
 Force Tags        datadog    metric    query    API
 Suite Setup       Suite Initialization

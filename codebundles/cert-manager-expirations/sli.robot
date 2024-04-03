@@ -1,5 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
+Metadata          Display Name    Cert-manager Expirations
+Metadata          Supports    K8s,cert-manager
 Documentation     Retrieve number of expired TLS certificates managed by cert-manager within a given window.
 ...               The metric pushed is the number of certs within the configured expiration window.
 Force Tags        K8s    Kubernetes    Kube    K8    Kubectl    cert-manager
