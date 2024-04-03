@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Metadata          Supports    aws,cloudwatch
+Metadata          Display Name    AWS CloudWatch Log Query (Total Count)
 Documentation     Retrieve number of results from an AWS CloudWatch Insights query.
 Force Tags        AWS    CloudWatch    Logs    Query    Log Group    Boto3    Errors    Failures    Files
 Library           RW.Core

@@ -1,6 +1,7 @@
 *** Settings ***
 Metadata          Author    Jonathan Funk
 Metadata          Supports    aws,cloudwatch
+Metadata          Display Name    AWS CloudWatch Log Query (Pass/Fail)
 Documentation     Retrieve binary result from an AWS CloudWatch Insights query.
 ...               Pushes 0 (success) if logs are found (activity) or 1 if no logs were found in the time window.
 Force Tags        AWS    CloudWatch    Logs    Query    Log Group    Boto3    Errors    Failures    Files    Heart beat
