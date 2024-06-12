@@ -106,3 +106,5 @@ Documentation for each codebundle is maintained in the README.md alongside the r
 | [vault-ok-sli](https://github.com/runwhen-contrib/rw-public-codecollection/blob/main/codebundles/vault-ok/sli.robot) | `vault` | `Check If Vault Endpoint Is Healthy` | Check the health of a Vault server. The response code is used to determine if the service is healthy, resulting in a metric of 1 if it is, or 0 if not. [Docs](https://docs.runwhen.com/public/v/codebundles/vault-ok) |
 | [web-triage-taskset](https://github.com/runwhen-contrib/rw-public-codecollection/blob/main/codebundles/web-triage/runbook.robot) | `web` | `Validate Platform Egress`, `Perform Inspection On URL` | Troubleshoot and triage a URL to inspect it for common issues such as an expired certification, missing DNS records, etc. [Docs](https://docs.runwhen.com/public/v/codebundles/web-triage) |
 
+
+
