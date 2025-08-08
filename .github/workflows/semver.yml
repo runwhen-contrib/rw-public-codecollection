@@ -1,60 +1,60 @@
-name: Semantic Versioning
-on:
-  workflow_dispatch:
-  push:
-    branches:
-      - main
-    paths:
-      - "VERSION"
+# name: Semantic Versioning
+# on:
+#   workflow_dispatch:
+#   push:
+#     branches:
+#       - main
+#     paths:
+#       - "VERSION"
 
-jobs:
-  semver-it:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-          ref: ${{ github.event.pull_request.base.ref }}
-      - name: Fetch All Tags
-        run: |
-          git fetch --tags origin
-          # show all known tags
-          git tag
-      - name: Create Semver Tag and Changelog Entry
-        run: |
-          git config --global user.email "${GITHUB_ACTOR}"
-          git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
-          git checkout -b "automatic-changelog-update"
+# jobs:
+#   semver-it:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - uses: actions/checkout@v3
+#         with:
+#           fetch-depth: 0
+#           ref: ${{ github.event.pull_request.base.ref }}
+#       - name: Fetch All Tags
+#         run: |
+#           git fetch --tags origin
+#           # show all known tags
+#           git tag
+#       - name: Create Semver Tag and Changelog Entry
+#         run: |
+#           git config --global user.email "${GITHUB_ACTOR}"
+#           git config --global user.name "${GITHUB_ACTOR}@users.noreply.github.com"
+#           git checkout -b "automatic-changelog-update"
 
-          # Run the semver-it script
-          ./.github/scripts/semver-it.sh VERSION CHANGELOG.md '(Feat|Add)'
-          if [ $? -eq 0 ]; then
-            most_recent_tag=$(git describe --tags --abbrev=0)
-            echo "Found most recent tag from semver it as $most_recent_tag"
-            echo "Pushing tag: $most_recent_tag"
-            git push origin "$most_recent_tag"
-          else
-            echo "return code of semver-it is $?"
-            exit 1
-          fi
+#           # Run the semver-it script
+#           ./.github/scripts/semver-it.sh VERSION CHANGELOG.md '(Feat|Add)'
+#           if [ $? -eq 0 ]; then
+#             most_recent_tag=$(git describe --tags --abbrev=0)
+#             echo "Found most recent tag from semver it as $most_recent_tag"
+#             echo "Pushing tag: $most_recent_tag"
+#             git push origin "$most_recent_tag"
+#           else
+#             echo "return code of semver-it is $?"
+#             exit 1
+#           fi
 
-          git add CHANGELOG.md
-          # Test if any git changes are made. If not, bail out and send instruction.
-          if [ -z "$(git diff-index HEAD)" ]; then
-              echo "No git changes detected to add to the changelog"
-              exit 0
-          else
-              echo "Changes detected in changelog. Pushing..."
-              git commit -m "Updating changelog"
-              git push --set-upstream origin automatic-changelog-update
-          fi
+#           git add CHANGELOG.md
+#           # Test if any git changes are made. If not, bail out and send instruction.
+#           if [ -z "$(git diff-index HEAD)" ]; then
+#               echo "No git changes detected to add to the changelog"
+#               exit 0
+#           else
+#               echo "Changes detected in changelog. Pushing..."
+#               git commit -m "Updating changelog"
+#               git push --set-upstream origin automatic-changelog-update
+#           fi
 
-          # Open up a PR
-          PR_OUTPUT=$(curl -X POST -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" -d '{"title":"automatic-changelog-update","head":"automatic-changelog-update","base":"main","body":"automatic-changelog-update" }' https://api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/pulls)
-          PR_LINK=$(echo $PR_OUTPUT| jq '._links.html.href' )
-          PR_LINK=$(echo $PR_LINK | tr -d '"')
-          # attempt auto merge but accept fail
-          # disabling for now
-          # gh pr merge --auto --squash $PR_LINK || 0
-        env:
-          GH_TOKEN: ${{ github.token }}
+#           # Open up a PR
+#           PR_OUTPUT=$(curl -X POST -H "Authorization: Token ${{ secrets.GITHUB_TOKEN }}" -H "Accept: application/vnd.github.v3+json" -d '{"title":"automatic-changelog-update","head":"automatic-changelog-update","base":"main","body":"automatic-changelog-update" }' https://api.github.com/repos/${{ github.event.repository.owner.login }}/${{ github.event.repository.name }}/pulls)
+#           PR_LINK=$(echo $PR_OUTPUT| jq '._links.html.href' )
+#           PR_LINK=$(echo $PR_LINK | tr -d '"')
+#           # attempt auto merge but accept fail
+#           # disabling for now
+#           # gh pr merge --auto --squash $PR_LINK || 0
+#         env:
+#           GH_TOKEN: ${{ github.token }}
