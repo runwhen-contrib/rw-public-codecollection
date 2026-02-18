@@ -5,7 +5,8 @@ on:
     branches:
       - main
     paths:
-      - VERSION
+      - 'libraries/**'
+      - '.github/workflows/pypi.yaml'
   workflow_dispatch:
 
 jobs:
