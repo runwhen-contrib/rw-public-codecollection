@@ -69,7 +69,6 @@ Fetch Logs
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Related Events
     ${stdout}=    RW.K8s.Shell
@@ -79,7 +78,6 @@ Get Related Events
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Check Deployment Replicas
     ${stdout}=    RW.K8s.Shell
@@ -107,4 +105,3 @@ Check Deployment Replicas
     RW.Core.Add Pre To Report    Next steps for remediation:\n\t${remediation_msg}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}

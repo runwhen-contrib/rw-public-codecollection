@@ -45,4 +45,3 @@ Running Kubectl And Adding Stdout To Report
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}

@@ -70,7 +70,6 @@ Check StatefulSets Replicas Ready
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Events For The StatefulSet
     ${stdout}=    RW.K8s.Shell
@@ -80,7 +79,6 @@ Get Events For The StatefulSet
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get StatefulSet Logs
     ${stdout}=    RW.K8s.Shell
@@ -90,7 +88,6 @@ Get StatefulSet Logs
     RW.Core.Add Pre To Report    ${stdout}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get StatefulSet Manifests Dump
     ${stdout}=    RW.K8s.Shell
@@ -100,4 +97,3 @@ Get StatefulSet Manifests Dump
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}

@@ -90,7 +90,6 @@ Troubleshoot Resourcing
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${resource_report}
 
 Troubleshoot Events
@@ -109,7 +108,6 @@ Troubleshoot Events
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${events_report}
 
 Troubleshoot PVC
@@ -131,7 +129,6 @@ Troubleshoot PVC
     ...    mute_suggestions=${MUTE_SUGGESTIONS}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${pvc_report}
 
 Troubleshoot Pods
@@ -147,7 +144,6 @@ Troubleshoot Pods
     ...    report_data=${rsp}
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
     RW.Core.Add Pre To Report    ${pod_report}
 
 # Troubleshoot PodDisruptionBudgets
@@ -163,7 +159,6 @@ Troubleshoot Pods
 #     ...    mute_suggestions=${MUTE_SUGGESTIONS}
 #     ${history}=    RW.K8s.Pop Shell History
 #     ${history}=    RW.Utils.List To String    data_list=${history}
-#     RW.Core.Add Pre To Report    Commands Used: ${history}
 #     RW.Core.Add Pre To Report    ${pdb_report}
 
 # Troubleshoot Networking
@@ -186,5 +181,4 @@ Troubleshoot Pods
 #     ...    mute_suggestions=${MUTE_SUGGESTIONS}
 #     ${history}=    RW.K8s.Pop Shell History
 #     ${history}=    RW.Utils.List To String    data_list=${history}
-#     RW.Core.Add Pre To Report    Commands Used: ${history}
 #     RW.Core.Add Pre To Report    ${networking_report}

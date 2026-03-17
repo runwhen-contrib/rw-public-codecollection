@@ -24,7 +24,6 @@ Get Standard Resources
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Describe Custom Resources
     IF    "${INCLUDE_CUSTOM_RESOURCES}" == "Yes"
@@ -43,8 +42,7 @@ Describe Custom Resources
         ...    custom_resources=${custom_resource_list}
         ${history}=    RW.K8s.Pop Shell History
         ${history}=    RW.Utils.List To String    data_list=${history}
-        RW.Core.Add Pre To Report    ${custom_resource_details}
-        RW.Core.Add Pre To Report    Commands Used: ${history} 
+        RW.Core.Add Pre To Report    ${custom_resource_details} 
     END
 
 Get Pod Logs & Events
@@ -58,7 +56,6 @@ Get Pod Logs & Events
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${pod_logs}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Pod Resource Utilization
     ${pod_resource_utilization}=     RW.K8s.Fetch Pod Resource Utilization By Label
@@ -70,7 +67,6 @@ Get Pod Resource Utilization
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${pod_resource_utilization}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Running Configuration
     ${templated_query}=    RW.Postgres.Template Command
@@ -101,7 +97,6 @@ Get Running Configuration
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    File Path:\n${active_db_config_location[0]}\n--------\nFile Contents:\n${active_db_config_contents}\n--------
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Patroni Output
     ${workload}=    RW.K8s.Template Workload
