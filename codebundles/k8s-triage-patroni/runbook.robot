@@ -62,7 +62,6 @@ Get Patroni Status
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Get Pods Status
     ${stdout}=    RW.K8s.Shell
@@ -72,7 +71,6 @@ Get Pods Status
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
 
 Fetch Logs
     ${stdout}=    RW.K8s.Shell
@@ -82,4 +80,3 @@ Fetch Logs
     ${history}=    RW.K8s.Pop Shell History
     ${history}=    RW.Utils.List To String    data_list=${history}
     RW.Core.Add Pre To Report    ${stdout}
-    RW.Core.Add Pre To Report    Commands Used: ${history}
