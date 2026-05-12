@@ -1,0 +1,150 @@
+name: Build All Branches
+
+# Manual fan-out: dispatches build-push.yaml against every branch in the
+# repo (or every branch matching a regex). Useful when:
+#
+#   - rw-base-runtime has shipped a new base image and every CCV branch
+#     should be rebuilt against it
+#   - a security fix or runtime contract change needs to propagate
+#     everywhere without waiting for each branch's next push
+#   - you want to validate that all branches still build cleanly
+#
+# Each dispatched run uses the build-push.yaml definition AS IT EXISTS
+# ON THAT BRANCH — this is intentional. Older branches with outdated
+# build workflows will build with their own logic; newer branches with
+# updated workflows get the new behavior. There is no "use main's build
+# workflow against branch X" mode by design.
+#
+# Builds run as separate workflow runs (one per branch), not as nested
+# jobs. Watch them in the Actions tab filtered to "Build And Push".
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch_pattern:
+        description: "Regex applied to branch names. '.*' (default) matches everything."
+        required: false
+        default: ".*"
+        type: string
+      exclude_pattern:
+        description: "Regex to EXCLUDE branches (applied after branch_pattern). Default: stale/.* prefixed branches."
+        required: false
+        default: "^(dependabot/|stale/)"
+        type: string
+      runtime_ref:
+        description: "rw-base-runtime ref each per-branch build should pin to (branch / tag / sha)."
+        required: false
+        default: "main"
+        type: string
+      push:
+        description: "Push the resulting images to GHCR."
+        required: false
+        default: true
+        type: boolean
+      max_parallel:
+        description: "How many per-branch builds to run concurrently. GHA limit is 256 jobs total."
+        required: false
+        default: "5"
+        type: string
+
+# `actions: write` is required for `gh workflow run` to dispatch other workflows.
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  # ===========================================================================
+  # enumerate — list branches matching the filter, emit them as a JSON
+  # array the matrix job consumes. Paginates the branches API since GHA
+  # repos can exceed the 100/page default.
+  # ===========================================================================
+  enumerate:
+    runs-on: ubuntu-latest
+    outputs:
+      branches: ${{ steps.list.outputs.branches }}
+      count: ${{ steps.list.outputs.count }}
+      max_parallel: ${{ steps.list.outputs.max_parallel }}
+    steps:
+      - name: List branches matching filter
+        id: list
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INCLUDE: ${{ inputs.branch_pattern }}
+          EXCLUDE: ${{ inputs.exclude_pattern }}
+          MAX_PARALLEL: ${{ inputs.max_parallel }}
+        run: |
+          set -euo pipefail
+
+          all=$(gh api -X GET "repos/${{ github.repository }}/branches" \
+                  --paginate --jq '.[].name')
+
+          # Apply include regex, then exclude regex. `|| true` so an empty
+          # match doesn't fail the pipeline -- we surface a clear message
+          # downstream instead.
+          filtered=$(printf '%s\n' "${all}" | grep -E "${INCLUDE}" || true)
+          if [ -n "${EXCLUDE}" ]; then
+            filtered=$(printf '%s\n' "${filtered}" | grep -Ev "${EXCLUDE}" || true)
+          fi
+
+          if [ -z "${filtered}" ]; then
+            echo "::warning::No branches matched include='${INCLUDE}' exclude='${EXCLUDE}'"
+            echo "branches=[]" >> "$GITHUB_OUTPUT"
+            echo "count=0" >> "$GITHUB_OUTPUT"
+            echo "max_parallel=${MAX_PARALLEL}" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          json=$(printf '%s\n' "${filtered}" | jq -R . | jq -s -c .)
+          count=$(echo "${json}" | jq 'length')
+
+          echo "branches=${json}" >> "$GITHUB_OUTPUT"
+          echo "count=${count}" >> "$GITHUB_OUTPUT"
+          echo "max_parallel=${MAX_PARALLEL}" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "## Branches selected for build (${count})"
+            echo
+            echo "- Include regex: \`${INCLUDE}\`"
+            echo "- Exclude regex: \`${EXCLUDE}\`"
+            echo "- Max parallel: \`${MAX_PARALLEL}\`"
+            echo
+            while IFS= read -r b; do echo "- \`${b}\`"; done <<< "${filtered}"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ===========================================================================
+  # dispatch — one matrix leg per branch. Each leg fires `gh workflow run
+  # build-push.yaml --ref <branch>` and exits. The actual build runs as a
+  # separate workflow run on its own runners, in parallel, so we are not
+  # billed for the long tail of each build here.
+  # ===========================================================================
+  dispatch:
+    needs: enumerate
+    if: needs.enumerate.outputs.count != '0'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 8
+      matrix:
+        branch: ${{ fromJson(needs.enumerate.outputs.branches) }}
+    steps:
+      - name: Dispatch build-push.yaml for ${{ matrix.branch }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ matrix.branch }}
+          RUNTIME_REF: ${{ inputs.runtime_ref }}
+          PUSH_FLAG: ${{ inputs.push }}
+        run: |
+          set -euo pipefail
+          echo "Dispatching build-push.yaml on '${BRANCH}' (runtime_ref=${RUNTIME_REF}, push=${PUSH_FLAG})"
+
+          # `gh workflow run` uses the workflow definition AS IT EXISTS at
+          # --ref. If a branch is missing build-push.yaml, the call fails;
+          # that's surfaced as a matrix-leg failure and the user is told to
+          # rebase the branch onto a build-push-bearing main.
+          gh workflow run build-push.yaml \
+            --repo "${{ github.repository }}" \
+            --ref "${BRANCH}" \
+            -f runtime_ref="${RUNTIME_REF}" \
+            -f push="${PUSH_FLAG}"
+
+          echo "::notice::Dispatched build-push.yaml on ${BRANCH}"

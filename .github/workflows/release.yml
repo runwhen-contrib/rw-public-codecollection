@@ -1,5 +1,23 @@
 name: Release (Date-based)
 
+# Cuts a date-based release tag (YYYY-MM-DD.N) via the shared
+# `runwhen-contrib/github-actions/generate-release` composite action,
+# then dispatches build-push.yaml against the newly-created tag so the
+# release ships with an immutable, catalog-discoverable OCI image.
+#
+# Flow:
+#   release        -> generate-release creates tag + GitHub Release,
+#                     exposing the new tag as steps.create_release.outputs.release_tag
+#   build-release  -> `gh workflow run build-push.yaml --ref <tag>`,
+#                     which runs build-push.yaml's workflow_dispatch path
+#                     against the tag, producing an OCI tag of the form
+#                       <sanitized-tag>-<cc_sha7>-<rt_sha7>
+#                     plus the human-readable :<release_tag> alias.
+#
+# The build runs as a SEPARATE workflow run -- this job just dispatches
+# and returns. Track the resulting build under the "Build And Push"
+# workflow filtered by the release tag ref.
+
 on:
   schedule:
     - cron: '0 12 * * 1'
@@ -7,10 +25,14 @@ on:
 
 permissions:
   contents: write
+  # actions: write is needed for `gh workflow run` to dispatch build-push.yaml.
+  actions: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.create_release.outputs.release_tag }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -19,6 +41,37 @@ jobs:
           persist-credentials: true
 
       - name: Create Release
+        id: create_release
         uses: runwhen-contrib/github-actions/generate-release@main
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  build-release-image:
+    needs: release
+    if: needs.release.outputs.release_tag != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch build-push.yaml for ${{ needs.release.outputs.release_tag }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ needs.release.outputs.release_tag }}
+        run: |
+          set -euo pipefail
+          echo "Dispatching build-push.yaml against release tag '${RELEASE_TAG}'"
+
+          # We dispatch with workflow_dispatch (not via the `release:` event
+          # on build-push.yaml) so the chain is observable here and the
+          # tag-set logic in build-push.yaml uses its existing
+          # workflow_dispatch path -- no special-casing needed.
+          gh workflow run build-push.yaml \
+            --repo "${{ github.repository }}" \
+            --ref "${RELEASE_TAG}" \
+            -f push=true
+
+          {
+            echo "## Release image build dispatched"
+            echo
+            echo "- Release tag: \`${RELEASE_TAG}\`"
+            echo "- Build workflow: \`build-push.yaml @ ${RELEASE_TAG}\`"
+            echo "- Track at: ${{ github.server_url }}/${{ github.repository }}/actions/workflows/build-push.yaml"
+          } >> "$GITHUB_STEP_SUMMARY"
