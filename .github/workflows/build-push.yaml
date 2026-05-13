@@ -287,8 +287,8 @@ jobs:
             set -eux
             python3 -c "import RW.Core, RW.platform, RW.fetchsecrets, robot"
             robot --version || true
-            test -d /home/runwhen/codecollection/codebundles
-            test -f /home/runwhen/codecollection/requirements.txt
+            test -d /home/runwhen/collection/codebundles
+            test -f /home/runwhen/collection/requirements.txt
             test -x /home/runwhen/worker
             python3 --version
           '
