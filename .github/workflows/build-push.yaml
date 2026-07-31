@@ -176,17 +176,23 @@ jobs:
           # --- moving-pointer aliases (re-pointed on every build) ---
           tags=( "${repo_lc}:${canonical_tag}" )
           case "${{ github.event_name }}" in
-            push)
+            push|workflow_dispatch)
+              # Branch alias (":main", ":feature-foo"). For push it's the
+              # pushed branch; for workflow_dispatch it's the dispatched
+              # ref. Both share this alias so a manual re-run of main
+              # behaves the same as an auto-push to main.
               tags+=( "${repo_lc}:${sanitized_ref}" )
+              # Move ":latest" whenever the destination branch is main.
+              # Previously this only fired for `push`, so workflow_dispatch
+              # builds on main never updated ":latest" — leaving consumers
+              # that pull ":latest" with a stale image and skewing the
+              # cc-catalog-svc / cc-registry-v2 view of which tag is newest.
               if [ "${{ github.ref_name }}" = "main" ]; then
                 tags+=( "${repo_lc}:latest" )
               fi
               ;;
             pull_request)
               tags+=( "${repo_lc}:pr-${{ github.event.pull_request.number }}" )
-              ;;
-            workflow_dispatch)
-              tags+=( "${repo_lc}:${sanitized_ref}" )
               ;;
           esac
 
